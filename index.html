@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SYNTRO - Gestión Ganadera</title>
+    <title>SYNTRO - Gestión Ganadera Inteligente</title>
     <style>
         :root {
             --syntro-primary: #0a3a40;
             --syntro-secondary: #1b6535;
-            --syntro-card-blue: #22578a;
-            --syntro-card-green: #2e8b57;
-            --syntro-bg: #0f172a;
+            --syntro-accent: #3db87a;
+            --syntro-bg: #eef4f1;
             --card-bg: #ffffff;
             --text-main: #222222;
         }
@@ -25,99 +24,118 @@
         body {
             background-color: var(--syntro-bg);
             color: var(--text-main);
-            padding: 10px;
-            max-width: 480px;
+            padding: 20px;
+            max-width: 900px;
             margin: 0 auto;
         }
 
         header {
+            text-align: center;
             background: linear-gradient(135deg, var(--syntro-primary), var(--syntro-secondary));
             color: white;
-            padding: 15px;
-            border-radius: 12px;
-            margin-bottom: 12px;
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2), inset 0 2px 3px rgba(255,255,255,0.2);
             display: flex;
             align-items: center;
+            justify-content: center;
+            gap: 16px;
+            border-bottom: 4px solid #06262a;
+        }
+
+        header img {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            object-fit: cover;
+            background: #fff;
+        }
+
+        header h1 { font-size: 1.5rem; letter-spacing: 0.5px; text-shadow: 1px 1px 2px rgba(0,0,0,0.3); }
+        header p { font-size: 0.85rem; opacity: 0.9; }
+
+        .finca-header-box {
+            background: #ffffff;
+            padding: 14px 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #b2d8c8;
+            font-size: 0.95rem;
+            display: flex;
             justify-content: space-between;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
         }
 
-        header h1 { font-size: 1.1rem; }
-        .header-icons { display: flex; gap: 10px; font-size: 1.2rem; cursor: pointer; }
+        .finca-header-box input {
+            padding: 8px 12px;
+            font-size: 0.95rem;
+            width: 65%;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
 
-        /* Menú Grid Estilo Tarjetas */
-        .menu-grid {
+        /* Menú Principal en Grid Estilo 3D */
+        .menu-container {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
         }
 
-        .menu-grid.hidden {
+        .menu-container.hidden {
             display: none !important;
         }
 
-        .card-menu {
-            background: var(--syntro-card-blue);
-            color: white;
-            border-radius: 14px;
-            padding: 14px 10px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-            cursor: pointer;
-            transition: transform 0.1s ease;
-        }
-
-        .card-menu.green {
-            background: var(--syntro-card-green);
-        }
-
-        .card-menu:active { transform: scale(0.97); }
-
-        .card-icon {
-            font-size: 1.8rem;
-            margin-bottom: 6px;
-        }
-
-        .card-title {
-            font-size: 0.85rem;
-            font-weight: bold;
-            text-transform: uppercase;
-            margin-bottom: 3px;
-            line-height: 1.1;
-        }
-
-        .card-desc {
-            font-size: 0.65rem;
-            opacity: 0.85;
-            margin-bottom: 10px;
-            flex-grow: 1;
-        }
-
-        .btn-iniciar {
-            background: rgba(0, 0, 0, 0.25);
+        .menu-btn-giant {
+            background: linear-gradient(145deg, #1f753d, var(--syntro-secondary));
             color: white;
             border: none;
-            border-radius: 20px;
-            padding: 5px 12px;
-            font-size: 0.65rem;
+            border-radius: 16px;
+            padding: 20px;
+            font-size: 1.1rem;
             font-weight: bold;
+            text-align: left;
+            cursor: pointer;
+            box-shadow: 0 6px 0 #0f391f, 0 10px 20px rgba(0,0,0,0.2);
             display: flex;
             align-items: center;
-            gap: 4px;
-            cursor: pointer;
+            justify-content: space-between;
+            transition: all 0.1s ease;
+            width: 100%;
         }
 
-        /* Secciones de Formularios */
+        .menu-btn-giant * {
+            pointer-events: none;
+        }
+
+        .menu-btn-giant:hover {
+            filter: brightness(1.05);
+        }
+
+        .menu-btn-giant:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 #0f391f, 0 5px 10px rgba(0,0,0,0.2);
+        }
+
+        .menu-btn-giant span.icon {
+            font-size: 2rem;
+            background: rgba(255,255,255,0.15);
+            padding: 10px 14px;
+            border-radius: 12px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* Secciones de Módulos */
         .section-card {
             background: var(--card-bg);
-            border-radius: 14px;
-            padding: 15px;
-            margin-bottom: 15px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
             display: none;
+            border: 1px solid #d2e6dc;
         }
 
         .section-card.active { display: block !important; }
@@ -126,297 +144,462 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
-            border-bottom: 2px solid #eee;
-            padding-bottom: 8px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--syntro-bg);
+            padding-bottom: 12px;
         }
 
-        .section-header h2 { font-size: 1rem; color: var(--syntro-primary); }
+        .section-header h2 { font-size: 1.25rem; color: var(--syntro-primary); }
 
         .back-btn {
-            background: #e0e0e0;
+            background: linear-gradient(145deg, #f0f0f0, #d0d0d0);
             border: none;
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 0.75rem;
+            padding: 10px 18px;
+            border-radius: 10px;
+            font-size: 0.9rem;
             font-weight: bold;
             cursor: pointer;
+            box-shadow: 0 4px 0 #b0b0b0, 0 6px 10px rgba(0,0,0,0.1);
+            transition: all 0.1s ease;
+        }
+        .back-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #b0b0b0;
         }
 
-        .form-group { margin-bottom: 10px; }
-        label { display: block; font-size: 0.75rem; font-weight: bold; margin-bottom: 3px; color: #444; }
+        .form-group { margin-bottom: 16px; }
+        label { display: block; font-size: 0.85rem; font-weight: bold; margin-bottom: 6px; color: #444; }
         input, select {
             width: 100%;
-            padding: 9px;
+            padding: 12px;
             border: 1px solid #ccc;
-            border-radius: 6px;
-            font-size: 0.85rem;
+            border-radius: 10px;
+            font-size: 1rem;
             background: #fafafa;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.03);
         }
 
+        /* Botones de Acción Estilo 3D */
         .btn-action {
-            background-color: var(--syntro-secondary);
+            background: linear-gradient(145deg, #227c45, var(--syntro-secondary));
             color: white;
             border: none;
             width: 100%;
-            padding: 11px;
-            border-radius: 6px;
+            padding: 14px;
+            border-radius: 10px;
             font-weight: bold;
-            font-size: 0.9rem;
+            font-size: 1.05rem;
             cursor: pointer;
-            margin-top: 8px;
+            margin-top: 12px;
+            box-shadow: 0 5px 0 #0f391f, 0 8px 15px rgba(0,0,0,0.15);
+            transition: all 0.1s ease;
+        }
+        .btn-action:active {
+            transform: translateY(3px);
+            box-shadow: 0 2px 0 #0f391f, 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        .btn-graph {
+            background: linear-gradient(145deg, #0d4b52, var(--syntro-primary));
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            box-shadow: 0 4px 0 #052225, 0 6px 12px rgba(0,0,0,0.15);
+            transition: all 0.1s ease;
+        }
+        .btn-graph:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 #052225;
+        }
+
+        .btn-export {
+            background: linear-gradient(145deg, #4ad18b, var(--syntro-accent));
+            color: #111;
+            border: none;
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            box-shadow: 0 4px 0 #288a55, 0 6px 12px rgba(0,0,0,0.1);
+            transition: all 0.1s ease;
+        }
+        .btn-export:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 #288a55;
+        }
+
+        .dashboard-box {
+            background: #e4f0ea;
+            border: 1px solid #a8d5be;
+            padding: 14px;
+            border-radius: 10px;
+            margin-bottom: 16px;
+            font-size: 0.95rem;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.03);
+        }
+
+        .graph-container-box {
+            background: #fff;
+            border: 2px dashed var(--syntro-primary);
+            padding: 14px;
+            border-radius: 10px;
+            margin-top: 14px;
+            display: none;
+            text-align: center;
+            font-size: 0.9rem;
         }
 
         .table-container {
             overflow-x: auto;
-            margin-top: 10px;
-            max-height: 150px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
+            margin-top: 16px;
+            max-height: 220px;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
         }
 
-        table { width: 100%; border-collapse: collapse; font-size: 0.7rem; white-space: nowrap; }
-        th, td { padding: 6px; text-align: left; border-bottom: 1px solid #ddd; }
-        th { background-color: #e4f0ea; color: var(--syntro-primary); }
+        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; white-space: nowrap; }
+        th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background-color: #e4f0ea; color: var(--syntro-primary); position: sticky; top: 0; }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>Gestión Ganadera</h1>
-        <div class="header-icons">
-            <span>🔍</span>
-            <span>⚙️</span>
+        <img src="logo.png" alt="SYNTRO Logo" onerror="this.style.display='none'">
+        <div>
+            <h1>SYNTRO GANADERA</h1>
+            <p>Sistema Inteligente de Trazabilidad</p>
         </div>
     </header>
 
-    <!-- MENÚ PRINCIPAL EN CUADRÍCULA -->
-    <div id="main-menu" class="menu-grid">
-        <div class="card-menu" onclick="showSection('sec-suplementacion')">
-            <div class="card-icon">🫙</div>
-            <div class="card-title">Suplementación</div>
-            <div class="card-desc">Plan de alimentación diaria.</div>
-            <button class="btn-iniciar">▶ INICIAR</button>
-        </div>
-
-        <div class="card-menu" onclick="showSection('sec-altura')">
-            <div class="card-icon">📊</div>
-            <div class="card-title">Altura del Pasto</div>
-            <div class="card-desc">Medición y manejo.</div>
-            <button class="btn-iniciar">▶ INICIAR</button>
-        </div>
-
-        <div class="card-menu" onclick="showSection('sec-rebano')">
-            <div class="card-icon">🚃</div>
-            <div class="card-title">Rebaño</div>
-            <div class="card-desc">Control de inventario.</div>
-            <button class="btn-iniciar">▶ INICIAR</button>
-        </div>
-
-        <div class="card-menu green" onclick="showSection('sec-cerca')">
-            <div class="card-icon">#</div>
-            <div class="card-title">Cerca</div>
-            <div class="card-desc">Estado y linderos.</div>
-            <button class="btn-iniciar">▶ INICIAR</button>
-        </div>
-
-        <div class="card-menu" onclick="showSection('sec-sanidad')">
-            <div class="card-icon">💉</div>
-            <div class="card-title">Sanidad</div>
-            <div class="card-desc">Vacunas y tratamientos.</div>
-            <button class="btn-iniciar">▶ INICIAR</button>
-        </div>
-
-        <div class="card-menu" onclick="showSection('sec-agua')">
-            <div class="card-icon">💧</div>
-            <div class="card-title">Agua</div>
-            <div class="card-desc">Niveles y calidad.</div>
-            <button class="btn-iniciar">▶ INICIAR</button>
-        </div>
-
-        <div class="card-menu" onclick="showSection('sec-heces')">
-            <div class="card-icon">💩</div>
-            <div class="card-title">Score de Heces</div>
-            <div class="card-desc">Monitoreo digestivo.</div>
-            <button class="btn-iniciar">▶ INICIAR</button>
-        </div>
-
-        <div class="card-menu" onclick="showSection('sec-leche')">
-            <div class="card-icon">🥛</div>
-            <div class="card-title">Registro de Leche</div>
-            <div class="card-desc">Producción total al día.</div>
-            <button class="btn-iniciar">▶ INICIAR</button>
-        </div>
+    <div class="finca-header-box">
+        <span>🏡 <strong>Finca:</strong></span>
+        <input type="text" id="nombre-finca" value="Hacienda San Juan" oninput="guardarFinca(this.value)">
     </div>
 
-    <!-- MÓDULO 1: SUPLEMENTACIÓN -->
-    <div id="sec-suplementacion" class="section-card">
+    <div id="main-menu" class="menu-container">
+        <button class="menu-btn-giant" onclick="showSection('sec-inventario')">
+            <div><strong>Inventario Maestro & Lotes</strong><br><small style="font-weight:normal; opacity:0.9;">Control de Aretes, Chips y Lotes</small></div>
+            <span class="icon">🐂</span>
+        </button>
+        <button class="menu-btn-giant" onclick="showSection('sec-nacimiento')">
+            <div><strong>Nacimientos & Dashboard</strong><br><small style="font-weight:normal; opacity:0.9;">Partos, gemelares, abortos</small></div>
+            <span class="icon">🐄</span>
+        </button>
+        <button class="menu-btn-giant" onclick="showSection('sec-traslado')">
+            <div><strong>Traslado Interno & Dashboard</strong><br><small style="font-weight:normal; opacity:0.9;">Movimiento automático de lotes</small></div>
+            <span class="icon">🌾</span>
+        </button>
+        <button class="menu-btn-giant" onclick="showSection('sec-palpacion')">
+            <div><strong>Palpación & Dashboard</strong><br><small style="font-weight:normal; opacity:0.9;">Gestación multiespecie y secado</small></div>
+            <span class="icon">🧬</span>
+        </button>
+        <button class="menu-btn-giant" onclick="showSection('sec-pesaje')">
+            <div><strong>Pesaje Corporal & Dashboard</strong><br><small style="font-weight:normal; opacity:0.9;">Control de peso por báscula</small></div>
+            <span class="icon">⚖️</span>
+        </button>
+        <button class="menu-btn-giant" onclick="showSection('sec-leche')">
+            <div><strong>Producción de Leche & Dashboard</strong><br><small style="font-weight:normal; opacity:0.9;">Control por lotes y turnos</small></div>
+            <span class="icon">🥛</span>
+        </button>
+        <button class="menu-btn-giant" onclick="showSection('sec-muerte')">
+            <div><strong>Muertes / Bajas & Dashboard</strong><br><small style="font-weight:normal; opacity:0.9;">Registro de mortalidad</small></div>
+            <span class="icon">⚰️</span>
+        </button>
+    </div>
+
+    <!-- SECCIÓN INVENTARIO -->
+    <div id="sec-inventario" class="section-card">
         <div class="section-header">
-            <h2>Suplementación</h2>
+            <h2>Inventario Maestro & Lotes</h2>
             <button class="back-btn" onclick="showMenu()">Volver</button>
         </div>
+        <div class="dashboard-box" id="dashboard-inv"><strong>📊 Dashboard Inventario:</strong> Cargando...</div>
         <div class="form-group">
-            <label>Lote / Potrero:</label>
-            <input type="text" id="sup-lote" placeholder="Ej. Lote 1">
+            <label>Lectura Microchip (Prioritario):</label>
+            <input type="text" id="inv-chip" placeholder="Pase el lector de microchip..." oninput="buscarPorChip(this.value)">
         </div>
         <div class="form-group">
-            <label>Tipo de Suplemento:</label>
-            <input type="text" id="sup-tipo" placeholder="Ej.ala mineralizada /ala proteica">
+            <label>Nro. de Arete:</label>
+            <input type="text" id="inv-arete" placeholder="Autogenerado o manual">
         </div>
         <div class="form-group">
-            <label>Cantidad (Kg):</label>
-            <input type="number" id="sup-cantidad" placeholder="Ej. 25">
+            <label>Lote (Editable / Seleccionable):</label>
+            <input type="text" id="inv-lote" list="lista-lotes" placeholder="Ej. Lote Ordeño 1, Potrero Vacío...">
+            <datalist id="lista-lotes">
+                <option value="Lote Ordeño Principal">
+                <option value="Lote Vacas Horras">
+                <option value="Potrero de Descanso">
+                <option value="Lote Maternidad">
+                <option value="Potrero de Engorde">
+            </datalist>
         </div>
-        <button class="btn-action" onclick="guardarRegistro('suplementacion')">Guardar Registro</button>
+        <div class="form-group">
+            <label>Especie / Categoría:</label>
+            <select id="inv-categoria">
+                <option value="Bovino">Vaca Bovina</option>
+                <option value="Bufalino">Búfala</option>
+                <option value="Porcino">Cerdas / Reproductora</option>
+                <option value="Novilla">Novilla</option>
+                <option value="Becerra">Becerra</option>
+                <option value="Toro">Toro / Reproductor</option>
+            </select>
+        </div>
+        <button class="btn-action" onclick="guardarInventario()">Registrar en Inventario</button>
+        <button class="btn-graph" onclick="toggleGrafica('inv')">📈 Ver Gráfica de Inventario</button>
+        <div id="graph-inv" class="graph-container-box">Resumen gráfico de inventario en SYNTRO</div>
+        <button class="btn-export" onclick="exportarCSV('inventario')">📥 Descargar CSV Inventario</button>
         <div class="table-container">
-            <table id="tabla-suplementacion"><thead><tr><th>Fecha</th><th>Lote</th><th>Tipo</th><th>Kg</th></tr></thead><tbody></tbody></table>
+            <table id="tabla-inventario"><thead><tr><th>Arete</th><th>Microchip</th><th>Lote</th><th>Categoría</th></tr></thead><tbody></tbody></table>
         </div>
     </div>
 
-    <!-- MÓDULO 2: ALTURA DEL PASTO -->
-    <div id="sec-altura" class="section-card">
+    <!-- SECCIÓN NACIMIENTOS -->
+    <div id="sec-nacimiento" class="section-card">
         <div class="section-header">
-            <h2>Altura del Pasto</h2>
+            <h2>Registro de Nacimientos</h2>
             <button class="back-btn" onclick="showMenu()">Volver</button>
         </div>
+        <div class="dashboard-box" id="dashboard-nac"><strong>📊 Dashboard Nacimientos:</strong> Cargando...</div>
         <div class="form-group">
-            <label>Potrero:</label>
-            <input type="text" id="alt-potrero" placeholder="Nombre del potrero">
+            <label>Especie:</label>
+            <select id="nac-especie">
+                <option value="bovino">Bovino (Gestación normal ~281d)</option>
+                <option value="bufalino">Bufalino (Gestación normal ~310d)</option>
+                <option value="porcino">Porcino (Gestación normal ~114d)</option>
+            </select>
         </div>
         <div class="form-group">
-            <label>Altura Promedio (cm):</label>
-            <input type="number" id="alt-medida" placeholder="Ej. 45">
+            <label>Madre (Arete / Microchip):</label>
+            <input type="text" id="nac-madre" placeholder="Arete o Chip de la madre">
         </div>
-        <button class="btn-action" onclick="guardarRegistro('altura')">Guardar Altura</button>
+        <div class="form-group">
+            <label>Tipo de Parto:</label>
+            <select id="nac-tipo" onchange="togglePartoTipo()">
+                <option value="normal">Normal</option>
+                <option value="gemelar">Gemelar / Múltiple</option>
+                <option value="distocico">Distócico (Asistido)</option>
+                <option value="aborto">Aborto</option>
+                <option value="mortinato">Mortinato</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Tiempo de Gestación transcurrido (en Días):</label>
+            <input type="number" id="nac-dias-gestacion" placeholder="Ej. 280">
+        </div>
+        
+        <div id="crias-container">
+            <fieldset style="border: 1px solid #ccc; padding: 12px; border-radius: 10px; margin-bottom: 12px;">
+                <legend style="font-size: 0.8rem; font-weight:bold; color:var(--syntro-primary);">Datos Cría 1</legend>
+                <div class="form-group">
+                    <label>Arete Cría 1:</label>
+                    <input type="text" id="nac-arete1">
+                </div>
+                <div class="form-group">
+                    <label>Sexo:</label>
+                    <select id="nac-sexo1"><option>Macho</option><option>Hembra</option></select>
+                </div>
+                <div class="form-group">
+                    <label>Peso (kg):</label>
+                    <input type="number" id="nac-peso1" placeholder="Ej. 32">
+                </div>
+            </fieldset>
+
+            <fieldset id="block-cria2" style="border: 1px solid #ccc; padding: 12px; border-radius: 10px; margin-bottom: 12px; display:none;">
+                <legend style="font-size: 0.8rem; font-weight:bold; color:var(--syntro-primary);">Datos Cría 2 (Gemelar)</legend>
+                <div class="form-group">
+                    <label>Arete Cría 2:</label>
+                    <input type="text" id="nac-arete2">
+                </div>
+                <div class="form-group">
+                    <label>Sexo:</label>
+                    <select id="nac-sexo2"><option>Macho</option><option>Hembra</option></select>
+                </div>
+                <div class="form-group">
+                    <label>Peso (kg):</label>
+                    <input type="number" id="nac-peso2" placeholder="Ej. 30">
+                </div>
+            </fieldset>
+        </div>
+
+        <button class="btn-action" onclick="guardarNacimiento()">Guardar y Vincular al Inventario</button>
+        <button class="btn-graph" onclick="toggleGrafica('nac')">📈 Ver Gráfica de Nacimientos</button>
+        <div id="graph-nac" class="graph-container-box">Resumen gráfico de natalidad</div>
+        <button class="btn-export" onclick="exportarCSV('nacimientos')">📥 Descargar CSV Nacimientos</button>
         <div class="table-container">
-            <table id="tabla-altura"><thead><tr><th>Fecha</th><th>Potrero</th><th>Altura (cm)</th></tr></thead><tbody></tbody></table>
+            <table id="tabla-nacimientos"><thead><tr><th>Fecha</th><th>Madre</th><th>Tipo</th><th>Cría</th><th>Peso</th></tr></thead><tbody></tbody></table>
         </div>
     </div>
 
-    <!-- MÓDULO 3: REBAÑO -->
-    <div id="sec-rebano" class="section-card">
+    <!-- SECCIÓN TRASLADOS -->
+    <div id="sec-traslado" class="section-card">
         <div class="section-header">
-            <h2>Control de Rebaño</h2>
+            <h2>Traslado Interno & Dashboard</h2>
             <button class="back-btn" onclick="showMenu()">Volver</button>
         </div>
+        <div class="dashboard-box" id="dashboard-tras"><strong>📊 Dashboard Traslados:</strong> Cargando...</div>
         <div class="form-group">
-            <label>Arete / Identificación:</label>
-            <input type="text" id="reb-arete" placeholder="Ej. A-101">
+            <label>Arete / Animal:</label>
+            <input type="text" id="tras-animal" placeholder="Ej. Arete 105">
         </div>
         <div class="form-group">
-            <label>Categoría:</label>
-            <select id="reb-cat"><option>Vaca</option><option>Novilla</option><option>Toro</option><option>Becerra/o</option></select>
+            <label>Potrero / Lote Destino (Actualiza Inventario):</label>
+            <input type="text" id="tras-destino" list="lista-lotes" placeholder="Ej. Potrero de Descanso">
         </div>
-        <button class="btn-action" onclick="guardarRegistro('rebano')">Registrar Animal</button>
+        <button class="btn-action" onclick="guardarTraslado()">Procesar Traslado y Actualizar Inventario</button>
+        <button class="btn-graph" onclick="toggleGrafica('tras')">📈 Ver Gráfica de Traslados</button>
+        <div id="graph-tras" class="graph-container-box">Resumen gráfico de movimientos</div>
+        <button class="btn-export" onclick="exportarCSV('traslados')">📥 Descargar CSV Traslados</button>
         <div class="table-container">
-            <table id="tabla-rebano"><thead><tr><th>Fecha</th><th>Arete</th><th>Categoría</th></tr></thead><tbody></tbody></table>
+            <table id="tabla-traslados"><thead><tr><th>Fecha</th><th>Animal</th><th>Nuevo Lote Destino</th></tr></thead><tbody></tbody></table>
         </div>
     </div>
 
-    <!-- MÓDULO 4: CERCA -->
-    <div id="sec-cerca" class="section-card">
+    <!-- SECCIÓN PALPACIÓN -->
+    <div id="sec-palpacion" class="section-card">
         <div class="section-header">
-            <h2>Estado de Cercas</h2>
+            <h2>Palpación & Dashboard Reproductivo</h2>
             <button class="back-btn" onclick="showMenu()">Volver</button>
         </div>
+        <div class="dashboard-box" id="dashboard-rep"><strong>📊 Dashboard Reproductivo:</strong> Cargando...</div>
         <div class="form-group">
-            <label>Tramo / Lindero:</label>
-            <input type="text" id="cer-tramo" placeholder="Ej. Potrero Norte">
+            <label>Arete del Animal:</label>
+            <input type="text" id="pal-animal" placeholder="Arete o Microchip">
         </div>
         <div class="form-group">
-            <label>Condición:</label>
-            <select id="cer-estado"><option>Óptimo</option><option>Requiere Reparación</option><option>Dañado</option></select>
+            <label>Especie:</label>
+            <select id="pal-especie">
+                <option value="bovino">Bovino (Gestación ~281 días)</option>
+                <option value="bufalino">Bufalino (Gestación ~310 días)</option>
+                <option value="porcino">Porcino (Gestación ~114 días)</option>
+            </select>
         </div>
-        <button class="btn-action" onclick="guardarRegistro('cerca')">Guardar Estado</button>
+        <div class="form-group">
+            <label>Diagnóstico:</label>
+            <select id="pal-diag" onchange="toggleGestacionCampos()">
+                <option value="Preñada">Preñada</option>
+                <option value="Vacia">Vacía / Repetición</option>
+                <option value="Cria al pie">Cría al pie / Apta</option>
+            </select>
+        </div>
+        <div class="form-group" id="block-gestacion">
+            <label>Fecha en que quedó preñada (Mes y Año):</label>
+            <input type="month" id="pal-fecha-servicio">
+        </div>
+        <button class="btn-action" onclick="guardarPalpacion()">Guardar Diagnóstico y Calcular Fechas</button>
+        <button class="btn-graph" onclick="toggleGrafica('rep')">📈 Ver Gráfica Reproductiva</button>
+        <div id="graph-rep" class="graph-container-box">Resumen gráfico de preñez</div>
+        <button class="btn-export" onclick="exportarCSV('palpaciones')">📥 Descargar CSV Palpaciones</button>
         <div class="table-container">
-            <table id="tabla-cerca"><thead><tr><th>Fecha</th><th>Tramo</th><th>Estado</th></tr></thead><tbody></tbody></table>
+            <table id="tabla-palpaciones"><thead><tr><th>Fecha Palp.</th><th>Arete</th><th>Diagnóstico</th><th>Parto Estimado</th><th>Secado Sugerido</th></tr></thead><tbody></tbody></table>
         </div>
     </div>
 
-    <!-- MÓDULO 5: SANIDAD -->
-    <div id="sec-sanidad" class="section-card">
+    <!-- SECCIÓN PESAJE -->
+    <div id="sec-pesaje" class="section-card">
         <div class="section-header">
-            <h2>Sanidad y Tratamientos</h2>
+            <h2>Pesaje Corporal & Dashboard</h2>
             <button class="back-btn" onclick="showMenu()">Volver</button>
         </div>
+        <div class="dashboard-box" id="dashboard-pes"><strong>📊 Dashboard Pesajes:</strong> Cargando...</div>
         <div class="form-group">
-            <label>Arete / Lote:</label>
-            <input type="text" id="san-animal" placeholder="Arete o Lote tratado">
+            <label>Arete del Animal:</label>
+            <input type="text" id="pes-animal" placeholder="Arete">
         </div>
         <div class="form-group">
-            <label>Tratamiento / Vacuna:</label>
-            <input type="text" id="san-tratamiento" placeholder="Ej. Gabrovac / Ivermectina">
+            <label>Peso Actual (kg):</label>
+            <input type="number" id="pes-kilos" placeholder="Ej. 420">
         </div>
-        <button class="btn-action" onclick="guardarRegistro('sanidad')">Guardar Tratamiento</button>
+        <button class="btn-action" onclick="guardarPesaje()">Registrar Peso</button>
+        <button class="btn-graph" onclick="toggleGrafica('pes')">📈 Ver Gráfica de Pesos</button>
+        <div id="graph-pes" class="graph-container-box">Resumen gráfico de pesajes</div>
+        <button class="btn-export" onclick="exportarCSV('pesajes')">📥 Descargar CSV Pesajes</button>
         <div class="table-container">
-            <table id="tabla-sanidad"><thead><tr><th>Fecha</th><th>Animal/Lote</th><th>Tratamiento</th></tr></thead><tbody></tbody></table>
+            <table id="tabla-pesajes"><thead><tr><th>Fecha</th><th>Arete</th><th>Peso (kg)</th></tr></thead><tbody></tbody></table>
         </div>
     </div>
 
-    <!-- MÓDULO 6: AGUA -->
-    <div id="sec-agua" class="section-card">
-        <div class="section-header">
-            <h2>Niveles y Calidad de Agua</h2>
-            <button class="back-btn" onclick="showMenu()">Volver</button>
-        </div>
-        <div class="form-group">
-            <label>Punto de Agua / Bebedero:</label>
-            <input type="text" id="agu-punto" placeholder="Ej. Bebedero Potrero 3">
-        </div>
-        <div class="form-group">
-            <label>Estado:</label>
-            <select id="agu-estado"><option>Lleno / Limpio</option><option>Medio / Regular</option><option>Vacío / Sucio</option></select>
-        </div>
-        <button class="btn-action" onclick="guardarRegistro('agua')">Guardar Registro</button>
-        <div class="table-container">
-            <table id="tabla-agua"><thead><tr><th>Fecha</th><th>Punto</th><th>Estado</th></tr></thead><tbody></tbody></table>
-        </div>
-    </div>
-
-    <!-- MÓDULO 7: SCORE DE HECES -->
-    <div id="sec-heces" class="section-card">
-        <div class="section-header">
-            <h2>Score de Heces</h2>
-            <button class="back-btn" onclick="showMenu()">Volver</button>
-        </div>
-        <div class="form-group">
-            <label>Lote / Animal:</label>
-            <input type="text" id="hec-ref" placeholder="Referencia">
-        </div>
-        <div class="form-group">
-            <label>Puntuación (1 al 5):</label>
-            <select id="hec-score"><option>1 (Muy líquido)</option><option>2 (Suave)</option><option>3 (Normal óptimo)</option><option>4 (Firmenegativo)</option><option>5 (Muy duro)</option></select>
-        </div>
-        <button class="btn-action" onclick="guardarRegistro('heces')">Guardar Score</button>
-        <div class="table-container">
-            <table id="tabla-heces"><thead><tr><th>Fecha</th><th>Referencia</th><th>Score</th></tr></thead><tbody></tbody></table>
-        </div>
-    </div>
-
-    <!-- MÓDULO 8: REGISTRO DE LECHE -->
+    <!-- SECCIÓN LECHE -->
     <div id="sec-leche" class="section-card">
         <div class="section-header">
-            <h2>Registro de Leche</h2>
+            <h2>Producción de Leche & Dashboard</h2>
             <button class="back-btn" onclick="showMenu()">Volver</button>
         </div>
+        <div class="dashboard-box" id="dashboard-lec"><strong>📊 Dashboard Leche:</strong> Cargando...</div>
         <div class="form-group">
-            <label>Lote / Ordeño:</label>
-            <input type="text" id="lec-lote" placeholder="Lote Ordeño">
+            <label>Nombre del Lote:</label>
+            <input type="text" id="lec-lote" list="lista-lotes" placeholder="Ej. Lote Ordeño Principal">
+        </div>
+        <div class="form-group">
+            <label>Turno:</label>
+            <select id="lec-turno">
+                <option>Mañana</option>
+                <option>Tarde</option>
+                <option>Único / Completo</option>
+            </select>
         </div>
         <div class="form-group">
             <label>Litros Totales:</label>
-            <input type="number" id="lec-litros" placeholder="Ej. 280">
+            <input type="number" id="lec-litros" placeholder="Ej. 350">
         </div>
-        <button class="btn-action" onclick="guardarRegistro('leche')">Guardar Litros</button>
+        <div class="form-group">
+            <label>Número de Vacas en Ordeño:</label>
+            <input type="number" id="lec-vacas" placeholder="Ej. 30">
+        </div>
+        <button class="btn-action" onclick="guardarLeche()">Registrar Producción</button>
+        <button class="btn-graph" onclick="toggleGrafica('lec')">📈 Ver Gráfica de Leche</button>
+        <div id="graph-lec" class="graph-container-box">Resumen gráfico de ordeño</div>
+        <button class="btn-export" onclick="exportarCSV('leche')">📥 Descargar CSV Leche</button>
         <div class="table-container">
-            <table id="tabla-leche"><thead><tr><th>Fecha</th><th>Lote</th><th>Litros</th></tr></thead><tbody></tbody></table>
+            <table id="tabla-leche"><thead><tr><th>Fecha</th><th>Lote</th><th>Turno</th><th>Litros</th><th>Vacas</th></tr></thead><tbody></tbody></table>
+        </div>
+    </div>
+
+    <!-- SECCIÓN MUERTES -->
+    <div id="sec-muerte" class="section-card">
+        <div class="section-header">
+            <h2>Muertes / Bajas & Dashboard</h2>
+            <button class="back-btn" onclick="showMenu()">Volver</button>
+        </div>
+        <div class="dashboard-box" id="dashboard-mue"><strong>📊 Dashboard Muertes:</strong> Cargando...</div>
+        <div class="form-group">
+            <label>Arete del Animal:</label>
+            <input type="text" id="mue-animal" placeholder="Arete">
+        </div>
+        <div class="form-group">
+            <label>Causa estimada:</label>
+            <input type="text" id="mue-causa" placeholder="Ej. Enfermedad / Accidente">
+        </div>
+        <button class="btn-action" onclick="guardarMuerte()">Registrar Baja</button>
+        <button class="btn-graph" onclick="toggleGrafica('mue')">📈 Ver Gráfica de Mortalidad</button>
+        <div id="graph-mue" class="graph-container-box">Resumen gráfico de bajas</div>
+        <button class="btn-export" onclick="exportarCSV('muertes')">📥 Descargar CSV Muertes</button>
+        <div class="table-container">
+            <table id="tabla-muertes"><thead><tr><th>Fecha</th><th>Arete</th><th>Causa</th></tr></thead><tbody></tbody></table>
         </div>
     </div>
 
     <script>
         document.addEventListener("DOMContentLoaded", () => {
+            let finca = localStorage.getItem('nombre_finca') || "Hacienda San Juan";
+            document.getElementById('nombre-finca').value = finca;
             actualizarTodasLasTablas();
+            sugerirCorrelativo();
+            actualizarTodosDashboards();
         });
+
+        function guardarFinca(val) {
+            localStorage.setItem('nombre_finca', val);
+        }
 
         function showSection(secId) {
             let menu = document.getElementById('main-menu');
@@ -430,6 +613,8 @@
             if(target) {
                 target.classList.add('active');
             }
+            if(secId === 'sec-inventario') sugerirCorrelativo();
+            actualizarTodosDashboards();
         }
 
         function showMenu() {
@@ -440,65 +625,315 @@
             if(menu) menu.classList.remove('hidden');
         }
 
-        function guardarRegistro(tipo) {
-            let fecha = new Date().toISOString().slice(0,10);
-            let obj = { fecha };
+        function obtenerDatos(tipo) {
+            return JSON.parse(localStorage.getItem(tipo)) || [];
+        }
+
+        function guardarLocal(tipo, data) {
+            localStorage.setItem(tipo, JSON.stringify(data));
+        }
+
+        function toggleGrafica(sec) {
+            let box = document.getElementById('graph-' + sec);
+            if(box) {
+                box.style.display = (box.style.display === 'block') ? 'none' : 'block';
+                let datos = obtenerDatos(sec === 'rep' ? 'palpaciones' : (sec === 'pes' ? 'pesajes' : (sec === 'lec' ? 'leche' : (sec === 'mue' ? 'muertes' : (sec === 'tras' ? 'traslados' : (sec === 'nac' ? 'nacimientos' : 'inventario')))));
+                box.innerHTML = `<strong>📊 SYNTRO Analytics (${sec.toUpperCase()}):</strong><br>Registros activos analizados: <strong>${datos.length}</strong><br><em>(Módulo optimizado PC / Portátil)</em>`;
+            }
+        }
+
+        function sugerirCorrelativo() {
+            let inv = obtenerDatos('inventario');
+            let siguiente = inv.length > 0 ? inv.length + 101 : 1001;
+            let areteInput = document.getElementById('inv-arete');
+            if(areteInput) areteInput.value = "A-" + siguiente;
+        }
+
+        function buscarPorChip(chipVal) {
+            if(!chipVal) return;
+            let inv = obtenerDatos('inventario');
+            let encontrado = inv.find(i => i.chip === chipVal);
+            if(encontrado) {
+                document.getElementById('inv-arete').value = encontrado.arete;
+                document.getElementById('inv-lote').value = encontrado.lote;
+            }
+        }
+
+        function togglePartoTipo() {
+            let tipo = document.getElementById('nac-tipo').value;
+            let criasContainer = document.getElementById('crias-container');
+            let blockCria2 = document.getElementById('block-cria2');
             
-            if(tipo === 'suplementacion') {
-                obj.lote = document.getElementById('sup-lote').value;
-                obj.tipo = document.getElementById('sup-tipo').value;
-                obj.cantidad = document.getElementById('sup-cantidad').value;
-            } else if(tipo === 'altura') {
-                obj.potrero = document.getElementById('alt-potrero').value;
-                obj.medida = document.getElementById('alt-medida').value;
-            } else if(tipo === 'rebano') {
-                obj.arete = document.getElementById('reb-arete').value;
-                obj.cat = document.getElementById('reb-cat').value;
-            } else if(tipo === 'cerca') {
-                obj.tramo = document.getElementById('cer-tramo').value;
-                obj.estado = document.getElementById('cer-estado').value;
-            } else if(tipo === 'sanidad') {
-                obj.animal = document.getElementById('san-animal').value;
-                obj.tratamiento = document.getElementById('san-tratamiento').value;
-            } else if(tipo === 'agua') {
-                obj.punto = document.getElementById('agu-punto').value;
-                obj.estado = document.getElementById('agu-estado').value;
-            } else if(tipo === 'heces') {
-                obj.ref = document.getElementById('hec-ref').value;
-                obj.score = document.getElementById('hec-score').value;
-            } else if(tipo === 'leche') {
-                obj.lote = document.getElementById('lec-lote').value;
-                obj.litros = document.getElementById('lec-litros').value;
+            if(tipo === 'aborto' || tipo === 'mortinato') {
+                criasContainer.style.display = 'none';
+            } else {
+                criasContainer.style.display = 'block';
+                blockCria2.style.display = (tipo === 'gemelar') ? 'block' : 'none';
+            }
+        }
+
+        function toggleGestacionCampos() {
+            let diag = document.getElementById('pal-diag').value;
+            let blockGestacion = document.getElementById('block-gestacion');
+            if(blockGestacion) blockGestacion.style.display = (diag === 'Preñada') ? 'block' : 'none';
+        }
+
+        function guardarInventario() {
+            let arete = document.getElementById('inv-arete').value;
+            let chip = document.getElementById('inv-chip').value;
+            let lote = document.getElementById('inv-lote').value || 'General';
+            let categoria = document.getElementById('inv-categoria').value;
+            if(!arete) { alert('Indique el arete'); return; }
+
+            let inv = obtenerDatos('inventario');
+            let idx = inv.findIndex(i => i.arete === arete);
+            if(idx >= 0) {
+                inv[idx] = {fecha: inv[idx].fecha, arete, chip, lote, categoria};
+            } else {
+                inv.push({fecha: new Date().toISOString().slice(0,10), arete, chip, lote, categoria});
+            }
+            guardarLocal('inventario', inv);
+            alert('Inventario guardado en SYNTRO con éxito');
+            
+            document.getElementById('inv-chip').value = '';
+            sugerirCorrelativo();
+            actualizarTabla('inventario');
+            actualizarTodosDashboards();
+        }
+
+        function guardarNacimiento() {
+            let especie = document.getElementById('nac-especie').value;
+            let madre = document.getElementById('nac-madre').value;
+            let tipo = document.getElementById('nac-tipo').value;
+            let diasGestacion = parseFloat(document.getElementById('nac-dias-gestacion').value) || 0;
+            let fecha = new Date().toISOString().slice(0,10);
+
+            let umbralMinimo = (especie === 'bufalino') ? 290 : (especie === 'porcino' ? 100 : 250);
+            if(tipo === 'normal' && diasGestacion > 0 && diasGestacion < umbralMinimo) {
+                alert(`⚠️ ALERTA SYNTRO: ¡Este animal no se puede registrar! El tiempo de gestación (${diasGestacion} días) es inferior al mínimo biológico idóneo (${umbralMinimo} días) para un parto normal en ${especie}.`);
+                return;
             }
 
-            let data = JSON.parse(localStorage.getItem(tipo)) || [];
-            data.push(obj);
-            localStorage.setItem(tipo, JSON.stringify(data));
-            alert('¡Registro guardado con éxito!');
-            actualizarTabla(tipo);
+            let nacs = obtenerDatos('nacimientos');
+            let inv = obtenerDatos('inventario');
+
+            if(!madre) { alert('Indique la madre'); return; }
+
+            if(tipo === 'aborto' || tipo === 'mortinato') {
+                nacs.push({fecha, madre, tipo, arete: 'N/A', peso: '0'});
+                guardarLocal('nacimientos', nacs);
+                alert('Registro de ' + tipo + ' guardado correctamente');
+                
+                document.getElementById('nac-madre').value = '';
+                document.getElementById('nac-dias-gestacion').value = '';
+                actualizarTodasLasTablas();
+                actualizarTodosDashboards();
+                return;
+            }
+
+            let arete1 = document.getElementById('nac-arete1').value;
+            let sexo1 = document.getElementById('nac-sexo1').value;
+            let peso1 = document.getElementById('nac-peso1').value;
+            if(!arete1) { alert('Indique arete de la Cría 1'); return; }
+
+            nacs.push({fecha, madre, tipo, arete: arete1, peso: peso1 + 'kg (' + sexo1 + ')'});
+            inv.push({fecha, arete: arete1, chip: '', lote: 'Lote Maternidad', categoria: 'Becerra/o'});
+
+            if(tipo === 'gemelar') {
+                let arete2 = document.getElementById('nac-arete2').value;
+                let sexo2 = document.getElementById('nac-sexo2').value;
+                let peso2 = document.getElementById('nac-peso2').value;
+                if(arete2) {
+                    nacs.push({fecha, madre, tipo: 'Gemelar (Cría 2)', arete: arete2, peso: peso2 + 'kg (' + sexo2 + ')'});
+                    inv.push({fecha, arete: arete2, chip: '', lote: 'Lote Maternidad', categoria: 'Becerra/o'});
+                }
+            }
+
+            guardarLocal('nacimientos', nacs);
+            guardarLocal('inventario', inv);
+            alert('Nacimiento(s) registrado(s) y vinculado(s) al inventario SYNTRO');
+
+            document.getElementById('nac-madre').value = '';
+            document.getElementById('nac-arete1').value = '';
+            document.getElementById('nac-peso1').value = '';
+            document.getElementById('nac-arete2').value = '';
+            document.getElementById('nac-peso2').value = '';
+            document.getElementById('nac-dias-gestacion').value = '';
+
+            actualizarTodasLasTablas();
+            actualizarTodosDashboards();
+        }
+
+        function guardarTraslado() {
+            let animal = document.getElementById('tras-animal').value;
+            let destino = document.getElementById('tras-destino').value;
+            if(!animal || !destino) { alert('Complete los campos'); return; }
+            
+            let inv = obtenerDatos('inventario');
+            let encontrado = inv.find(i => i.arete === animal);
+            if(encontrado) {
+                encontrado.lote = destino;
+                guardarLocal('inventario', inv);
+            } else {
+                inv.push({fecha: new Date().toISOString().slice(0,10), arete: animal, chip: '', lote: destino, categoria: 'General'});
+                guardarLocal('inventario', inv);
+            }
+
+            let data = obtenerDatos('traslados');
+            data.push({fecha: new Date().toISOString().slice(0,10), animal, destino});
+            guardarLocal('traslados', data);
+            
+            alert('Traslado registrado y lote actualizado automáticamente');
+            
+            document.getElementById('tras-animal').value = '';
+            document.getElementById('tras-destino').value = '';
+            actualizarTodasLasTablas();
+            actualizarTodosDashboards();
+        }
+
+        function guardarPalpacion() {
+            let animal = document.getElementById('pal-animal').value;
+            let especie = document.getElementById('pal-especie').value;
+            let diag = document.getElementById('pal-diag').value;
+            let fechaServicio = document.getElementById('pal-fecha-servicio').value;
+            if(!animal) { alert('Indique animal'); return; }
+
+            let partoEstimadoStr = 'N/A';
+            let secadoStr = 'N/A';
+
+            if(diag === 'Preñada' && fechaServicio) {
+                let dServicio = new Date(fechaServicio + "-01");
+                let diasGestacionTotal = (especie === 'bufalino') ? 310 : (especie === 'porcino' ? 114 : 281);
+                
+                let dParto = new Date(dServicio);
+                dParto.setDate(dParto.getDate() + diasGestacionTotal);
+                partoEstimadoStr = dParto.toISOString().slice(0,10);
+
+                let dSecado = new Date(dParto);
+                dSecado.setDate(dSecado.getDate() - 60);
+                secadoStr = dSecado.toISOString().slice(0,10);
+            }
+
+            let data = obtenerDatos('palpaciones');
+            data.push({
+                fecha: new Date().toISOString().slice(0,10),
+                animal,
+                diag,
+                parto: partoEstimadoStr,
+                secado: (diag === 'Preñada') ? `Apartar secado: ${secadoStr}` : 'N/A'
+            });
+            guardarLocal('palpaciones', data);
+            
+            alert(`Diagnóstico guardado. Parto estimado: ${partoEstimadoStr}. Fecha secado: ${secadoStr}`);
+            
+            document.getElementById('pal-animal').value = '';
+            document.getElementById('pal-fecha-servicio').value = '';
+            actualizarTabla('palpaciones');
+            actualizarTodosDashboards();
+        }
+
+        function guardarPesaje() {
+            let animal = document.getElementById('pes-animal').value;
+            let kilos = document.getElementById('pes-kilos').value;
+            if(!animal || !kilos) { alert('Complete los campos'); return; }
+            let data = obtenerDatos('pesajes');
+            data.push({fecha: new Date().toISOString().slice(0,10), animal, kilos});
+            guardarLocal('pesajes', data);
+            alert('Pesaje registrado');
+            
+            document.getElementById('pes-animal').value = '';
+            document.getElementById('pes-kilos').value = '';
+            actualizarTabla('pesajes');
+            actualizarTodosDashboards();
+        }
+
+        function guardarLeche() {
+            let lote = document.getElementById('lec-lote').value;
+            let turno = document.getElementById('lec-turno').value;
+            let litros = document.getElementById('lec-litros').value;
+            let vacas = document.getElementById('lec-vacas').value;
+            if(!lote || !litros) { alert('Complete los campos'); return; }
+            let data = obtenerDatos('leche');
+            data.push({fecha: new Date().toISOString().slice(0,10), lote, turno, litros, vacas});
+            guardarLocal('leche', data);
+            alert('Producción de leche registrada');
+            
+            document.getElementById('lec-litros').value = '';
+            document.getElementById('lec-vacas').value = '';
+            actualizarTabla('leche');
+            actualizarTodosDashboards();
+        }
+
+        function guardarMuerte() {
+            let animal = document.getElementById('mue-animal').value;
+            let causa = document.getElementById('mue-causa').value;
+            if(!animal) { alert('Indique animal'); return; }
+            let data = obtenerDatos('muertes');
+            data.push({fecha: new Date().toISOString().slice(0,10), animal, causa});
+            guardarLocal('muertes', data);
+            alert('Baja registrada');
+            
+            document.getElementById('mue-animal').value = '';
+            document.getElementById('mue-causa').value = '';
+            actualizarTabla('muertes');
+            actualizarTodosDashboards();
+        }
+
+        function actualizarTodosDashboards() {
+            let elInv = document.getElementById('dashboard-inv');
+            if(elInv) elInv.innerHTML = `<strong>📊 Dashboard SYNTRO:</strong> Total animales: <strong>${obtenerDatos('inventario').length}</strong>`;
+            let elNac = document.getElementById('dashboard-nac');
+            if(elNac) elNac.innerHTML = `<strong>📊 Dashboard SYNTRO:</strong> Partos/eventos: <strong>${obtenerDatos('nacimientos').length}</strong>`;
+            let elTras = document.getElementById('dashboard-tras');
+            if(elTras) elTras.innerHTML = `<strong>📊 Dashboard SYNTRO:</strong> Movimientos: <strong>${obtenerDatos('traslados').length}</strong>`;
+            let elRep = document.getElementById('dashboard-rep');
+            if(elRep) elRep.innerHTML = `<strong>📊 Dashboard SYNTRO:</strong> Preñadas: <strong>${obtenerDatos('palpaciones').filter(p=>p.diag==='Preñada').length}</strong>`;
+            let elPes = document.getElementById('dashboard-pes');
+            if(elPes) elPes.innerHTML = `<strong>📊 Dashboard SYNTRO:</strong> Pesajes: <strong>${obtenerDatos('pesajes').length}</strong>`;
+            let totalLitros = obtenerDatos('leche').reduce((acc, curr) => acc + parseFloat(curr.litros || 0), 0);
+            let elLec = document.getElementById('dashboard-lec');
+            if(elLec) elLec.innerHTML = `<strong>📊 Dashboard SYNTRO:</strong> Litros Totales: <strong>${totalLitros} L</strong>`;
+            let elMue = document.getElementById('dashboard-mue');
+            if(elMue) elMue.innerHTML = `<strong>📊 Dashboard SYNTRO:</strong> Bajas: <strong>${obtenerDatos('muertes').length}</strong>`;
         }
 
         function actualizarTabla(tipo) {
-            let data = JSON.parse(localStorage.getItem(tipo)) || [];
-            let tbody = document.querySelector(`#tabla-${tipo} tbody`);
+            const datos = obtenerDatos(tipo);
+            const tbody = document.querySelector(`#tabla-${tipo} tbody`);
             if(!tbody) return;
             tbody.innerHTML = '';
-            data.forEach(item => {
+            datos.forEach(item => {
                 let tr = document.createElement('tr');
-                if(tipo === 'suplementacion') tr.innerHTML = `<td>${item.fecha}</td><td>${item.lote}</td><td>${item.tipo}</td><td>${item.cantidad}kg</td>`;
-                if(tipo === 'altura') tr.innerHTML = `<td>${item.fecha}</td><td>${item.potrero}</td><td>${item.medida}cm</td>`;
-                if(tipo === 'rebano') tr.innerHTML = `<td>${item.fecha}</td><td>${item.arete}</td><td>${item.cat}</td>`;
-                if(tipo === 'cerca') tr.innerHTML = `<td>${item.fecha}</td><td>${item.tramo}</td><td>${item.estado}</td>`;
-                if(tipo === 'sanidad') tr.innerHTML = `<td>${item.fecha}</td><td>${item.animal}</td><td>${item.tratamiento}</td>`;
-                if(tipo === 'agua') tr.innerHTML = `<td>${item.fecha}</td><td>${item.punto}</td><td>${item.estado}</td>`;
-                if(tipo === 'heces') tr.innerHTML = `<td>${item.fecha}</td><td>${item.ref}</td><td>${item.score}</td>`;
-                if(tipo === 'leche') tr.innerHTML = `<td>${item.fecha}</td><td>${item.lote}</td><td>${item.litros}L</td>`;
+                if(tipo === 'inventario') tr.innerHTML = `<td>${item.arete}</td><td>${item.chip || '-'}</td><td>${item.lote}</td><td>${item.categoria}</td>`;
+                if(tipo === 'nacimientos') tr.innerHTML = `<td>${item.fecha}</td><td>${item.madre}</td><td>${item.tipo}</td><td>${item.arete}</td><td>${item.peso}</td>`;
+                if(tipo === 'traslados') tr.innerHTML = `<td>${item.fecha}</td><td>${item.animal}</td><td>${item.destino}</td>`;
+                if(tipo === 'palpaciones') tr.innerHTML = `<td>${item.fecha}</td><td>${item.animal}</td><td>${item.diag}</td><td>${item.parto}</td><td>${item.secado}</td>`;
+                if(tipo === 'pesajes') tr.innerHTML = `<td>${item.fecha}</td><td>${item.animal}</td><td>${item.kilos}kg</td>`;
+                if(tipo === 'leche') tr.innerHTML = `<td>${item.fecha}</td><td>${item.lote}</td><td>${item.turno}</td><td>${item.litros}L</td><td>${item.vacas}</td>`;
+                if(tipo === 'muertes') tr.innerHTML = `<td>${item.fecha}</td><td>${item.animal}</td><td>${item.causa}</td>`;
                 tbody.appendChild(tr);
             });
         }
 
         function actualizarTodasLasTablas() {
-            ['suplementacion', 'altura', 'rebano', 'cerca', 'sanidad', 'agua', 'heces', 'leche'].forEach(t => actualizarTabla(t));
+            ['inventario', 'nacimientos', 'traslados', 'palpaciones', 'pesajes', 'leche', 'muertes'].forEach(t => actualizarTabla(t));
+        }
+
+        function exportarCSV(tipo) {
+            const datos = obtenerDatos(tipo);
+            if(datos.length === 0) { alert('No hay datos para exportar.'); return; }
+            let csv = "data:text/csv;charset=utf-8,";
+            const keys = Object.keys(datos[0]);
+            csv += keys.join(",") + "\r\n";
+            datos.forEach(row => {
+                csv += keys.map(k => row[k]).join(",") + "\r\n";
+            });
+            const link = document.createElement("a");
+            link.setAttribute("href", encodeURI(csv));
+            link.setAttribute("download", `SYNTRO_${tipo}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
     </script>
 </body>
