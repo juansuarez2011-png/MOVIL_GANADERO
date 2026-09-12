@@ -289,7 +289,7 @@
         .table-container {
             overflow-x: auto;
             margin-top: 14px;
-            max-height: 200px;
+            max-height: 240px;
             border: 1px solid #e0e0e0;
             border-radius: 10px;
         }
@@ -297,6 +297,28 @@
         table { width: 100%; border-collapse: collapse; font-size: 0.8rem; white-space: nowrap; }
         th, td { padding: 8px 10px; text-align: left; border-bottom: 1px solid #ddd; }
         th { background-color: #e4f0ea; color: var(--syntro-primary); position: sticky; top: 0; }
+
+        .btn-tbl-edit {
+            background: #f0ad4e;
+            color: #fff;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            margin-right: 4px;
+            font-weight: bold;
+        }
+        .btn-tbl-delete {
+            background: #d9534f;
+            color: #fff;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -352,6 +374,7 @@
             <button class="back-btn" onclick="showMenu()">Volver</button>
         </div>
         <div class="dashboard-box" id="dashboard-inv"><strong>📊 Dashboard Inventario:</strong> Cargando...</div>
+        <input type="hidden" id="edit-index-inventario" value="-1">
         <div class="form-group">
             <label>Lectura Microchip (Prioritario):</label>
             <input type="text" id="inv-chip" placeholder="Pase el lector de microchip..." oninput="buscarPorChip(this.value)">
@@ -382,13 +405,13 @@
                 <option value="Toro">Toro / Reproductor</option>
             </select>
         </div>
-        <button class="btn-action" onclick="guardarInventario()">Registrar en Inventario</button>
+        <button class="btn-action" onclick="guardarInventario()">Registrar / Actualizar en Inventario</button>
         <button class="btn-graph" onclick="toggleGrafica('inv')">📈 Ver Gráfica de Inventario</button>
         <button class="btn-refresh" onclick="refrescarGrafica('inv')">🔄 Actualizar Gráfica</button>
         <div id="graph-inv" class="graph-container-box"></div>
         <button class="btn-export" onclick="exportarCSV('inventario')">📥 Descargar CSV Inventario</button>
         <div class="table-container">
-            <table id="tabla-inventario"><thead><tr><th>Arete</th><th>Microchip</th><th>Lote</th><th>Categoría</th></tr></thead><tbody></tbody></table>
+            <table id="tabla-inventario"><thead><tr><th>Arete</th><th>Microchip</th><th>Lote</th><th>Categoría</th><th>Acciones</th></tr></thead><tbody></tbody></table>
         </div>
     </div>
 
@@ -399,6 +422,7 @@
             <button class="back-btn" onclick="showMenu()">Volver</button>
         </div>
         <div class="dashboard-box" id="dashboard-nac"><strong>📊 Dashboard Nacimientos:</strong> Cargando...</div>
+        <input type="hidden" id="edit-index-nacimientos" value="-1">
         <div class="form-group">
             <label>Especie:</label>
             <select id="nac-especie">
@@ -460,13 +484,13 @@
             </fieldset>
         </div>
 
-        <button class="btn-action" onclick="guardarNacimiento()">Guardar y Vincular al Inventario</button>
+        <button class="btn-action" onclick="guardarNacimiento()">Guardar / Actualizar Nacimiento</button>
         <button class="btn-graph" onclick="toggleGrafica('nac')">📈 Ver Gráfica de Nacimientos</button>
         <button class="btn-refresh" onclick="refrescarGrafica('nac')">🔄 Actualizar Gráfica</button>
         <div id="graph-nac" class="graph-container-box"></div>
         <button class="btn-export" onclick="exportarCSV('nacimientos')">📥 Descargar CSV Nacimientos</button>
         <div class="table-container">
-            <table id="tabla-nacimientos"><thead><tr><th>Fecha</th><th>Madre</th><th>Tipo</th><th>Cría</th><th>Peso</th></tr></thead><tbody></tbody></table>
+            <table id="tabla-nacimientos"><thead><tr><th>Fecha</th><th>Madre</th><th>Tipo</th><th>Cría</th><th>Peso</th><th>Acciones</th></tr></thead><tbody></tbody></table>
         </div>
     </div>
 
@@ -477,6 +501,7 @@
             <button class="back-btn" onclick="showMenu()">Volver</button>
         </div>
         <div class="dashboard-box" id="dashboard-tras"><strong>📊 Dashboard Traslados:</strong> Cargando...</div>
+        <input type="hidden" id="edit-index-traslados" value="-1">
         <div class="form-group">
             <label>Arete / Animal:</label>
             <input type="text" id="tras-animal" placeholder="Ej. Arete 105">
@@ -485,13 +510,13 @@
             <label>Potrero / Lote Destino (Actualiza Inventario):</label>
             <input type="text" id="tras-destino" list="lista-lotes" placeholder="Ej. Potrero de Descanso">
         </div>
-        <button class="btn-action" onclick="guardarTraslado()">Procesar Traslado y Actualizar Inventario</button>
+        <button class="btn-action" onclick="guardarTraslado()">Procesar / Actualizar Traslado</button>
         <button class="btn-graph" onclick="toggleGrafica('tras')">📈 Ver Gráfica de Traslados</button>
         <button class="btn-refresh" onclick="refrescarGrafica('tras')">🔄 Actualizar Gráfica</button>
         <div id="graph-tras" class="graph-container-box"></div>
         <button class="btn-export" onclick="exportarCSV('traslados')">📥 Descargar CSV Traslados</button>
         <div class="table-container">
-            <table id="tabla-traslados"><thead><tr><th>Fecha</th><th>Animal</th><th>Nuevo Lote Destino</th></tr></thead><tbody></tbody></table>
+            <table id="tabla-traslados"><thead><tr><th>Fecha</th><th>Animal</th><th>Nuevo Lote Destino</th><th>Acciones</th></tr></thead><tbody></tbody></table>
         </div>
     </div>
 
@@ -502,6 +527,7 @@
             <button class="back-btn" onclick="showMenu()">Volver</button>
         </div>
         <div class="dashboard-box" id="dashboard-rep"><strong>📊 Dashboard Reproductivo:</strong> Cargando...</div>
+        <input type="hidden" id="edit-index-palpaciones" value="-1">
         <div class="form-group">
             <label>Arete del Animal:</label>
             <input type="text" id="pal-animal" placeholder="Arete o Microchip">
@@ -526,13 +552,13 @@
             <label>Fecha en que quedó preñada (Mes y Año):</label>
             <input type="month" id="pal-fecha-servicio">
         </div>
-        <button class="btn-action" onclick="guardarPalpacion()">Guardar Diagnóstico y Calcular Fechas</button>
+        <button class="btn-action" onclick="guardarPalpacion()">Guardar / Actualizar Diagnóstico</button>
         <button class="btn-graph" onclick="toggleGrafica('rep')">📈 Ver Gráfica Reproductiva</button>
         <button class="btn-refresh" onclick="refrescarGrafica('rep')">🔄 Actualizar Gráfica</button>
         <div id="graph-rep" class="graph-container-box"></div>
         <button class="btn-export" onclick="exportarCSV('palpaciones')">📥 Descargar CSV Palpaciones</button>
         <div class="table-container">
-            <table id="tabla-palpaciones"><thead><tr><th>Fecha Palp.</th><th>Arete</th><th>Diagnóstico</th><th>Parto Estimado</th><th>Secado Sugerido</th></tr></thead><tbody></tbody></table>
+            <table id="tabla-palpaciones"><thead><tr><th>Fecha Palp.</th><th>Arete</th><th>Diagnóstico</th><th>Parto Estimado</th><th>Secado Sugerido</th><th>Acciones</th></tr></thead><tbody></tbody></table>
         </div>
     </div>
 
@@ -543,6 +569,7 @@
             <button class="back-btn" onclick="showMenu()">Volver</button>
         </div>
         <div class="dashboard-box" id="dashboard-pes"><strong>📊 Dashboard Pesajes:</strong> Cargando...</div>
+        <input type="hidden" id="edit-index-pesajes" value="-1">
         <div class="form-group">
             <label>Arete del Animal:</label>
             <input type="text" id="pes-animal" placeholder="Arete">
@@ -551,13 +578,13 @@
             <label>Peso Actual (kg):</label>
             <input type="number" id="pes-kilos" placeholder="Ej. 420">
         </div>
-        <button class="btn-action" onclick="guardarPesaje()">Registrar Peso</button>
+        <button class="btn-action" onclick="guardarPesaje()">Registrar / Actualizar Peso</button>
         <button class="btn-graph" onclick="toggleGrafica('pes')">📈 Ver Gráfica de Pesos</button>
         <button class="btn-refresh" onclick="refrescarGrafica('pes')">🔄 Actualizar Gráfica</button>
         <div id="graph-pes" class="graph-container-box"></div>
         <button class="btn-export" onclick="exportarCSV('pesajes')">📥 Descargar CSV Pesajes</button>
         <div class="table-container">
-            <table id="tabla-pesajes"><thead><tr><th>Fecha</th><th>Arete</th><th>Peso (kg)</th></tr></thead><tbody></tbody></table>
+            <table id="tabla-pesajes"><thead><tr><th>Fecha</th><th>Arete</th><th>Peso (kg)</th><th>Acciones</th></tr></thead><tbody></tbody></table>
         </div>
     </div>
 
@@ -568,6 +595,7 @@
             <button class="back-btn" onclick="showMenu()">Volver</button>
         </div>
         <div class="dashboard-box" id="dashboard-lec"><strong>📊 Dashboard Leche:</strong> Cargando...</div>
+        <input type="hidden" id="edit-index-leche" value="-1">
         <div class="form-group">
             <label>Nombre del Lote:</label>
             <input type="text" id="lec-lote" list="lista-lotes" placeholder="Ej. Lote Ordeño Principal">
@@ -588,13 +616,13 @@
             <label>Número de Vacas en Ordeño:</label>
             <input type="number" id="lec-vacas" placeholder="Ej. 30">
         </div>
-        <button class="btn-action" onclick="guardarLeche()">Registrar Producción</button>
+        <button class="btn-action" onclick="guardarLeche()">Registrar / Actualizar Producción</button>
         <button class="btn-graph" onclick="toggleGrafica('lec')">📈 Ver Gráfica de Leche</button>
         <button class="btn-refresh" onclick="refrescarGrafica('lec')">🔄 Actualizar Gráfica</button>
         <div id="graph-lec" class="graph-container-box"></div>
         <button class="btn-export" onclick="exportarCSV('leche')">📥 Descargar CSV Leche</button>
         <div class="table-container">
-            <table id="tabla-leche"><thead><tr><th>Fecha</th><th>Lote</th><th>Turno</th><th>Litros</th><th>Vacas</th></tr></thead><tbody></tbody></table>
+            <table id="tabla-leche"><thead><tr><th>Fecha</th><th>Lote</th><th>Turno</th><th>Litros</th><th>Vacas</th><th>Acciones</th></tr></thead><tbody></tbody></table>
         </div>
     </div>
 
@@ -605,6 +633,7 @@
             <button class="back-btn" onclick="showMenu()">Volver</button>
         </div>
         <div class="dashboard-box" id="dashboard-mue"><strong>📊 Dashboard Muertes:</strong> Cargando...</div>
+        <input type="hidden" id="edit-index-muertes" value="-1">
         <div class="form-group">
             <label>Arete del Animal:</label>
             <input type="text" id="mue-animal" placeholder="Arete">
@@ -613,13 +642,13 @@
             <label>Causa estimada:</label>
             <input type="text" id="mue-causa" placeholder="Ej. Enfermedad / Accidente">
         </div>
-        <button class="btn-action" onclick="guardarMuerte()">Registrar Baja</button>
+        <button class="btn-action" onclick="guardarMuerte()">Registrar / Actualizar Baja</button>
         <button class="btn-graph" onclick="toggleGrafica('mue')">📈 Ver Gráfica de Mortalidad</button>
         <button class="btn-refresh" onclick="refrescarGrafica('mue')">🔄 Actualizar Gráfica</button>
         <div id="graph-mue" class="graph-container-box"></div>
         <button class="btn-export" onclick="exportarCSV('muertes')">📥 Descargar CSV Muertes</button>
         <div class="table-container">
-            <table id="tabla-muertes"><thead><tr><th>Fecha</th><th>Arete</th><th>Causa</th></tr></thead><tbody></tbody></table>
+            <table id="tabla-muertes"><thead><tr><th>Fecha</th><th>Arete</th><th>Causa</th><th>Acciones</th></tr></thead><tbody></tbody></table>
         </div>
     </div>
 
@@ -668,6 +697,15 @@
 
         function guardarLocal(tipo, data) {
             localStorage.setItem(tipo, JSON.stringify(data));
+        }
+
+        function eliminarRegistro(tipo, index) {
+            if (!confirm('¿Está seguro de eliminar este registro?')) return;
+            let datos = obtenerDatos(tipo);
+            datos.splice(index, 1);
+            guardarLocal(tipo, datos);
+            actualizarTodasLasTablas();
+            actualizarTodosDashboards();
         }
 
         function toggleGrafica(sec) {
@@ -817,7 +855,8 @@
             let sigNum = inv.length + 1;
             let areteSugerido = "SYN-" + String(sigNum).padStart(3, '0');
             let inputArete = document.getElementById('inv-arete');
-            if (inputArete && !inputArete.value) {
+            let editIndex = document.getElementById('edit-index-inventario').value;
+            if (inputArete && !inputArete.value && editIndex == -1) {
                 inputArete.value = areteSugerido;
             }
         }
@@ -833,11 +872,13 @@
             }
         }
 
+        // --- INVENTARIO ---
         function guardarInventario() {
             let chip = document.getElementById('inv-chip').value.trim();
             let arete = document.getElementById('inv-arete').value.trim();
             let lote = document.getElementById('inv-lote').value.trim() || 'General';
             let categoria = document.getElementById('inv-categoria').value;
+            let editIndex = parseInt(document.getElementById('edit-index-inventario').value);
 
             if (!arete) {
                 alert('El número de arete es obligatorio.');
@@ -845,11 +886,16 @@
             }
 
             let inv = obtenerDatos('inventario');
-            let index = inv.findIndex(i => i.arete === arete);
-            if (index >= 0) {
-                inv[index] = { arete, chip, lote, categoria };
+            if (editIndex >= 0) {
+                inv[editIndex] = { arete, chip, lote, categoria };
+                document.getElementById('edit-index-inventario').value = -1;
             } else {
-                inv.push({ arete, chip, lote, categoria });
+                let index = inv.findIndex(i => i.arete === arete);
+                if (index >= 0) {
+                    inv[index] = { arete, chip, lote, categoria };
+                } else {
+                    inv.push({ arete, chip, lote, categoria });
+                }
             }
 
             guardarLocal('inventario', inv);
@@ -861,18 +907,33 @@
             alert('¡Animal registrado en inventario con éxito!');
         }
 
+        function editarInventario(index) {
+            let inv = obtenerDatos('inventario');
+            let item = inv[index];
+            document.getElementById('edit-index-inventario').value = index;
+            document.getElementById('inv-chip').value = item.chip || '';
+            document.getElementById('inv-arete').value = item.arete;
+            document.getElementById('inv-lote').value = item.lote;
+            document.getElementById('inv-categoria').value = item.categoria;
+        }
+
         function actualizarTablaInventario() {
             let inv = obtenerDatos('inventario');
             let tbody = document.querySelector('#tabla-inventario tbody');
             if (!tbody) return;
             tbody.innerHTML = '';
-            inv.forEach(i => {
+            inv.forEach((i, idx) => {
                 let tr = document.createElement('tr');
-                tr.innerHTML = `<td>${i.arete}</td><td>${i.chip || 'N/D'}</td><td>${i.lote}</td><td>${i.categoria}</td>`;
+                tr.innerHTML = `<td>${i.arete}</td><td>${i.chip || 'N/D'}</td><td>${i.lote}</td><td>${i.categoria}</td>
+                <td>
+                    <button class="btn-tbl-edit" onclick="editarInventario(${idx})">Editar</button>
+                    <button class="btn-tbl-delete" onclick="eliminarRegistro('inventario', ${idx})">Eliminar</button>
+                </td>`;
                 tbody.appendChild(tr);
             });
         }
 
+        // --- NACIMIENTOS ---
         function togglePartoTipo() {
             let tipo = document.getElementById('nac-tipo').value;
             let cria2Block = document.getElementById('block-cria2');
@@ -889,6 +950,7 @@
             let tipo = document.getElementById('nac-tipo').value;
             let dias = document.getElementById('nac-dias-gestacion').value;
             let fecha = new Date().toISOString().split('T')[0];
+            let editIndex = parseInt(document.getElementById('edit-index-nacimientos').value);
 
             let arete1 = document.getElementById('nac-arete1').value.trim();
             let sexo1 = document.getElementById('nac-sexo1').value;
@@ -900,33 +962,38 @@
             }
 
             let nacs = obtenerDatos('nacimientos');
-            nacs.push({ fecha, madre, tipo, dias, arete: arete1, sexo: sexo1, peso: peso1 });
-            guardarLocal('nacimientos', nacs);
+            let registro = { fecha, madre, tipo, dias, arete: arete1, sexo: sexo1, peso: peso1 };
 
-            if (arete1 && tipo !== 'aborto' && tipo !== 'mortinato') {
-                let inv = obtenerDatos('inventario');
-                inv.push({ arete: arete1, chip: '', lote: 'Lote Maternidad', categoria: especie === 'bufalino' ? 'Bufalino' : 'Bovino' });
-                guardarLocal('inventario', inv);
-                actualizarTablaInventario();
-            }
-
-            if (tipo === 'gemelar') {
-                let arete2 = document.getElementById('nac-arete2').value.trim();
-                let sexo2 = document.getElementById('nac-sexo2').value;
-                let peso2 = document.getElementById('nac-peso2').value;
-                if (arete2) {
-                    nacs.push({ fecha, madre, tipo: 'gemelar (2da cría)', dias, arete: arete2, sexo: sexo2, peso: peso2 });
-                    guardarLocal('nacimientos', nacs);
+            if (editIndex >= 0) {
+                nacs[editIndex] = registro;
+                document.getElementById('edit-index-nacimientos').value = -1;
+            } else {
+                nacs.push(registro);
+                if (arete1 && tipo !== 'aborto' && tipo !== 'mortinato') {
                     let inv = obtenerDatos('inventario');
-                    inv.push({ arete: arete2, chip: '', lote: 'Lote Maternidad', categoria: especie === 'bufalino' ? 'Bufalino' : 'Bovino' });
+                    inv.push({ arete: arete1, chip: '', lote: 'Lote Maternidad', categoria: especie === 'bufalino' ? 'Bufalino' : 'Bovino' });
                     guardarLocal('inventario', inv);
                     actualizarTablaInventario();
                 }
             }
 
+            guardarLocal('nacimientos', nacs);
             actualizarTablaNacimientos();
             actualizarTodosDashboards();
-            alert('Nacimiento registrado correctamente.');
+            alert('Nacimiento registrado / actualizado correctamente.');
+        }
+
+        function editarNacimiento(index) {
+            let nacs = obtenerDatos('nacimientos');
+            let n = nacs[index];
+            document.getElementById('edit-index-nacimientos').value = index;
+            document.getElementById('nac-madre').value = n.madre || '';
+            document.getElementById('nac-tipo').value = n.tipo.includes('gemelar') ? 'gemelar' : n.tipo;
+            document.getElementById('nac-dias-gestacion').value = n.dias || '';
+            document.getElementById('nac-arete1').value = n.arete || '';
+            document.getElementById('nac-sexo1').value = n.sexo || 'Macho';
+            document.getElementById('nac-peso1').value = n.peso || '';
+            togglePartoTipo();
         }
 
         function actualizarTablaNacimientos() {
@@ -934,17 +1001,23 @@
             let tbody = document.querySelector('#tabla-nacimientos tbody');
             if (!tbody) return;
             tbody.innerHTML = '';
-            nacs.forEach(n => {
+            nacs.forEach((n, idx) => {
                 let tr = document.createElement('tr');
-                tr.innerHTML = `<td>${n.fecha}</td><td>${n.madre || 'N/D'}</td><td>${n.tipo}</td><td>${n.arete || '-'}</td><td>${n.peso || '-'} kg</td>`;
+                tr.innerHTML = `<td>${n.fecha}</td><td>${n.madre || 'N/D'}</td><td>${n.tipo}</td><td>${n.arete || '-'}</td><td>${n.peso || '-'} kg</td>
+                <td>
+                    <button class="btn-tbl-edit" onclick="editarNacimiento(${idx})">Editar</button>
+                    <button class="btn-tbl-delete" onclick="eliminarRegistro('nacimientos', ${idx})">Eliminar</button>
+                </td>`;
                 tbody.appendChild(tr);
             });
         }
 
+        // --- TRASLADOS ---
         function guardarTraslado() {
             let animal = document.getElementById('tras-animal').value.trim();
             let destino = document.getElementById('tras-destino').value.trim();
             let fecha = new Date().toISOString().split('T')[0];
+            let editIndex = parseInt(document.getElementById('edit-index-traslados').value);
 
             if (!animal || !destino) {
                 alert('Complete el arete del animal y el lote de destino.');
@@ -952,7 +1025,15 @@
             }
 
             let tras = obtenerDatos('traslados');
-            tras.push({ fecha, animal, destino });
+            let registro = { fecha, animal, destino };
+
+            if (editIndex >= 0) {
+                tras[editIndex] = registro;
+                document.getElementById('edit-index-traslados').value = -1;
+            } else {
+                tras.push(registro);
+            }
+
             guardarLocal('traslados', tras);
 
             let inv = obtenerDatos('inventario');
@@ -965,7 +1046,15 @@
 
             actualizarTablaTraslados();
             actualizarTodosDashboards();
-            alert('Traslado procesado y lote actualizado en el inventario.');
+            alert('Traslado procesado y actualizado.');
+        }
+
+        function editarTraslado(index) {
+            let tras = obtenerDatos('traslados');
+            let t = tras[index];
+            document.getElementById('edit-index-traslados').value = index;
+            document.getElementById('tras-animal').value = t.animal;
+            document.getElementById('tras-destino').value = t.destino;
         }
 
         function actualizarTablaTraslados() {
@@ -973,13 +1062,18 @@
             let tbody = document.querySelector('#tabla-traslados tbody');
             if (!tbody) return;
             tbody.innerHTML = '';
-            tras.forEach(t => {
+            tras.forEach((t, idx) => {
                 let tr = document.createElement('tr');
-                tr.innerHTML = `<td>${t.fecha}</td><td>${t.animal}</td><td>${t.destino}</td>`;
+                tr.innerHTML = `<td>${t.fecha}</td><td>${t.animal}</td><td>${t.destino}</td>
+                <td>
+                    <button class="btn-tbl-edit" onclick="editarTraslado(${idx})">Editar</button>
+                    <button class="btn-tbl-delete" onclick="eliminarRegistro('traslados', ${idx})">Eliminar</button>
+                </td>`;
                 tbody.appendChild(tr);
             });
         }
 
+        // --- PALPACIÓN ---
         function toggleGestacionCampos() {
             let diag = document.getElementById('pal-diag').value;
             let block = document.getElementById('block-gestacion');
@@ -996,6 +1090,7 @@
             let diagnostico = document.getElementById('pal-diag').value;
             let fechaServicio = document.getElementById('pal-fecha-servicio').value;
             let fechaPalp = new Date().toISOString().split('T')[0];
+            let editIndex = parseInt(document.getElementById('edit-index-palpaciones').value);
 
             if (!animal) {
                 alert('Ingrese el arete del animal.');
@@ -1016,12 +1111,30 @@
             }
 
             let reps = obtenerDatos('palpaciones');
-            reps.push({ fecha: fechaPalp, animal, diagnostico, partoEst, secadoSug });
-            guardarLocal('palpaciones', reps);
+            let registro = { fecha: fechaPalp, animal, diagnostico, partoEst, secadoSug, especie, fechaServicio };
 
+            if (editIndex >= 0) {
+                reps[editIndex] = registro;
+                document.getElementById('edit-index-palpaciones').value = -1;
+            } else {
+                reps.push(registro);
+            }
+
+            guardarLocal('palpaciones', reps);
             actualizarTablaPalpaciones();
             actualizarTodosDashboards();
-            alert('Diagnóstico reproductivo guardado con éxito.');
+            alert('Diagnóstico reproductivo guardado / actualizado con éxito.');
+        }
+
+        function editarPalpacion(index) {
+            let reps = obtenerDatos('palpaciones');
+            let r = reps[index];
+            document.getElementById('edit-index-palpaciones').value = index;
+            document.getElementById('pal-animal').value = r.animal;
+            document.getElementById('pal-especie').value = r.especie || 'bovino';
+            document.getElementById('pal-diag').value = r.diagnostico;
+            document.getElementById('pal-fecha-servicio').value = r.fechaServicio || '';
+            toggleGestacionCampos();
         }
 
         function actualizarTablaPalpaciones() {
@@ -1029,17 +1142,23 @@
             let tbody = document.querySelector('#tabla-palpaciones tbody');
             if (!tbody) return;
             tbody.innerHTML = '';
-            reps.forEach(r => {
+            reps.forEach((r, idx) => {
                 let tr = document.createElement('tr');
-                tr.innerHTML = `<td>${r.fecha}</td><td>${r.animal}</td><td>${r.diagnostico}</td><td>${r.partoEst}</td><td>${r.secadoSug}</td>`;
+                tr.innerHTML = `<td>${r.fecha}</td><td>${r.animal}</td><td>${r.diagnostico}</td><td>${r.partoEst}</td><td>${r.secadoSug}</td>
+                <td>
+                    <button class="btn-tbl-edit" onclick="editarPalpacion(${idx})">Editar</button>
+                    <button class="btn-tbl-delete" onclick="eliminarRegistro('palpaciones', ${idx})">Eliminar</button>
+                </td>`;
                 tbody.appendChild(tr);
             });
         }
 
+        // --- PESAJE ---
         function guardarPesaje() {
             let arete = document.getElementById('pes-animal').value.trim();
             let peso = document.getElementById('pes-kilos').value;
             let fecha = new Date().toISOString().split('T')[0];
+            let editIndex = parseInt(document.getElementById('edit-index-pesajes').value);
 
             if (!arete || !peso) {
                 alert('Complete el arete y los kilos.');
@@ -1047,12 +1166,27 @@
             }
 
             let pes = obtenerDatos('pesajes');
-            pes.push({ fecha, arete, peso: parseFloat(peso) });
-            guardarLocal('pesajes', pes);
+            let registro = { fecha, arete, peso: parseFloat(peso) };
 
+            if (editIndex >= 0) {
+                pes[editIndex] = registro;
+                document.getElementById('edit-index-pesajes').value = -1;
+            } else {
+                pes.push(registro);
+            }
+
+            guardarLocal('pesajes', pes);
             actualizarTablaPesajes();
             actualizarTodosDashboards();
-            alert('Peso registrado correctamente.');
+            alert('Peso registrado / actualizado correctamente.');
+        }
+
+        function editarPesaje(index) {
+            let pes = obtenerDatos('pesajes');
+            let p = pes[index];
+            document.getElementById('edit-index-pesajes').value = index;
+            document.getElementById('pes-animal').value = p.arete;
+            document.getElementById('pes-kilos').value = p.peso;
         }
 
         function actualizarTablaPesajes() {
@@ -1060,19 +1194,25 @@
             let tbody = document.querySelector('#tabla-pesajes tbody');
             if (!tbody) return;
             tbody.innerHTML = '';
-            pes.forEach(p => {
+            pes.forEach((p, idx) => {
                 let tr = document.createElement('tr');
-                tr.innerHTML = `<td>${p.fecha}</td><td>${p.arete}</td><td>${p.peso} kg</td>`;
+                tr.innerHTML = `<td>${p.fecha}</td><td>${p.arete}</td><td>${p.peso} kg</td>
+                <td>
+                    <button class="btn-tbl-edit" onclick="editarPesaje(${idx})">Editar</button>
+                    <button class="btn-tbl-delete" onclick="eliminarRegistro('pesajes', ${idx})">Eliminar</button>
+                </td>`;
                 tbody.appendChild(tr);
             });
         }
 
+        // --- LECHE ---
         function guardarLeche() {
             let lote = document.getElementById('lec-lote').value.trim();
             let turno = document.getElementById('lec-turno').value;
             let litros = document.getElementById('lec-litros').value;
             let vacas = document.getElementById('lec-vacas').value;
             let fecha = new Date().toISOString().split('T')[0];
+            let editIndex = parseInt(document.getElementById('edit-index-leche').value);
 
             if (!lote || !litros) {
                 alert('Complete el lote y los litros totales.');
@@ -1080,12 +1220,29 @@
             }
 
             let lecs = obtenerDatos('leche');
-            lecs.push({ fecha, lote, turno, litros: parseFloat(litros), vacas: parseInt(vacas) || 0 });
-            guardarLocal('leche', lecs);
+            let registro = { fecha, lote, turno, litros: parseFloat(litros), vacas: parseInt(vacas) || 0 };
 
+            if (editIndex >= 0) {
+                lecs[editIndex] = registro;
+                document.getElementById('edit-index-leche').value = -1;
+            } else {
+                lecs.push(registro);
+            }
+
+            guardarLocal('leche', lecs);
             actualizarTablaLeche();
             actualizarTodosDashboards();
-            alert('Producción de leche registrada con éxito.');
+            alert('Producción de leche registrada / actualizada con éxito.');
+        }
+
+        function editarLeche(index) {
+            let lecs = obtenerDatos('leche');
+            let l = lecs[index];
+            document.getElementById('edit-index-leche').value = index;
+            document.getElementById('lec-lote').value = l.lote;
+            document.getElementById('lec-turno').value = l.turno;
+            document.getElementById('lec-litros').value = l.litros;
+            document.getElementById('lec-vacas').value = l.vacas;
         }
 
         function actualizarTablaLeche() {
@@ -1093,17 +1250,23 @@
             let tbody = document.querySelector('#tabla-leche tbody');
             if (!tbody) return;
             tbody.innerHTML = '';
-            lecs.forEach(l => {
+            lecs.forEach((l, idx) => {
                 let tr = document.createElement('tr');
-                tr.innerHTML = `<td>${l.fecha}</td><td>${l.lote}</td><td>${l.turno}</td><td>${l.litros} L</td><td>${l.vacas}</td>`;
+                tr.innerHTML = `<td>${l.fecha}</td><td>${l.lote}</td><td>${l.turno}</td><td>${l.litros} L</td><td>${l.vacas}</td>
+                <td>
+                    <button class="btn-tbl-edit" onclick="editarLeche(${idx})">Editar</button>
+                    <button class="btn-tbl-delete" onclick="eliminarRegistro('leche', ${idx})">Eliminar</button>
+                </td>`;
                 tbody.appendChild(tr);
             });
         }
 
+        // --- MUERTES ---
         function guardarMuerte() {
             let arete = document.getElementById('mue-animal').value.trim();
             let causa = document.getElementById('mue-causa').value.trim();
             let fecha = new Date().toISOString().split('T')[0];
+            let editIndex = parseInt(document.getElementById('edit-index-muertes').value);
 
             if (!arete) {
                 alert('Ingrese el arete del animal dado de baja.');
@@ -1111,17 +1274,31 @@
             }
 
             let mues = obtenerDatos('muertes');
-            mues.push({ fecha, arete, causa });
+            let registro = { fecha, arete, causa };
+
+            if (editIndex >= 0) {
+                mues[editIndex] = registro;
+                document.getElementById('edit-index-muertes').value = -1;
+            } else {
+                mues.push(registro);
+                let inv = obtenerDatos('inventario');
+                inv = inv.filter(i => i.arete !== arete);
+                guardarLocal('inventario', inv);
+                actualizarTablaInventario();
+            }
+
             guardarLocal('muertes', mues);
-
-            let inv = obtenerDatos('inventario');
-            inv = inv.filter(i => i.arete !== arete);
-            guardarLocal('inventario', inv);
-            actualizarTablaInventario();
-
             actualizarTablaMuertes();
             actualizarTodosDashboards();
-            alert('Baja registrada y retirada del inventario.');
+            alert('Baja registrada / actualizada.');
+        }
+
+        function editarMuerte(index) {
+            let mues = obtenerDatos('muertes');
+            let m = mues[index];
+            document.getElementById('edit-index-muertes').value = index;
+            document.getElementById('mue-animal').value = m.arete;
+            document.getElementById('mue-causa').value = m.causa;
         }
 
         function actualizarTablaMuertes() {
@@ -1129,9 +1306,13 @@
             let tbody = document.querySelector('#tabla-muertes tbody');
             if (!tbody) return;
             tbody.innerHTML = '';
-            mues.forEach(m => {
+            mues.forEach((m, idx) => {
                 let tr = document.createElement('tr');
-                tr.innerHTML = `<td>${m.fecha}</td><td>${m.arete}</td><td>${m.causa || 'N/D'}</td>`;
+                tr.innerHTML = `<td>${m.fecha}</td><td>${m.arete}</td><td>${m.causa || 'N/D'}</td>
+                <td>
+                    <button class="btn-tbl-edit" onclick="editarMuerte(${idx})">Editar</button>
+                    <button class="btn-tbl-delete" onclick="eliminarRegistro('muertes', ${idx})">Eliminar</button>
+                </td>`;
                 tbody.appendChild(tr);
             });
         }
