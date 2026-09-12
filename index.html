@@ -120,11 +120,20 @@
             width: 100%;
         }
 
+        .menu-btn-config {
+            background: linear-gradient(145deg, #4a5d64, var(--syntro-primary)) !important;
+            box-shadow: 0 5px 0 #0a3a40, 0 8px 16px rgba(0,0,0,0.2) !important;
+        }
+
         .menu-btn-giant * { pointer-events: none; }
         .menu-btn-giant:hover { filter: brightness(1.05); }
         .menu-btn-giant:active {
             transform: translateY(3px);
             box-shadow: 0 2px 0 #0f391f, 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .menu-btn-config:active {
+            box-shadow: 0 2px 0 #0a3a40, 0 4px 8px rgba(0,0,0,0.2) !important;
         }
 
         .menu-btn-giant span.icon {
@@ -365,6 +374,48 @@
             <div><strong>Muertes / Bajas & Dashboard</strong><br><small style="font-weight:normal; opacity:0.9;">Registro de mortalidad</small></div>
             <span class="icon">⚰️</span>
         </button>
+        <button class="menu-btn-giant menu-btn-config" onclick="showSection('sec-configuracion')">
+            <div><strong>Configuración & Parámetros</strong><br><small style="font-weight:normal; opacity:0.9;">Editar gestaciones y gestión de lotes</small></div>
+            <span class="icon">⚙️</span>
+        </button>
+    </div>
+
+    <!-- SECCIÓN CONFIGURACIÓN -->
+    <div id="sec-configuracion" class="section-card">
+        <div class="section-header">
+            <h2>Configuración de Gestaciones y Lotes</h2>
+            <button class="back-btn" onclick="showMenu()">Volver</button>
+        </div>
+        
+        <div style="background: #e4f0ea; padding: 12px; border-radius: 10px; margin-bottom: 16px; border: 1px solid #a8d5be;">
+            <h3 style="font-size: 0.95rem; color: var(--syntro-primary); margin-bottom: 8px;">🧬 Parámetros de Días de Gestación</h3>
+            <p style="font-size: 0.8rem; color: #555; margin-bottom: 10px;">Modifique los días estándar de gestación para las especies del sistema o agregue nuevas especies.</p>
+            <div class="form-group">
+                <label>Nombre de Especie / Categoría:</label>
+                <input type="text" id="cfg-especie-nombre" placeholder="Ej. Caprino, Equino...">
+            </div>
+            <div class="form-group">
+                <label>Días de Gestación:</label>
+                <input type="number" id="cfg-especie-dias" placeholder="Ej. 150">
+            </div>
+            <button class="btn-action" onclick="guardarEspecieConfig()">Agregar / Actualizar Especie</button>
+            <div class="table-container">
+                <table id="tabla-cfg-especies"><thead><tr><th>Especie</th><th>Días de Gestación</th><th>Acciones</th></tr></thead><tbody></tbody></table>
+            </div>
+        </div>
+
+        <div style="background: #fdf5e6; padding: 12px; border-radius: 10px; margin-bottom: 16px; border: 1px solid #f1d5a3;">
+            <h3 style="font-size: 0.95rem; color: #8a6d3b; margin-bottom: 8px;">🏡 Gestión y Creación de Lotes / Potreros</h3>
+            <p style="font-size: 0.8rem; color: #555; margin-bottom: 10px;">Agregue o elimine los lotes disponibles para el sistema y los selectores de fichas.</p>
+            <div class="form-group">
+                <label>Nombre del Nuevo Lote / Potrero:</label>
+                <input type="text" id="cfg-lote-nombre" placeholder="Ej. Potrero San Benito, Lote Novillas 2...">
+            </div>
+            <button class="btn-action" style="background: linear-gradient(145deg, #f0ad4e, #d98c1f); box-shadow: 0 4px 0 #a96c10, 0 6px 12px rgba(0,0,0,0.15);" onclick="guardarLoteConfig()">Agregar Nuevo Lote</button>
+            <div class="table-container">
+                <table id="tabla-cfg-lotes"><thead><tr><th>Nombre del Lote</th><th>Acciones</th></tr></thead><tbody></tbody></table>
+            </div>
+        </div>
     </div>
 
     <!-- SECCIÓN INVENTARIO -->
@@ -385,14 +436,8 @@
         </div>
         <div class="form-group">
             <label>Lote (Editable / Seleccionable):</label>
-            <input type="text" id="inv-lote" list="lista-lotes" placeholder="Ej. Lote Ordeño 1, Potrero Vacío...">
-            <datalist id="lista-lotes">
-                <option value="Lote Ordeño Principal">
-                <option value="Lote Vacas Horras">
-                <option value="Potrero de Descanso">
-                <option value="Lote Maternidad">
-                <option value="Potrero de Engorde">
-            </datalist>
+            <input type="text" id="inv-lote" list="lista-lotes" placeholder="Seleccione o escriba un lote...">
+            <datalist id="lista-lotes"></datalist>
         </div>
         <div class="form-group">
             <label>Especie / Categoría:</label>
@@ -425,11 +470,7 @@
         <input type="hidden" id="edit-index-nacimientos" value="-1">
         <div class="form-group">
             <label>Especie:</label>
-            <select id="nac-especie">
-                <option value="bovino">Bovino (Gestación normal ~281d)</option>
-                <option value="bufalino">Bufalino (Gestación normal ~310d)</option>
-                <option value="porcino">Porcino (Gestación normal ~114d)</option>
-            </select>
+            <select id="nac-especie"></select>
         </div>
         <div class="form-group">
             <label>Madre (Arete / Microchip):</label>
@@ -508,7 +549,7 @@
         </div>
         <div class="form-group">
             <label>Potrero / Lote Destino (Actualiza Inventario):</label>
-            <input type="text" id="tras-destino" list="lista-lotes" placeholder="Ej. Potrero de Descanso">
+            <input type="text" id="tras-destino" list="lista-lotes" placeholder="Seleccione el lote destino">
         </div>
         <button class="btn-action" onclick="guardarTraslado()">Procesar / Actualizar Traslado</button>
         <button class="btn-graph" onclick="toggleGrafica('tras')">📈 Ver Gráfica de Traslados</button>
@@ -534,11 +575,7 @@
         </div>
         <div class="form-group">
             <label>Especie:</label>
-            <select id="pal-especie">
-                <option value="bovino">Bovino (Gestación ~281 días)</option>
-                <option value="bufalino">Bufalino (Gestación ~310 días)</option>
-                <option value="porcino">Porcino (Gestación ~114 días)</option>
-            </select>
+            <select id="pal-especie"></select>
         </div>
         <div class="form-group">
             <label>Diagnóstico:</label>
@@ -598,7 +635,7 @@
         <input type="hidden" id="edit-index-leche" value="-1">
         <div class="form-group">
             <label>Nombre del Lote:</label>
-            <input type="text" id="lec-lote" list="lista-lotes" placeholder="Ej. Lote Ordeño Principal">
+            <input type="text" id="lec-lote" list="lista-lotes" placeholder="Seleccione el lote">
         </div>
         <div class="form-group">
             <label>Turno:</label>
@@ -655,13 +692,181 @@
     <script>
         const chartsInstancia = {};
 
+        // Datos iniciales por defecto si no existen en localStorage
+        const defaultEspecies = [
+            { nombre: "Bovino", dias: 281 },
+            { nombre: "Bufalino", dias: 310 },
+            { nombre: "Porcino", dias: 114 }
+        ];
+
+        const defaultLotes = [
+            "Lote Ordeño Principal",
+            "Lote Vacas Horras",
+            "Potrero de Descanso",
+            "Lote Maternidad",
+            "Potrero de Engorde"
+        ];
+
         document.addEventListener("DOMContentLoaded", () => {
             let finca = localStorage.getItem('nombre_finca') || "Hacienda San Juan";
             document.getElementById('nombre-finca').value = finca;
+            
+            inicializarConfiguracionPorDefecto();
+            sincronizarSelectsYLotes();
             actualizarTodasLasTablas();
             sugerirCorrelativo();
             actualizarTodosDashboards();
         });
+
+        function inicializarConfiguracionPorDefecto() {
+            if (!localStorage.getItem('cfg_especies')) {
+                localStorage.setItem('cfg_especies', JSON.stringify(defaultEspecies));
+            }
+            if (!localStorage.getItem('cfg_lotes')) {
+                localStorage.setItem('cfg_lotes', JSON.stringify(defaultLotes));
+            }
+        }
+
+        function obtenerEspeciesConfig() {
+            return JSON.parse(localStorage.getItem('cfg_especies')) || defaultEspecies;
+        }
+
+        function obtenerLotesConfig() {
+            return JSON.parse(localStorage.getItem('cfg_lotes')) || defaultLotes;
+        }
+
+        function sincronizarSelectsYLotes() {
+            // Sincronizar Datalist de Lotes
+            let lotes = obtenerLotesConfig();
+            let datalist = document.getElementById('lista-lotes');
+            if (datalist) {
+                datalist.innerHTML = '';
+                lotes.forEach(l => {
+                    let opt = document.createElement('option');
+                    opt.value = l;
+                    datalist.appendChild(opt);
+                });
+            }
+
+            // Sincronizar Selects de Especies
+            let especies = obtenerEspeciesConfig();
+            let selectsEspecie = ['nac-especie', 'pal-especie'];
+            selectsEspecie.forEach(selId => {
+                let sel = document.getElementById(selId);
+                if (sel) {
+                    let valorActual = sel.value;
+                    sel.innerHTML = '';
+                    especies.forEach(e => {
+                        let opt = document.createElement('option');
+                        opt.value = e.nombre.toLowerCase();
+                        opt.textContent = `${e.nombre} (Gestación normal ~${e.dias}d)`;
+                        sel.appendChild(opt);
+                    });
+                    if (valorActual) sel.value = valorActual;
+                }
+            });
+
+            actualizarTablaCfgEspecies();
+            actualizarTablaCfgLotes();
+        }
+
+        function guardarEspecieConfig() {
+            let nombre = document.getElementById('cfg-especie-nombre').value.trim();
+            let dias = parseInt(document.getElementById('cfg-especie-dias').value);
+
+            if (!nombre || !dias) {
+                alert('Ingrese el nombre de la especie y los días de gestación.');
+                return;
+            }
+
+            let especies = obtenerEspeciesConfig();
+            let index = especies.findIndex(e => e.nombre.toLowerCase() === nombre.toLowerCase());
+            if (index >= 0) {
+                especies[index].dias = dias;
+            } else {
+                especies.push({ nombre, dias });
+            }
+
+            localStorage.setItem('cfg_especies', JSON.stringify(especies));
+            document.getElementById('cfg-especie-nombre').value = '';
+            document.getElementById('cfg-especie-dias').value = '';
+            sincronizarSelectsYLotes();
+            alert('Especie y gestación configurada con éxito.');
+        }
+
+        function eliminarEspecieConfig(index) {
+            let especies = obtenerEspeciesConfig();
+            if (especies.length <= 1) {
+                alert('Debe mantener al menos una especie registrada.');
+                return;
+            }
+            if (!confirm('¿Está seguro de eliminar esta especie?')) return;
+            especies.splice(index, 1);
+            localStorage.setItem('cfg_especies', JSON.stringify(especies));
+            sincronizarSelectsYLotes();
+        }
+
+        function actualizarTablaCfgEspecies() {
+            let especies = obtenerEspeciesConfig();
+            let tbody = document.querySelector('#tabla-cfg-especies tbody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+            especies.forEach((e, idx) => {
+                let tr = document.createElement('tr');
+                tr.innerHTML = `<td>${e.nombre}</td><td>${e.dias} días</td>
+                <td>
+                    <button class="btn-tbl-delete" onclick="eliminarEspecieConfig(${idx})">Eliminar</button>
+                </td>`;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function guardarLoteConfig() {
+            let nombreLote = document.getElementById('cfg-lote-nombre').value.trim();
+            if (!nombreLote) {
+                alert('Ingrese el nombre del lote.');
+                return;
+            }
+
+            let lotes = obtenerLotesConfig();
+            if (lotes.includes(nombreLote)) {
+                alert('Este lote ya se encuentra registrado.');
+                return;
+            }
+
+            lotes.push(nombreLote);
+            localStorage.setItem('cfg_lotes', JSON.stringify(lotes));
+            document.getElementById('cfg-lote-nombre').value = '';
+            sincronizarSelectsYLotes();
+            alert('Lote agregado exitosamente.');
+        }
+
+        function eliminarLoteConfig(index) {
+            let lotes = obtenerLotesConfig();
+            if (lotes.length <= 1) {
+                alert('Debe mantener al menos un lote registrado.');
+                return;
+            }
+            if (!confirm('¿Está seguro de eliminar este lote?')) return;
+            lotes.splice(index, 1);
+            localStorage.setItem('cfg_lotes', JSON.stringify(lotes));
+            sincronizarSelectsYLotes();
+        }
+
+        function actualizarTablaCfgLotes() {
+            let lotes = obtenerLotesConfig();
+            let tbody = document.querySelector('#tabla-cfg-lotes tbody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+            lotes.forEach((l, idx) => {
+                let tr = document.createElement('tr');
+                tr.innerHTML = `<td>${l}</td>
+                <td>
+                    <button class="btn-tbl-delete" onclick="eliminarLoteConfig(${idx})">Eliminar</button>
+                </td>`;
+                tbody.appendChild(tr);
+            });
+        }
 
         function guardarFinca(val) {
             localStorage.setItem('nombre_finca', val);
@@ -680,6 +885,7 @@
                 target.classList.add('active');
             }
             if(secId === 'sec-inventario') sugerirCorrelativo();
+            sincronizarSelectsYLotes();
             actualizarTodosDashboards();
         }
 
@@ -689,6 +895,7 @@
             });
             let menu = document.getElementById('main-menu');
             if(menu) menu.classList.remove('hidden');
+            sincronizarSelectsYLotes();
         }
 
         function obtenerDatos(tipo) {
@@ -971,7 +1178,7 @@
                 nacs.push(registro);
                 if (arete1 && tipo !== 'aborto' && tipo !== 'mortinato') {
                     let inv = obtenerDatos('inventario');
-                    inv.push({ arete: arete1, chip: '', lote: 'Lote Maternidad', categoria: especie === 'bufalino' ? 'Bufalino' : 'Bovino' });
+                    inv.push({ arete: arete1, chip: '', lote: 'Lote Maternidad', categoria: especie });
                     guardarLocal('inventario', inv);
                     actualizarTablaInventario();
                 }
@@ -1086,7 +1293,7 @@
 
         function guardarPalpacion() {
             let animal = document.getElementById('pal-animal').value.trim();
-            let especie = document.getElementById('pal-especie').value;
+            let especieVal = document.getElementById('pal-especie').value;
             let diagnostico = document.getElementById('pal-diag').value;
             let fechaServicio = document.getElementById('pal-fecha-servicio').value;
             let fechaPalp = new Date().toISOString().split('T')[0];
@@ -1097,12 +1304,16 @@
                 return;
             }
 
+            // Buscar días de gestación configurados para la especie seleccionada
+            let especies = obtenerEspeciesConfig();
+            let espObj = especies.find(e => e.nombre.toLowerCase() === especieVal.toLowerCase());
+            let diasGestacion = espObj ? espObj.dias : 281;
+
             let partoEst = '-';
             let secadoSug = '-';
 
             if (diagnostico === 'Preñada' && fechaServicio) {
                 let dServ = new Date(fechaServicio + '-01');
-                let diasGestacion = especie === 'bufalino' ? 310 : (especie === 'porcino' ? 114 : 281);
                 let dParto = new Date(dServ.getTime() + diasGestacion * 24 * 60 * 60 * 1000);
                 partoEst = dParto.toISOString().split('T')[0];
 
@@ -1111,7 +1322,7 @@
             }
 
             let reps = obtenerDatos('palpaciones');
-            let registro = { fecha: fechaPalp, animal, diagnostico, partoEst, secadoSug, especie, fechaServicio };
+            let registro = { fecha: fechaPalp, animal, diagnostico, partoEst, secadoSug, especie: especieVal, fechaServicio };
 
             if (editIndex >= 0) {
                 reps[editIndex] = registro;
