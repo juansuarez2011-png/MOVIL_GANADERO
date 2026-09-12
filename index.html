@@ -101,6 +101,12 @@
             align-items: center;
             justify-content: space-between;
             transition: transform 0.1s ease;
+            width: 100%;
+        }
+
+        /* Evita que los elementos internos bloqueen el clic del botón */
+        .menu-btn-giant * {
+            pointer-events: none;
         }
 
         .menu-btn-giant:active { transform: scale(0.98); }
