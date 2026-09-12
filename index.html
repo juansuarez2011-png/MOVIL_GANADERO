@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SYNTRO - Gestión Ganadera Inteligente</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <style>
         :root {
             --syntro-primary: #0a3a40;
@@ -106,13 +107,9 @@
             width: 100%;
         }
 
-        .menu-btn-giant * {
-            pointer-events: none;
-        }
+        .menu-btn-giant * { pointer-events: none; }
 
-        .menu-btn-giant:hover {
-            filter: brightness(1.05);
-        }
+        .menu-btn-giant:hover { filter: brightness(1.05); }
 
         .menu-btn-giant:active {
             transform: translateY(4px);
@@ -218,6 +215,25 @@
             box-shadow: 0 1px 0 #052225;
         }
 
+        .btn-refresh {
+            background: linear-gradient(145deg, #f0ad4e, #d98c1f);
+            color: #fff;
+            border: none;
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            box-shadow: 0 4px 0 #a96c10, 0 6px 12px rgba(0,0,0,0.15);
+            transition: all 0.1s ease;
+        }
+        .btn-refresh:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 #a96c10;
+        }
+
         .btn-export {
             background: linear-gradient(145deg, #4ad18b, var(--syntro-accent));
             color: #111;
@@ -250,12 +266,13 @@
         .graph-container-box {
             background: #fff;
             border: 2px dashed var(--syntro-primary);
-            padding: 14px;
+            padding: 16px;
             border-radius: 10px;
             margin-top: 14px;
             display: none;
             text-align: center;
             font-size: 0.9rem;
+            min-height: 260px;
         }
 
         .table-container {
@@ -356,7 +373,8 @@
         </div>
         <button class="btn-action" onclick="guardarInventario()">Registrar en Inventario</button>
         <button class="btn-graph" onclick="toggleGrafica('inv')">📈 Ver Gráfica de Inventario</button>
-        <div id="graph-inv" class="graph-container-box">Resumen gráfico de inventario en SYNTRO</div>
+        <button class="btn-refresh" onclick="refrescarGrafica('inv')">🔄 Actualizar Gráfica</button>
+        <div id="graph-inv" class="graph-container-box"></div>
         <button class="btn-export" onclick="exportarCSV('inventario')">📥 Descargar CSV Inventario</button>
         <div class="table-container">
             <table id="tabla-inventario"><thead><tr><th>Arete</th><th>Microchip</th><th>Lote</th><th>Categoría</th></tr></thead><tbody></tbody></table>
@@ -433,7 +451,8 @@
 
         <button class="btn-action" onclick="guardarNacimiento()">Guardar y Vincular al Inventario</button>
         <button class="btn-graph" onclick="toggleGrafica('nac')">📈 Ver Gráfica de Nacimientos</button>
-        <div id="graph-nac" class="graph-container-box">Resumen gráfico de natalidad</div>
+        <button class="btn-refresh" onclick="refrescarGrafica('nac')">🔄 Actualizar Gráfica</button>
+        <div id="graph-nac" class="graph-container-box"></div>
         <button class="btn-export" onclick="exportarCSV('nacimientos')">📥 Descargar CSV Nacimientos</button>
         <div class="table-container">
             <table id="tabla-nacimientos"><thead><tr><th>Fecha</th><th>Madre</th><th>Tipo</th><th>Cría</th><th>Peso</th></tr></thead><tbody></tbody></table>
@@ -457,7 +476,8 @@
         </div>
         <button class="btn-action" onclick="guardarTraslado()">Procesar Traslado y Actualizar Inventario</button>
         <button class="btn-graph" onclick="toggleGrafica('tras')">📈 Ver Gráfica de Traslados</button>
-        <div id="graph-tras" class="graph-container-box">Resumen gráfico de movimientos</div>
+        <button class="btn-refresh" onclick="refrescarGrafica('tras')">🔄 Actualizar Gráfica</button>
+        <div id="graph-tras" class="graph-container-box"></div>
         <button class="btn-export" onclick="exportarCSV('traslados')">📥 Descargar CSV Traslados</button>
         <div class="table-container">
             <table id="tabla-traslados"><thead><tr><th>Fecha</th><th>Animal</th><th>Nuevo Lote Destino</th></tr></thead><tbody></tbody></table>
@@ -497,7 +517,8 @@
         </div>
         <button class="btn-action" onclick="guardarPalpacion()">Guardar Diagnóstico y Calcular Fechas</button>
         <button class="btn-graph" onclick="toggleGrafica('rep')">📈 Ver Gráfica Reproductiva</button>
-        <div id="graph-rep" class="graph-container-box">Resumen gráfico de preñez</div>
+        <button class="btn-refresh" onclick="refrescarGrafica('rep')">🔄 Actualizar Gráfica</button>
+        <div id="graph-rep" class="graph-container-box"></div>
         <button class="btn-export" onclick="exportarCSV('palpaciones')">📥 Descargar CSV Palpaciones</button>
         <div class="table-container">
             <table id="tabla-palpaciones"><thead><tr><th>Fecha Palp.</th><th>Arete</th><th>Diagnóstico</th><th>Parto Estimado</th><th>Secado Sugerido</th></tr></thead><tbody></tbody></table>
@@ -521,7 +542,8 @@
         </div>
         <button class="btn-action" onclick="guardarPesaje()">Registrar Peso</button>
         <button class="btn-graph" onclick="toggleGrafica('pes')">📈 Ver Gráfica de Pesos</button>
-        <div id="graph-pes" class="graph-container-box">Resumen gráfico de pesajes</div>
+        <button class="btn-refresh" onclick="refrescarGrafica('pes')">🔄 Actualizar Gráfica</button>
+        <div id="graph-pes" class="graph-container-box"></div>
         <button class="btn-export" onclick="exportarCSV('pesajes')">📥 Descargar CSV Pesajes</button>
         <div class="table-container">
             <table id="tabla-pesajes"><thead><tr><th>Fecha</th><th>Arete</th><th>Peso (kg)</th></tr></thead><tbody></tbody></table>
@@ -557,7 +579,8 @@
         </div>
         <button class="btn-action" onclick="guardarLeche()">Registrar Producción</button>
         <button class="btn-graph" onclick="toggleGrafica('lec')">📈 Ver Gráfica de Leche</button>
-        <div id="graph-lec" class="graph-container-box">Resumen gráfico de ordeño</div>
+        <button class="btn-refresh" onclick="refrescarGrafica('lec')">🔄 Actualizar Gráfica</button>
+        <div id="graph-lec" class="graph-container-box"></div>
         <button class="btn-export" onclick="exportarCSV('leche')">📥 Descargar CSV Leche</button>
         <div class="table-container">
             <table id="tabla-leche"><thead><tr><th>Fecha</th><th>Lote</th><th>Turno</th><th>Litros</th><th>Vacas</th></tr></thead><tbody></tbody></table>
@@ -581,7 +604,8 @@
         </div>
         <button class="btn-action" onclick="guardarMuerte()">Registrar Baja</button>
         <button class="btn-graph" onclick="toggleGrafica('mue')">📈 Ver Gráfica de Mortalidad</button>
-        <div id="graph-mue" class="graph-container-box">Resumen gráfico de bajas</div>
+        <button class="btn-refresh" onclick="refrescarGrafica('mue')">🔄 Actualizar Gráfica</button>
+        <div id="graph-mue" class="graph-container-box"></div>
         <button class="btn-export" onclick="exportarCSV('muertes')">📥 Descargar CSV Muertes</button>
         <div class="table-container">
             <table id="tabla-muertes"><thead><tr><th>Fecha</th><th>Arete</th><th>Causa</th></tr></thead><tbody></tbody></table>
@@ -589,6 +613,9 @@
     </div>
 
     <script>
+        // Almacén de instancias de gráficas
+        const chartsInstancia = {};
+
         document.addEventListener("DOMContentLoaded", () => {
             let finca = localStorage.getItem('nombre_finca') || "Hacienda San Juan";
             document.getElementById('nombre-finca').value = finca;
@@ -633,15 +660,168 @@
             localStorage.setItem(tipo, JSON.stringify(data));
         }
 
+        // ==================== GRÁFICAS ====================
         function toggleGrafica(sec) {
-            let box = document.getElementById('graph-' + sec);
-            if(box) {
-                box.style.display = (box.style.display === 'block') ? 'none' : 'block';
-                let datos = obtenerDatos(sec === 'rep' ? 'palpaciones' : (sec === 'pes' ? 'pesajes' : (sec === 'lec' ? 'leche' : (sec === 'mue' ? 'muertes' : (sec === 'tras' ? 'traslados' : (sec === 'nac' ? 'nacimientos' : 'inventario')))));
-                box.innerHTML = `<strong>📊 SYNTRO Analytics (${sec.toUpperCase()}):</strong><br>Registros activos analizados: <strong>${datos.length}</strong><br><em>(Módulo optimizado PC / Portátil)</em>`;
+            const box = document.getElementById('graph-' + sec);
+            if (!box) return;
+
+            // Si ya está visible, la ocultamos y destruimos la gráfica
+            if (box.style.display === 'block') {
+                box.style.display = 'none';
+                if (chartsInstancia[sec]) {
+                    chartsInstancia[sec].destroy();
+                    delete chartsInstancia[sec];
+                }
+                return;
+            }
+
+            // Mostrar contenedor
+            box.style.display = 'block';
+            box.innerHTML = '<canvas id="canvas-' + sec + '" style="max-height:320px;"></canvas>';
+
+            // Obtener datos y configuración según sección
+            const config = obtenerConfigGrafica(sec);
+            if (!config || config.data.datasets[0].data.length === 0 || config.data.datasets[0].data.every(v => v === 0)) {
+                box.innerHTML = '<p style="padding:20px;color:#888;">📭 No hay datos suficientes para graficar. Registra información primero.</p>';
+                return;
+            }
+
+            // Crear gráfica
+            const ctx = document.getElementById('canvas-' + sec).getContext('2d');
+            chartsInstancia[sec] = new Chart(ctx, config);
+        }
+
+        function refrescarGrafica(sec) {
+            const box = document.getElementById('graph-' + sec);
+            if (box && box.style.display === 'block') {
+                if (chartsInstancia[sec]) {
+                    chartsInstancia[sec].destroy();
+                    delete chartsInstancia[sec];
+                }
+                box.style.display = 'none';
+                toggleGrafica(sec);
+            } else {
+                toggleGrafica(sec);
             }
         }
 
+        function obtenerConfigGrafica(sec) {
+            const colorVerde = '#1b6535';
+            const colorVerdeClaro = 'rgba(61, 184, 122, 0.6)';
+            const colorOscuro = '#0a3a40';
+
+            // ===== INVENTARIO: Doughnut por categoría =====
+            if (sec === 'inv') {
+                const inv = obtenerDatos('inventario');
+                const conteo = {};
+                inv.forEach(i => { conteo[i.categoria] = (conteo[i.categoria] || 0) + 1; });
+                return {
+                    type: 'doughnut',
+                    data: {
+                        labels: Object.keys(conteo),
+                        datasets: [{
+                            data: Object.values(conteo),
+                            backgroundColor: ['#1b6535', '#3db87a', '#0a3a40', '#7fd1a8', '#a8d5be', '#4ad18b']
+                        }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' }, title: { display: true, text: 'Inventario por Categoría' } } }
+                };
+            }
+
+            // ===== NACIMIENTOS: Barras por tipo =====
+            if (sec === 'nac') {
+                const nacs = obtenerDatos('nacimientos');
+                const conteo = {};
+                nacs.forEach(n => { conteo[n.tipo] = (conteo[n.tipo] || 0) + 1; });
+                return {
+                    type: 'bar',
+                    data: {
+                        labels: Object.keys(conteo),
+                        datasets: [{ label: 'Eventos', data: Object.values(conteo), backgroundColor: colorVerdeClaro, borderColor: colorVerde, borderWidth: 2 }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, title: { display: true, text: 'Nacimientos por Tipo' } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
+                };
+            }
+
+            // ===== TRASLADOS: Barras por destino =====
+            if (sec === 'tras') {
+                const tras = obtenerDatos('traslados');
+                const conteo = {};
+                tras.forEach(t => { conteo[t.destino] = (conteo[t.destino] || 0) + 1; });
+                return {
+                    type: 'bar',
+                    data: {
+                        labels: Object.keys(conteo),
+                        datasets: [{ label: 'Movimientos', data: Object.values(conteo), backgroundColor: colorVerdeClaro, borderColor: colorVerde, borderWidth: 2 }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, title: { display: true, text: 'Traslados por Lote Destino' } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
+                };
+            }
+
+            // ===== PALPACIÓN: Doughnut diagnóstico =====
+            if (sec === 'rep') {
+                const pals = obtenerDatos('palpaciones');
+                const conteo = {};
+                pals.forEach(p => { conteo[p.diag] = (conteo[p.diag] || 0) + 1; });
+                return {
+                    type: 'doughnut',
+                    data: {
+                        labels: Object.keys(conteo),
+                        datasets: [{ data: Object.values(conteo), backgroundColor: ['#3db87a', '#d9534f', '#f0ad4e', '#0a3a40'] }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' }, title: { display: true, text: 'Diagnóstico Reproductivo' } } }
+                };
+            }
+
+            // ===== PESAJE: Línea de evolución =====
+            if (sec === 'pes') {
+                const pes = obtenerDatos('pesajes');
+                const labels = pes.map(p => p.animal + ' (' + p.fecha + ')');
+                const valores = pes.map(p => parseFloat(p.kilos) || 0);
+                return {
+                    type: 'line',
+                    data: {
+                        labels,
+                        datasets: [{ label: 'Peso (kg)', data: valores, borderColor: colorOscuro, backgroundColor: colorVerdeClaro, tension: 0.3, fill: true }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true }, title: { display: true, text: 'Evolución de Pesajes' } }, scales: { y: { beginAtZero: false } } }
+                };
+            }
+
+            // ===== LECHE: Barras por turno =====
+            if (sec === 'lec') {
+                const lec = obtenerDatos('leche');
+                const conteo = { Mañana: 0, Tarde: 0, 'Único / Completo': 0 };
+                lec.forEach(l => { conteo[l.turno] = (conteo[l.turno] || 0) + parseFloat(l.litros || 0); });
+                return {
+                    type: 'bar',
+                    data: {
+                        labels: Object.keys(conteo),
+                        datasets: [{ label: 'Litros', data: Object.values(conteo), backgroundColor: ['#0a3a40', '#1b6535', '#3db87a'] }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, title: { display: true, text: 'Producción de Leche por Turno (L)' } }, scales: { y: { beginAtZero: true } } }
+                };
+            }
+
+            // ===== MUERTES: Barras por causa =====
+            if (sec === 'mue') {
+                const mue = obtenerDatos('muertes');
+                const conteo = {};
+                mue.forEach(m => { const c = m.causa || 'Sin causa'; conteo[c] = (conteo[c] || 0) + 1; });
+                return {
+                    type: 'bar',
+                    data: {
+                        labels: Object.keys(conteo),
+                        datasets: [{ label: 'Bajas', data: Object.values(conteo), backgroundColor: ['#d9534f', '#f0ad4e', '#c9302c'] }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, title: { display: true, text: 'Muertes por Causa' } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
+                };
+            }
+
+            return null;
+        }
+
+        // ==================== FORMULARIOS ====================
         function sugerirCorrelativo() {
             let inv = obtenerDatos('inventario');
             let siguiente = inv.length > 0 ? inv.length + 101 : 1001;
