@@ -78,7 +78,6 @@
             border-radius: 8px;
         }
 
-        /* Menú Principal en Grid Estilo 3D */
         .menu-container {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -108,9 +107,7 @@
         }
 
         .menu-btn-giant * { pointer-events: none; }
-
         .menu-btn-giant:hover { filter: brightness(1.05); }
-
         .menu-btn-giant:active {
             transform: translateY(4px);
             box-shadow: 0 2px 0 #0f391f, 0 5px 10px rgba(0,0,0,0.2);
@@ -124,7 +121,6 @@
             box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
         }
 
-        /* Secciones de Módulos */
         .section-card {
             background: var(--card-bg);
             border-radius: 16px;
@@ -176,7 +172,6 @@
             box-shadow: inset 0 2px 4px rgba(0,0,0,0.03);
         }
 
-        /* Botones de Acción Estilo 3D */
         .btn-action {
             background: linear-gradient(145deg, #227c45, var(--syntro-secondary));
             color: white;
@@ -613,7 +608,6 @@
     </div>
 
     <script>
-        // Almacén de instancias de gráficas
         const chartsInstancia = {};
 
         document.addEventListener("DOMContentLoaded", () => {
@@ -660,12 +654,10 @@
             localStorage.setItem(tipo, JSON.stringify(data));
         }
 
-        // ==================== GRÁFICAS ====================
         function toggleGrafica(sec) {
             const box = document.getElementById('graph-' + sec);
             if (!box) return;
 
-            // Si ya está visible, la ocultamos y destruimos la gráfica
             if (box.style.display === 'block') {
                 box.style.display = 'none';
                 if (chartsInstancia[sec]) {
@@ -675,18 +667,15 @@
                 return;
             }
 
-            // Mostrar contenedor
             box.style.display = 'block';
             box.innerHTML = '<canvas id="canvas-' + sec + '" style="max-height:320px;"></canvas>';
 
-            // Obtener datos y configuración según sección
             const config = obtenerConfigGrafica(sec);
             if (!config || config.data.datasets[0].data.length === 0 || config.data.datasets[0].data.every(v => v === 0)) {
                 box.innerHTML = '<p style="padding:20px;color:#888;">📭 No hay datos suficientes para graficar. Registra información primero.</p>';
                 return;
             }
 
-            // Crear gráfica
             const ctx = document.getElementById('canvas-' + sec).getContext('2d');
             chartsInstancia[sec] = new Chart(ctx, config);
         }
@@ -708,9 +697,7 @@
         function obtenerConfigGrafica(sec) {
             const colorVerde = '#1b6535';
             const colorVerdeClaro = 'rgba(61, 184, 122, 0.6)';
-            const colorOscuro = '#0a3a40';
 
-            // ===== INVENTARIO: Doughnut por categoría =====
             if (sec === 'inv') {
                 const inv = obtenerDatos('inventario');
                 const conteo = {};
@@ -728,7 +715,6 @@
                 };
             }
 
-            // ===== NACIMIENTOS: Barras por tipo =====
             if (sec === 'nac') {
                 const nacs = obtenerDatos('nacimientos');
                 const conteo = {};
@@ -743,7 +729,6 @@
                 };
             }
 
-            // ===== TRASLADOS: Barras por destino =====
             if (sec === 'tras') {
                 const tras = obtenerDatos('traslados');
                 const conteo = {};
@@ -752,368 +737,433 @@
                     type: 'bar',
                     data: {
                         labels: Object.keys(conteo),
-                        datasets: [{ label: 'Movimientos', data: Object.values(conteo), backgroundColor: colorVerdeClaro, borderColor: colorVerde, borderWidth: 2 }]
+                        datasets: [{ label: 'Traslados', data: Object.values(conteo), backgroundColor: '#3db87a', borderColor: colorVerde, borderWidth: 2 }]
                     },
                     options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, title: { display: true, text: 'Traslados por Lote Destino' } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
                 };
             }
 
-            // ===== PALPACIÓN: Doughnut diagnóstico =====
             if (sec === 'rep') {
-                const pals = obtenerDatos('palpaciones');
+                const reps = obtenerDatos('palpaciones');
                 const conteo = {};
-                pals.forEach(p => { conteo[p.diag] = (conteo[p.diag] || 0) + 1; });
+                reps.forEach(r => { conteo[r.diagnostico] = (conteo[r.diagnostico] || 0) + 1; });
+                return {
+                    type: 'pie',
+                    data: {
+                        labels: Object.keys(conteo),
+                        datasets: [{ data: Object.values(conteo), backgroundColor: ['#227c45', '#f0ad4e', '#d9534f', '#3db87a'] }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' }, title: { display: true, text: 'Diagnósticos Reproductivos' } } }
+                };
+            }
+
+            if (sec === 'pes') {
+                const pess = obtenerDatos('pesajes');
+                return {
+                    type: 'line',
+                    data: {
+                        labels: pess.map(p => p.fecha + ' (' + p.arete + ')'),
+                        datasets: [{ label: 'Peso (kg)', data: pess.map(p => p.peso), borderColor: '#0a3a40', backgroundColor: 'rgba(10,58,64,0.1)', fill: true, tension: 0.2 }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'Historial de Pesajes' } }, scales: { y: { beginAtZero: false } } }
+                };
+            }
+
+            if (sec === 'lec') {
+                const lecs = obtenerDatos('leche');
+                return {
+                    type: 'bar',
+                    data: {
+                        labels: lecs.map(l => l.fecha + ' - ' + l.lote),
+                        datasets: [{ label: 'Litros Totales', data: lecs.map(l => l.litros), backgroundColor: '#4ad18b', borderColor: colorVerde, borderWidth: 1 }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'Producción de Leche por Registro' } }, scales: { y: { beginAtZero: true } } }
+                };
+            }
+
+            if (sec === 'mue') {
+                const mues = obtenerDatos('muertes');
+                const conteo = {};
+                mues.forEach(m => { conteo[m.causa] = (conteo[m.causa] || 0) + 1; });
                 return {
                     type: 'doughnut',
                     data: {
                         labels: Object.keys(conteo),
-                        datasets: [{ data: Object.values(conteo), backgroundColor: ['#3db87a', '#d9534f', '#f0ad4e', '#0a3a40'] }]
+                        datasets: [{ data: Object.values(conteo), backgroundColor: ['#d9534f', '#f0ad4e', '#0a3a40', '#777'] }]
                     },
-                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' }, title: { display: true, text: 'Diagnóstico Reproductivo' } } }
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' }, title: { display: true, text: 'Bajas por Causa' } } }
                 };
             }
-
-            // ===== PESAJE: Línea de evolución =====
-            if (sec === 'pes') {
-                const pes = obtenerDatos('pesajes');
-                const labels = pes.map(p => p.animal + ' (' + p.fecha + ')');
-                const valores = pes.map(p => parseFloat(p.kilos) || 0);
-                return {
-                    type: 'line',
-                    data: {
-                        labels,
-                        datasets: [{ label: 'Peso (kg)', data: valores, borderColor: colorOscuro, backgroundColor: colorVerdeClaro, tension: 0.3, fill: true }]
-                    },
-                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true }, title: { display: true, text: 'Evolución de Pesajes' } }, scales: { y: { beginAtZero: false } } }
-                };
-            }
-
-            // ===== LECHE: Barras por turno =====
-            if (sec === 'lec') {
-                const lec = obtenerDatos('leche');
-                const conteo = { Mañana: 0, Tarde: 0, 'Único / Completo': 0 };
-                lec.forEach(l => { conteo[l.turno] = (conteo[l.turno] || 0) + parseFloat(l.litros || 0); });
-                return {
-                    type: 'bar',
-                    data: {
-                        labels: Object.keys(conteo),
-                        datasets: [{ label: 'Litros', data: Object.values(conteo), backgroundColor: ['#0a3a40', '#1b6535', '#3db87a'] }]
-                    },
-                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, title: { display: true, text: 'Producción de Leche por Turno (L)' } }, scales: { y: { beginAtZero: true } } }
-                };
-            }
-
-            // ===== MUERTES: Barras por causa =====
-            if (sec === 'mue') {
-                const mue = obtenerDatos('muertes');
-                const conteo = {};
-                mue.forEach(m => { const c = m.causa || 'Sin causa'; conteo[c] = (conteo[c] || 0) + 1; });
-                return {
-                    type: 'bar',
-                    data: {
-                        labels: Object.keys(conteo),
-                        datasets: [{ label: 'Bajas', data: Object.values(conteo), backgroundColor: ['#d9534f', '#f0ad4e', '#c9302c'] }]
-                    },
-                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, title: { display: true, text: 'Muertes por Causa' } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
-                };
-            }
-
-            return null;
         }
 
-        // ==================== FORMULARIOS ====================
+        // Sugerir correlativo automático para aretes
         function sugerirCorrelativo() {
             let inv = obtenerDatos('inventario');
-            let siguiente = inv.length > 0 ? inv.length + 101 : 1001;
-            let areteInput = document.getElementById('inv-arete');
-            if(areteInput) areteInput.value = "A-" + siguiente;
+            let sigNum = inv.length + 1;
+            let areteSugerido = "SYN-" + String(sigNum).padStart(3, '0');
+            let inputArete = document.getElementById('inv-arete');
+            if (inputArete && !inputArete.value) {
+                inputArete.value = areteSugerido;
+            }
         }
 
-        function buscarPorChip(chipVal) {
-            if(!chipVal) return;
+        function buscarPorChip(chip) {
+            if (!chip) return;
             let inv = obtenerDatos('inventario');
-            let encontrado = inv.find(i => i.chip === chipVal);
-            if(encontrado) {
+            let encontrado = inv.find(i => i.chip === chip);
+            if (encontrado) {
                 document.getElementById('inv-arete').value = encontrado.arete;
                 document.getElementById('inv-lote').value = encontrado.lote;
+                document.getElementById('inv-categoria').value = encontrado.categoria;
             }
-        }
-
-        function togglePartoTipo() {
-            let tipo = document.getElementById('nac-tipo').value;
-            let criasContainer = document.getElementById('crias-container');
-            let blockCria2 = document.getElementById('block-cria2');
-            
-            if(tipo === 'aborto' || tipo === 'mortinato') {
-                criasContainer.style.display = 'none';
-            } else {
-                criasContainer.style.display = 'block';
-                blockCria2.style.display = (tipo === 'gemelar') ? 'block' : 'none';
-            }
-        }
-
-        function toggleGestacionCampos() {
-            let diag = document.getElementById('pal-diag').value;
-            let blockGestacion = document.getElementById('block-gestacion');
-            if(blockGestacion) blockGestacion.style.display = (diag === 'Preñada') ? 'block' : 'none';
         }
 
         function guardarInventario() {
-            let arete = document.getElementById('inv-arete').value;
-            let chip = document.getElementById('inv-chip').value;
-            let lote = document.getElementById('inv-lote').value || 'General';
+            let chip = document.getElementById('inv-chip').value.trim();
+            let arete = document.getElementById('inv-arete').value.trim();
+            let lote = document.getElementById('inv-lote').value.trim() || 'General';
             let categoria = document.getElementById('inv-categoria').value;
-            if(!arete) { alert('Indique el arete'); return; }
+
+            if (!arete) {
+                alert('El número de arete es obligatorio.');
+                return;
+            }
 
             let inv = obtenerDatos('inventario');
-            let idx = inv.findIndex(i => i.arete === arete);
-            if(idx >= 0) {
-                inv[idx] = {fecha: inv[idx].fecha, arete, chip, lote, categoria};
+            let index = inv.findIndex(i => i.arete === arete);
+            if (index >= 0) {
+                inv[index] = { arete, chip, lote, categoria };
             } else {
-                inv.push({fecha: new Date().toISOString().slice(0,10), arete, chip, lote, categoria});
+                inv.push({ arete, chip, lote, categoria });
             }
+
             guardarLocal('inventario', inv);
-            alert('Inventario guardado en SYNTRO con éxito');
-            
+            actualizarTablaInventario();
+            actualizarTodosDashboards();
             document.getElementById('inv-chip').value = '';
+            document.getElementById('inv-arete').value = '';
             sugerirCorrelativo();
-            actualizarTabla('inventario');
-            actualizarTodosDashboards();
+            alert('¡Animal registrado en inventario con éxito!');
         }
 
-        function guardarNacimiento() {
-            let especie = document.getElementById('nac-especie').value;
-            let madre = document.getElementById('nac-madre').value;
-            let tipo = document.getElementById('nac-tipo').value;
-            let diasGestacion = parseFloat(document.getElementById('nac-dias-gestacion').value) || 0;
-            let fecha = new Date().toISOString().slice(0,10);
-
-            let umbralMinimo = (especie === 'bufalino') ? 290 : (especie === 'porcino' ? 100 : 250);
-            if(tipo === 'normal' && diasGestacion > 0 && diasGestacion < umbralMinimo) {
-                alert(`⚠️ ALERTA SYNTRO: ¡Este animal no se puede registrar! El tiempo de gestación (${diasGestacion} días) es inferior al mínimo biológico idóneo (${umbralMinimo} días) para un parto normal en ${especie}.`);
-                return;
-            }
-
-            let nacs = obtenerDatos('nacimientos');
+        function actualizarTablaInventario() {
             let inv = obtenerDatos('inventario');
-
-            if(!madre) { alert('Indique la madre'); return; }
-
-            if(tipo === 'aborto' || tipo === 'mortinato') {
-                nacs.push({fecha, madre, tipo, arete: 'N/A', peso: '0'});
-                guardarLocal('nacimientos', nacs);
-                alert('Registro de ' + tipo + ' guardado correctamente');
-                
-                document.getElementById('nac-madre').value = '';
-                document.getElementById('nac-dias-gestacion').value = '';
-                actualizarTodasLasTablas();
-                actualizarTodosDashboards();
-                return;
-            }
-
-            let arete1 = document.getElementById('nac-arete1').value;
-            let sexo1 = document.getElementById('nac-sexo1').value;
-            let peso1 = document.getElementById('nac-peso1').value;
-            if(!arete1) { alert('Indique arete de la Cría 1'); return; }
-
-            nacs.push({fecha, madre, tipo, arete: arete1, peso: peso1 + 'kg (' + sexo1 + ')'});
-            inv.push({fecha, arete: arete1, chip: '', lote: 'Lote Maternidad', categoria: 'Becerra/o'});
-
-            if(tipo === 'gemelar') {
-                let arete2 = document.getElementById('nac-arete2').value;
-                let sexo2 = document.getElementById('nac-sexo2').value;
-                let peso2 = document.getElementById('nac-peso2').value;
-                if(arete2) {
-                    nacs.push({fecha, madre, tipo: 'Gemelar (Cría 2)', arete: arete2, peso: peso2 + 'kg (' + sexo2 + ')'});
-                    inv.push({fecha, arete: arete2, chip: '', lote: 'Lote Maternidad', categoria: 'Becerra/o'});
-                }
-            }
-
-            guardarLocal('nacimientos', nacs);
-            guardarLocal('inventario', inv);
-            alert('Nacimiento(s) registrado(s) y vinculado(s) al inventario SYNTRO');
-
-            document.getElementById('nac-madre').value = '';
-            document.getElementById('nac-arete1').value = '';
-            document.getElementById('nac-peso1').value = '';
-            document.getElementById('nac-arete2').value = '';
-            document.getElementById('nac-peso2').value = '';
-            document.getElementById('nac-dias-gestacion').value = '';
-
-            actualizarTodasLasTablas();
-            actualizarTodosDashboards();
-        }
-
-        function guardarTraslado() {
-            let animal = document.getElementById('tras-animal').value;
-            let destino = document.getElementById('tras-destino').value;
-            if(!animal || !destino) { alert('Complete los campos'); return; }
-            
-            let inv = obtenerDatos('inventario');
-            let encontrado = inv.find(i => i.arete === animal);
-            if(encontrado) {
-                encontrado.lote = destino;
-                guardarLocal('inventario', inv);
-            } else {
-                inv.push({fecha: new Date().toISOString().slice(0,10), arete: animal, chip: '', lote: destino, categoria: 'General'});
-                guardarLocal('inventario', inv);
-            }
-
-            let data = obtenerDatos('traslados');
-            data.push({fecha: new Date().toISOString().slice(0,10), animal, destino});
-            guardarLocal('traslados', data);
-            
-            alert('Traslado registrado y lote actualizado automáticamente');
-            
-            document.getElementById('tras-animal').value = '';
-            document.getElementById('tras-destino').value = '';
-            actualizarTodasLasTablas();
-            actualizarTodosDashboards();
-        }
-
-        function guardarPalpacion() {
-            let animal = document.getElementById('pal-animal').value;
-            let especie = document.getElementById('pal-especie').value;
-            let diag = document.getElementById('pal-diag').value;
-            let fechaServicio = document.getElementById('pal-fecha-servicio').value;
-            if(!animal) { alert('Indique animal'); return; }
-
-            let partoEstimadoStr = 'N/A';
-            let secadoStr = 'N/A';
-
-            if(diag === 'Preñada' && fechaServicio) {
-                let dServicio = new Date(fechaServicio + "-01");
-                let diasGestacionTotal = (especie === 'bufalino') ? 310 : (especie === 'porcino' ? 114 : 281);
-                
-                let dParto = new Date(dServicio);
-                dParto.setDate(dParto.getDate() + diasGestacionTotal);
-                partoEstimadoStr = dParto.toISOString().slice(0,10);
-
-                let dSecado = new Date(dParto);
-                dSecado.setDate(dSecado.getDate() - 60);
-                secadoStr = dSecado.toISOString().slice(0,10);
-            }
-
-            let data = obtenerDatos('palpaciones');
-            data.push({
-                fecha: new Date().toISOString().slice(0,10),
-                animal,
-                diag,
-                parto: partoEstimadoStr,
-                secado: (diag === 'Preñada') ? `Apartar secado: ${secadoStr}` : 'N/A'
-            });
-            guardarLocal('palpaciones', data);
-            
-            alert(`Diagnóstico guardado. Parto estimado: ${partoEstimadoStr}. Fecha secado: ${secadoStr}`);
-            
-            document.getElementById('pal-animal').value = '';
-            document.getElementById('pal-fecha-servicio').value = '';
-            actualizarTabla('palpaciones');
-            actualizarTodosDashboards();
-        }
-
-        function guardarPesaje() {
-            let animal = document.getElementById('pes-animal').value;
-            let kilos = document.getElementById('pes-kilos').value;
-            if(!animal || !kilos) { alert('Complete los campos'); return; }
-            let data = obtenerDatos('pesajes');
-            data.push({fecha: new Date().toISOString().slice(0,10), animal, kilos});
-            guardarLocal('pesajes', data);
-            alert('Pesaje registrado');
-            
-            document.getElementById('pes-animal').value = '';
-            document.getElementById('pes-kilos').value = '';
-            actualizarTabla('pesajes');
-            actualizarTodosDashboards();
-        }
-
-        function guardarLeche() {
-            let lote = document.getElementById('lec-lote').value;
-            let turno = document.getElementById('lec-turno').value;
-            let litros = document.getElementById('lec-litros').value;
-            let vacas = document.getElementById('lec-vacas').value;
-            if(!lote || !litros) { alert('Complete los campos'); return; }
-            let data = obtenerDatos('leche');
-            data.push({fecha: new Date().toISOString().slice(0,10), lote, turno, litros, vacas});
-            guardarLocal('leche', data);
-            alert('Producción de leche registrada');
-            
-            document.getElementById('lec-litros').value = '';
-            document.getElementById('lec-vacas').value = '';
-            actualizarTabla('leche');
-            actualizarTodosDashboards();
-        }
-
-        function guardarMuerte() {
-            let animal = document.getElementById('mue-animal').value;
-            let causa = document.getElementById('mue-causa').value;
-            if(!animal) { alert('Indique animal'); return; }
-            let data = obtenerDatos('muertes');
-            data.push({fecha: new Date().toISOString().slice(0,10), animal, causa});
-            guardarLocal('muertes', data);
-            alert('Baja registrada');
-            
-            document.getElementById('mue-animal').value = '';
-            document.getElementById('mue-causa').value = '';
-            actualizarTabla('muertes');
-            actualizarTodosDashboards();
-        }
-
-        function actualizarTodosDashboards() {
-            let elInv = document.getElementById('dashboard-inv');
-            if(elInv) elInv.innerHTML = `<strong>📊 Dashboard SYNTRO:</strong> Total animales: <strong>${obtenerDatos('inventario').length}</strong>`;
-            let elNac = document.getElementById('dashboard-nac');
-            if(elNac) elNac.innerHTML = `<strong>📊 Dashboard SYNTRO:</strong> Partos/eventos: <strong>${obtenerDatos('nacimientos').length}</strong>`;
-            let elTras = document.getElementById('dashboard-tras');
-            if(elTras) elTras.innerHTML = `<strong>📊 Dashboard SYNTRO:</strong> Movimientos: <strong>${obtenerDatos('traslados').length}</strong>`;
-            let elRep = document.getElementById('dashboard-rep');
-            if(elRep) elRep.innerHTML = `<strong>📊 Dashboard SYNTRO:</strong> Preñadas: <strong>${obtenerDatos('palpaciones').filter(p=>p.diag==='Preñada').length}</strong>`;
-            let elPes = document.getElementById('dashboard-pes');
-            if(elPes) elPes.innerHTML = `<strong>📊 Dashboard SYNTRO:</strong> Pesajes: <strong>${obtenerDatos('pesajes').length}</strong>`;
-            let totalLitros = obtenerDatos('leche').reduce((acc, curr) => acc + parseFloat(curr.litros || 0), 0);
-            let elLec = document.getElementById('dashboard-lec');
-            if(elLec) elLec.innerHTML = `<strong>📊 Dashboard SYNTRO:</strong> Litros Totales: <strong>${totalLitros} L</strong>`;
-            let elMue = document.getElementById('dashboard-mue');
-            if(elMue) elMue.innerHTML = `<strong>📊 Dashboard SYNTRO:</strong> Bajas: <strong>${obtenerDatos('muertes').length}</strong>`;
-        }
-
-        function actualizarTabla(tipo) {
-            const datos = obtenerDatos(tipo);
-            const tbody = document.querySelector(`#tabla-${tipo} tbody`);
-            if(!tbody) return;
+            let tbody = document.querySelector('#tabla-inventario tbody');
             tbody.innerHTML = '';
-            datos.forEach(item => {
+            inv.forEach(i => {
                 let tr = document.createElement('tr');
-                if(tipo === 'inventario') tr.innerHTML = `<td>${item.arete}</td><td>${item.chip || '-'}</td><td>${item.lote}</td><td>${item.categoria}</td>`;
-                if(tipo === 'nacimientos') tr.innerHTML = `<td>${item.fecha}</td><td>${item.madre}</td><td>${item.tipo}</td><td>${item.arete}</td><td>${item.peso}</td>`;
-                if(tipo === 'traslados') tr.innerHTML = `<td>${item.fecha}</td><td>${item.animal}</td><td>${item.destino}</td>`;
-                if(tipo === 'palpaciones') tr.innerHTML = `<td>${item.fecha}</td><td>${item.animal}</td><td>${item.diag}</td><td>${item.parto}</td><td>${item.secado}</td>`;
-                if(tipo === 'pesajes') tr.innerHTML = `<td>${item.fecha}</td><td>${item.animal}</td><td>${item.kilos}kg</td>`;
-                if(tipo === 'leche') tr.innerHTML = `<td>${item.fecha}</td><td>${item.lote}</td><td>${item.turno}</td><td>${item.litros}L</td><td>${item.vacas}</td>`;
-                if(tipo === 'muertes') tr.innerHTML = `<td>${item.fecha}</td><td>${item.animal}</td><td>${item.causa}</td>`;
+                tr.innerHTML = `<td>${i.arete}</td><td>${i.chip || 'N/D'}</td><td>${i.lote}</td><td>${i.categoria}</td>`;
                 tbody.appendChild(tr);
             });
         }
 
-        function actualizarTodasLasTablas() {
-            ['inventario', 'nacimientos', 'traslados', 'palpaciones', 'pesajes', 'leche', 'muertes'].forEach(t => actualizarTabla(t));
+        function togglePartoTipo() {
+            let tipo = document.getElementById('nac-tipo').value;
+            let cria2Block = document.getElementById('block-cria2');
+            if (tipo === 'gemelar') {
+                cria2Block.style.display = 'block';
+            } else {
+                cria2Block.style.display = 'none';
+            }
+        }
+
+        function guardarNacimiento() {
+            let especie = document.getElementById('nac-especie').value;
+            let madre = document.getElementById('nac-madre').value.trim();
+            let tipo = document.getElementById('nac-tipo').value;
+            let dias = document.getElementById('nac-dias-gestacion').value;
+            let fecha = new Date().toISOString().split('T')[0];
+
+            let arete1 = document.getElementById('nac-arete1').value.trim();
+            let sexo1 = document.getElementById('nac-sexo1').value;
+            let peso1 = document.getElementById('nac-peso1').value;
+
+            if (!arete1 && tipo !== 'aborto' && tipo !== 'mortinato') {
+                alert('Debe registrar al menos el Arete de la Cría 1.');
+                return;
+            }
+
+            let nacs = obtenerDatos('nacimientos');
+            nacs.push({ fecha, madre, tipo, dias, arete: arete1, sexo: sexo1, peso: peso1 });
+            guardarLocal('nacimientos', nacs);
+
+            // Registrar cría en inventario si aplica
+            if (arete1 && tipo !== 'aborto' && tipo !== 'mortinato') {
+                let inv = obtenerDatos('inventario');
+                inv.push({ arete: arete1, chip: '', lote: 'Lote Maternidad', categoria: especie === 'bufalino' ? 'Bufalino' : 'Bovino' });
+                guardarLocal('inventario', inv);
+                actualizarTablaInventario();
+            }
+
+            if (tipo === 'gemelar') {
+                let arete2 = document.getElementById('nac-arete2').value.trim();
+                let sexo2 = document.getElementById('nac-sexo2').value;
+                let peso2 = document.getElementById('nac-peso2').value;
+                if (arete2) {
+                    nacs.push({ fecha, madre, tipo: 'gemelar (2da cría)', dias, arete: arete2, sexo: sexo2, peso: peso2 });
+                    guardarLocal('nacimientos', nacs);
+                    let inv = obtenerDatos('inventario');
+                    inv.push({ arete: arete2, chip: '', lote: 'Lote Maternidad', categoria: especie === 'bufalino' ? 'Bufalino' : 'Bovino' });
+                    guardarLocal('inventario', inv);
+                    actualizarTablaInventario();
+                }
+            }
+
+            actualizarTablaNacimientos();
+            actualizarTodosDashboards();
+            alert('Nacimiento registrado correctamente.');
+        }
+
+        function actualizarTablaNacimientos() {
+            let nacs = obtenerDatos('nacimientos');
+            let tbody = document.querySelector('#tabla-nacimientos tbody');
+            tbody.innerHTML = '';
+            nacs.forEach(n => {
+                let tr = document.createElement('tr');
+                tr.innerHTML = `<td>${n.fecha}</td><td>${n.madre || 'N/D'}</td><td>${n.tipo}</td><td>${n.arete || '-'}</td><td>${n.peso || '-'} kg</td>`;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function guardarTraslado() {
+            let animal = document.getElementById('tras-animal').value.trim();
+            let destino = document.getElementById('tras-destino').value.trim();
+            let fecha = new Date().toISOString().split('T')[0];
+
+            if (!animal || !destino) {
+                alert('Complete el arete del animal y el lote de destino.');
+                return;
+            }
+
+            let tras = obtenerDatos('traslados');
+            tras.push({ fecha, animal, destino });
+            guardarLocal('traslados', tras);
+
+            // Actualizar inventario lote
+            let inv = obtenerDatos('inventario');
+            let index = inv.findIndex(i => i.arete === animal);
+            if (index >= 0) {
+                inv[index].lote = destino;
+                guardarLocal('inventario', inv);
+                actualizarTablaInventario();
+            }
+
+            actualizarTablaTraslados();
+            actualizarTodosDashboards();
+            alert('Traslado procesado y lote actualizado en el inventario.');
+        }
+
+        function actualizarTablaTraslados() {
+            let tras = obtenerDatos('traslados');
+            let tbody = document.querySelector('#tabla-traslados tbody');
+            tbody.innerHTML = '';
+            tras.forEach(t => {
+                let tr = document.createElement('tr');
+                tr.innerHTML = `<td>${t.fecha}</td><td>${t.animal}</td><td>${t.destino}</td>`;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function toggleGestacionCampos() {
+            let diag = document.getElementById('pal-diag').value;
+            let block = document.getElementById('block-gestacion');
+            if (diag === 'Preñada') {
+                block.style.display = 'block';
+            } else {
+                block.style.display = 'none';
+            }
+        }
+
+        function guardarPalpacion() {
+            let animal = document.getElementById('pal-animal').value.trim();
+            let especie = document.getElementById('pal-especie').value;
+            let diagnostico = document.getElementById('pal-diag').value;
+            let fechaServicio = document.getElementById('pal-fecha-servicio').value;
+            let fechaPalp = new Date().toISOString().split('T')[0];
+
+            if (!animal) {
+                alert('Ingrese el arete del animal.');
+                return;
+            }
+
+            let partoEst = '-';
+            let secadoSug = '-';
+
+            if (diagnostico === 'Preñada' && fechaServicio) {
+                let dServ = new Date(fechaServicio + '-01');
+                let diasGestacion = especie === 'bufalino' ? 310 : (especie === 'porcino' ? 114 : 281);
+                let dParto = new Date(dServ.getTime() + diasGestacion * 24 * 60 * 60 * 1000);
+                partoEst = dParto.toISOString().split('T')[0];
+
+                let dSecado = new Date(dParto.getTime() - 60 * 24 * 60 * 60 * 1000);
+                secadoSug = dSecado.toISOString().split('T')[0];
+            }
+
+            let reps = obtenerDatos('palpaciones');
+            reps.push({ fecha: fechaPalp, animal, diagnostico, partoEst, secadoSug });
+            guardarLocal('palpaciones', reps);
+
+            actualizarTablaPalpaciones();
+            actualizarTodosDashboards();
+            alert('Diagnóstico reproductivo guardado con éxito.');
+        }
+
+        function actualizarTablaPalpaciones() {
+            let reps = obtenerDatos('palpaciones');
+            let tbody = document.querySelector('#tabla-palpaciones tbody');
+            tbody.innerHTML = '';
+            reps.forEach(r => {
+                let tr = document.createElement('tr');
+                tr.innerHTML = `<td>${r.fecha}</td><td>${r.animal}</td><td>${r.diagnostico}</td><td>${r.partoEst}</td><td>${r.secadoSug}</td>`;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function guardarPesaje() {
+            let arete = document.getElementById('pes-animal').value.trim();
+            let peso = document.getElementById('pes-kilos').value;
+            let fecha = new Date().toISOString().split('T')[0];
+
+            if (!arete || !peso) {
+                alert('Complete el arete y los kilos.');
+                return;
+            }
+
+            let pes = obtenerDatos('pesajes');
+            pes.push({ fecha, arete, peso: parseFloat(peso) });
+            guardarLocal('pesajes', pes);
+
+            actualizarTablaPesajes();
+            actualizarTodosDashboards();
+            alert('Peso registrado correctamente.');
+        }
+
+        function actualizarTablaPesajes() {
+            let pes = obtenerDatos('pesajes');
+            let tbody = document.querySelector('#tabla-pesajes tbody');
+            tbody.innerHTML = '';
+            pes.forEach(p => {
+                let tr = document.createElement('tr');
+                tr.innerHTML = `<td>${p.fecha}</td><td>${p.arete}</td><td>${p.peso} kg</td>`;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function guardarLeche() {
+            let lote = document.getElementById('lec-lote').value.trim();
+            let turno = document.getElementById('lec-turno').value;
+            let litros = document.getElementById('lec-litros').value;
+            let vacas = document.getElementById('lec-vacas').value;
+            let fecha = new Date().toISOString().split('T')[0];
+
+            if (!lote || !litros) {
+                alert('Complete el lote y los litros totales.');
+                return;
+            }
+
+            let lecs = obtenerDatos('leche');
+            lecs.push({ fecha, lote, turno, litros: parseFloat(litros), vacas: parseInt(vacas) || 0 });
+            guardarLocal('leche', lecs);
+
+            actualizarTablaLeche();
+            actualizarTodosDashboards();
+            alert('Producción de leche registrada con éxito.');
+        }
+
+        function actualizarTablaLeche() {
+            let lecs = obtenerDatos('leche');
+            let tbody = document.querySelector('#tabla-leche tbody');
+            tbody.innerHTML = '';
+            lecs.forEach(l => {
+                let tr = document.createElement('tr');
+                tr.innerHTML = `<td>${l.fecha}</td><td>${l.lote}</td><td>${l.turno}</td><td>${l.litros} L</td><td>${l.vacas}</td>`;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function guardarMuerte() {
+            let arete = document.getElementById('mue-animal').value.trim();
+            let causa = document.getElementById('mue-causa').value.trim();
+            let fecha = new Date().toISOString().split('T')[0];
+
+            if (!arete) {
+                alert('Ingrese el arete del animal dado de baja.');
+                return;
+            }
+
+            let mues = obtenerDatos('muertes');
+            mues.push({ fecha, arete, causa });
+            guardarLocal('muertes', mues);
+
+            // Remover del inventario activo
+            let inv = obtenerDatos('inventario');
+            inv = inv.filter(i => i.arete !== arete);
+            guardarLocal('inventario', inv);
+            actualizarTablaInventario();
+
+            actualizarTablaMuertes();
+            actualizarTodosDashboards();
+            alert('Baja registrada y retirada del inventario.');
+        }
+
+        function actualizarTablaMuertes() {
+            let mues = obtenerDatos('muertes');
+            let tbody = document.querySelector('#tabla-muertes tbody');
+            tbody.innerHTML = '';
+            mues.forEach(m => {
+                let tr = document.createElement('tr');
+                tr.innerHTML = `<td>${m.fecha}</td><td>${m.arete}</td><td>${m.causa || 'N/D'}</td>`;
+                tbody.appendChild(tr);
+            });
         }
 
         function exportarCSV(tipo) {
-            const datos = obtenerDatos(tipo);
-            if(datos.length === 0) { alert('No hay datos para exportar.'); return; }
-            let csv = "data:text/csv;charset=utf-8,";
-            const keys = Object.keys(datos[0]);
-            csv += keys.join(",") + "\r\n";
+            let datos = obtenerDatos(tipo);
+            if (datos.length === 0) {
+                alert('No hay datos para exportar en esta sección.');
+                return;
+            }
+            let keys = Object.keys(datos[0]);
+            let csv = keys.join(',') + '\n';
             datos.forEach(row => {
-                csv += keys.map(k => row[k]).join(",") + "\r\n";
+                csv += keys.map(k => '"' + (row[k] || '') + '"').join(',') + '\n';
             });
-            const link = document.createElement("a");
-            link.setAttribute("href", encodeURI(csv));
-            link.setAttribute("download", `SYNTRO_${tipo}.csv`);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            let blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            let url = URL.createObjectURL(blob);
+            let a = document.createElement('a');
+            a.href = url;
+            a.download = 'syntro_' + tipo + '.csv';
+            a.click();
+        }
+
+        function actualizarTodosDashboards() {
+            let inv = obtenerDatos('inventario');
+            let nacs = obtenerDatos('nacimientos');
+            let tras = obtenerDatos('traslados');
+            let reps = obtenerDatos('palpaciones');
+            let pes = obtenerDatos('pesajes');
+            let lecs = obtenerDatos('leche');
+            let mues = obtenerDatos('muertes');
+
+            document.getElementById('dashboard-inv').innerHTML = `📊 <strong>Total Animales en Inventario:</strong> ${inv.length}`;
+            document.getElementById('dashboard-nac').innerHTML = `📊 <strong>Total Nacimientos Registrados:</strong> ${nacs.length}`;
+            document.getElementById('dashboard-tras').innerHTML = `📊 <strong>Total Traslados Realizados:</strong> ${tras.length}`;
+            document.getElementById('dashboard-rep').innerHTML = `📊 <strong>Total Diagnósticos Reproductivos:</strong> ${reps.length}`;
+            document.getElementById('dashboard-pes').innerHTML = `📊 <strong>Total Pesajes Registrados:</strong> ${pes.length}`;
+            
+            let totalLitros = lecs.reduce((acc, l) => acc + (l.litros || 0), 0);
+            document.getElementById('dashboard-lec').innerHTML = `📊 <strong>Litros Acumulados:</strong> ${totalLitros} L (Registros: ${lecs.length})`;
+            document.getElementById('dashboard-mue').innerHTML = `📊 <strong>Total Bajas / Muertes:</strong> ${mues.length}`;
+        }
+
+        function actualizarTodasLasTablas() {
+            actualizarTablaInventario();
+            actualizarTablaNacimientos();
+            actualizarTablaTraslados();
+            actualizarTablaPalpaciones();
+            actualizarTablaPesajes();
+            actualizarTablaLeche();
+            actualizarTablaMuertes();
         }
     </script>
 </body>
