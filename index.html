@@ -40,15 +40,16 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            gap: 12px;
         }
 
         header img {
-            width: 45px;
-            height: 45px;
+            width: 48px;
+            height: 48px;
             border-radius: 50%;
             border: 2px solid #fff;
             object-fit: cover;
+            background: #fff;
         }
 
         header h1 { font-size: 1.2rem; letter-spacing: 0.5px; }
@@ -231,7 +232,7 @@
 <body>
 
     <header>
-        <img src="logo.jpg" alt="SYNTRO Logo" onerror="this.style.display='none'">
+        <img src="logo.png" alt="SYNTRO Logo" onerror="this.style.display='none'">
         <div>
             <h1>SYNTRO GANADERA</h1>
             <p>Sistema Inteligente de Trazabilidad</p>
@@ -552,8 +553,13 @@
         }
 
         function showSection(secId) {
-            document.getElementById('main-menu').classList.add('hidden');
-            document.querySelectorAll('.section-card').forEach(el => el.classList.remove('active'));
+            let menu = document.getElementById('main-menu');
+            if(menu) menu.classList.add('hidden');
+            
+            document.querySelectorAll('.section-card').forEach(el => {
+                el.classList.remove('active');
+            });
+            
             let target = document.getElementById(secId);
             if(target) {
                 target.classList.add('active');
@@ -563,8 +569,11 @@
         }
 
         function showMenu() {
-            document.querySelectorAll('.section-card').forEach(el => el.classList.remove('active'));
-            document.getElementById('main-menu').classList.remove('hidden');
+            document.querySelectorAll('.section-card').forEach(el => {
+                el.classList.remove('active');
+            });
+            let menu = document.getElementById('main-menu');
+            if(menu) menu.classList.remove('hidden');
         }
 
         function obtenerDatos(tipo) {
