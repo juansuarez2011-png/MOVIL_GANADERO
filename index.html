@@ -864,6 +864,7 @@
         function actualizarTablaInventario() {
             let inv = obtenerDatos('inventario');
             let tbody = document.querySelector('#tabla-inventario tbody');
+            if (!tbody) return;
             tbody.innerHTML = '';
             inv.forEach(i => {
                 let tr = document.createElement('tr');
@@ -931,6 +932,7 @@
         function actualizarTablaNacimientos() {
             let nacs = obtenerDatos('nacimientos');
             let tbody = document.querySelector('#tabla-nacimientos tbody');
+            if (!tbody) return;
             tbody.innerHTML = '';
             nacs.forEach(n => {
                 let tr = document.createElement('tr');
@@ -969,6 +971,7 @@
         function actualizarTablaTraslados() {
             let tras = obtenerDatos('traslados');
             let tbody = document.querySelector('#tabla-traslados tbody');
+            if (!tbody) return;
             tbody.innerHTML = '';
             tras.forEach(t => {
                 let tr = document.createElement('tr');
@@ -1024,6 +1027,7 @@
         function actualizarTablaPalpaciones() {
             let reps = obtenerDatos('palpaciones');
             let tbody = document.querySelector('#tabla-palpaciones tbody');
+            if (!tbody) return;
             tbody.innerHTML = '';
             reps.forEach(r => {
                 let tr = document.createElement('tr');
@@ -1054,6 +1058,7 @@
         function actualizarTablaPesajes() {
             let pes = obtenerDatos('pesajes');
             let tbody = document.querySelector('#tabla-pesajes tbody');
+            if (!tbody) return;
             tbody.innerHTML = '';
             pes.forEach(p => {
                 let tr = document.createElement('tr');
@@ -1086,6 +1091,7 @@
         function actualizarTablaLeche() {
             let lecs = obtenerDatos('leche');
             let tbody = document.querySelector('#tabla-leche tbody');
+            if (!tbody) return;
             tbody.innerHTML = '';
             lecs.forEach(l => {
                 let tr = document.createElement('tr');
@@ -1121,8 +1127,9 @@
         function actualizarTablaMuertes() {
             let mues = obtenerDatos('muertes');
             let tbody = document.querySelector('#tabla-muertes tbody');
+            if (!tbody) return;
             tbody.innerHTML = '';
-            mues.forEach(m =>5 {
+            mues.forEach(m => {
                 let tr = document.createElement('tr');
                 tr.innerHTML = `<td>${m.fecha}</td><td>${m.arete}</td><td>${m.causa || 'N/D'}</td>`;
                 tbody.appendChild(tr);
