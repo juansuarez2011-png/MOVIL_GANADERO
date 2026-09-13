@@ -353,7 +353,7 @@ th{background:var(--s-verde-claro);color:var(--s-azul-profundo);position:sticky;
 <div id="wm" class="wm">
 <div class="wmc">
 <h3>💬 Enviar por WhatsApp</h3>
-<p style="font-size:.85rem;color:#555;margin-bomostrarRecuperarttom:12px">Número con código de país (sin +).</p>
+<p style="font-size:.85rem;color:#555;margin-bottom:12px">Número con código de país (sin +).</p>
 <input type="tel" id="w-num" placeholder="Ej: 584241234567">
 <input type="hidden" id="w-mod">
 <div class="wmb">
@@ -392,7 +392,6 @@ let modoReset = null;
 let oobCodeActual = null;
 let D = {inventario:[],nacimientos:[],traslados:[],palpaciones:[],pesajes:[],leche:[],muertes:[],configEspecies:[],configLotes:[]};
 
-// ==================== LOGIN / REGISTRO ====================
 window.login = async function(){
 const e=document.getElementById('a-email').value.trim(),p=document.getElementById('a-pass').value;
 msg('','');if(!e||!p){msg('Ingrese email y contraseña.','e');return;}
@@ -438,7 +437,6 @@ e.style.display='none';o.style.display='none';
 if(tipo==='e'){e.textContent=t;e.style.display='block';}
 if(tipo==='o'){o.textContent=t;o.style.display='block';}}
 
-// ==================== RECUPERACIÓN DE CONTRASEÑA ====================
 window.mostrarRecuperar = function(){
 document.getElementById('login').style.display='none';
 document.getElementById('pantalla-reset').style.display='block';
@@ -485,7 +483,6 @@ try{
 }
 };
 
-// Detectar si venimos de un enlace de recuperación
 function detectarResetEnURL(){
   const params = new URLSearchParams(window.location.search);
   const mode = params.get('mode');
@@ -495,7 +492,6 @@ function detectarResetEnURL(){
     modoReset = 'resetPassword';
     oobCodeActual = oobCode;
     
-    // Verificar que el código sea válido
     verifyPasswordResetCode(auth, oobCode)
       .then((email) => {
         document.getElementById('login').style.display='none';
@@ -515,8 +511,6 @@ function detectarResetEnURL(){
   }
   return false;
 }
-
-// ==================== FIN RECUPERACIÓN ====================
 
 async function crearFincaConDefaults(uid, nombre, email){
 fincaId = uid;
@@ -939,7 +933,6 @@ if(navigator.canShare&&navigator.canShare({files:[ar]})){try{await navigator.sha
 window.open(`https://wa.me/${n}?text=${encodeURIComponent(r)}`,'_blank');
 dl(bl,`syntro_${m}_${fh}.csv`);alert("WhatsApp abierto. CSV descargado.");cw();};
 
-// Detectar enlace de recuperación al iniciar
 detectarResetEnURL();
 </script>
 </body>
