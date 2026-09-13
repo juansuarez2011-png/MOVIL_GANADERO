@@ -6,85 +6,121 @@
 <title>SYNTRO - Gestión Ganadera</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <style>
-:root{--p:#0a3a40;--s:#1b6535;--a:#3db87a;--bg:#eef4f1;--c:#fff;--t:#222}
+:root{
+--s-verde-claro:#d9ed92;
+--s-verde-lima:#b5e48c;
+--s-verde:#99d98c;
+--s-verde-medio:#76c893;
+--s-verde-agua:#52b69a;
+--s-turquesa:#34a0a4;
+--s-azul:#168aad;
+--s-azul-medio:#1a759f;
+--s-azul-oscuro:#1e6091;
+--s-azul-profundo:#184e77;
+--s-primary:#184e77;
+--s-secondary:#1e6091;
+--s-accent:#52b69a;
+--s-success:#76c893;
+--s-bg:#f0f7f5;
+--s-card:#ffffff;
+--s-text:#1a2b3c;
+}
 *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
-body{background:var(--bg);color:var(--t);padding:12px;max-width:900px;margin:0 auto}
-#login{max-width:420px;margin:40px auto;background:#fff;border-radius:16px;padding:24px;box-shadow:0 10px 30px rgba(0,0,0,.1)}
-#login h1{color:var(--p);text-align:center;font-size:1.4rem;margin-bottom:6px}
-#login .sub{text-align:center;color:#666;font-size:.85rem;margin-bottom:20px}
-#login input{width:100%;padding:12px;margin-bottom:10px;border:1px solid #ccc;border-radius:8px;font-size:1rem}
-#login button{width:100%;padding:14px;border:none;border-radius:8px;font-weight:bold;font-size:1rem;cursor:pointer;margin-bottom:8px}
-.bl{background:linear-gradient(145deg,#227c45,var(--s));color:#fff}
-.br{background:linear-gradient(145deg,#0d4b52,var(--p));color:#fff}
-.brec{background:transparent!important;color:var(--p);text-decoration:underline;font-size:.85rem!important;padding:8px!important}
-.err{display:none;background:#f8d7da;color:#721c24;padding:10px;border-radius:8px;margin-bottom:12px;font-size:.85rem}
-.ok{display:none;background:#d4edda;color:#155724;padding:10px;border-radius:8px;margin-bottom:12px;font-size:.85rem}
+body{background:var(--s-bg);color:var(--s-text);padding:12px;max-width:900px;margin:0 auto}
+
+#login,#pantalla-reset{max-width:420px;margin:40px auto;background:#fff;border-radius:16px;padding:32px 24px;box-shadow:0 10px 30px rgba(24,78,119,.15);border-top:5px solid var(--s-accent);text-align:center}
+#pantalla-reset{display:none}
+#login .logo,#pantalla-reset .logo{width:140px;height:140px;object-fit:contain;margin:0 auto 16px;display:block}
+#login .sub,#pantalla-reset .sub{color:#666;font-size:.9rem;margin-bottom:24px}
+#login input,#pantalla-reset input{width:100%;padding:13px;margin-bottom:10px;border:1px solid #ccc;border-radius:8px;font-size:1rem;text-align:left}
+#login button,#pantalla-reset button{width:100%;padding:14px;border:none;border-radius:8px;font-weight:bold;font-size:1rem;cursor:pointer;margin-bottom:8px;color:#fff}
+.bl{background:linear-gradient(145deg,var(--s-accent),var(--s-azul-oscuro))}
+.br{background:linear-gradient(145deg,var(--s-azul-oscuro),var(--s-azul-profundo))}
+.brec{background:transparent!important;color:var(--s-azul-oscuro);text-decoration:underline;font-size:.85rem!important;padding:8px!important}
+.err{display:none;background:#f8d7da;color:#721c24;padding:10px;border-radius:8px;margin-bottom:12px;font-size:.85rem;text-align:left}
+.ok{display:none;background:#d4edda;color:#155724;padding:10px;border-radius:8px;margin-bottom:12px;font-size:.85rem;text-align:left}
+
 #app{display:none}
-header{text-align:center;background:linear-gradient(135deg,var(--p),var(--s));color:#fff;padding:16px;border-radius:14px;margin-bottom:14px;box-shadow:0 6px 16px rgba(0,0,0,.2);display:flex;align-items:center;justify-content:center;gap:12px;border-bottom:4px solid #06262a;position:relative}
-header img{width:48px;height:48px;border-radius:8px;border:2px solid #fff;object-fit:contain}
-header h1{font-size:1.25rem}
+header{text-align:center;background:linear-gradient(135deg,var(--s-azul-profundo),var(--s-accent));color:#fff;padding:16px;border-radius:14px;margin-bottom:14px;box-shadow:0 6px 16px rgba(24,78,119,.3);display:flex;align-items:center;justify-content:center;gap:12px;border-bottom:4px solid var(--s-azul-medio);position:relative}
+header img{width:48px;height:48px;border-radius:8px;border:2px solid #fff;object-fit:contain;background:#fff}
+header h1{font-size:1.25rem;letter-spacing:.5px}
 header p{font-size:.75rem;opacity:.9}
 .bo{position:absolute;right:10px;top:10px;background:rgba(255,255,255,.2);color:#fff;border:1px solid rgba(255,255,255,.4);border-radius:6px;padding:4px 8px;font-size:.7rem;cursor:pointer}
-.fh{background:#fff;padding:10px 14px;border-radius:10px;margin-bottom:14px;border:1px solid #b2d8c8;font-size:.9rem;display:flex;flex-direction:column;gap:6px}
+
+#banner-vencimiento{display:none;background:#fff3cd;border-left:4px solid #f0ad4e;padding:12px;border-radius:8px;margin-bottom:12px;font-size:.9rem;color:#856404}
+#banner-vencimiento a{color:var(--s-azul-oscuro);font-weight:bold;text-decoration:underline;margin-left:8px}
+
+.fh{background:#fff;padding:10px 14px;border-radius:10px;margin-bottom:14px;border:1px solid var(--s-verde-medio);font-size:.9rem;display:flex;flex-direction:column;gap:6px}
 .fh input{padding:10px;font-size:.95rem;width:100%;border:1px solid #ccc;border-radius:8px}
 @media(min-width:700px){.fh{flex-direction:row;justify-content:space-between;align-items:center}.fh input{width:65%}}
+
 .mc{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .mc.h{display:none!important}
-.mb{background:linear-gradient(145deg,#1f753d,var(--s));color:#fff;border:none;border-radius:14px;padding:14px 12px;font-size:.85rem;font-weight:bold;text-align:left;cursor:pointer;box-shadow:0 5px 0 #0f391f,0 8px 16px rgba(0,0,0,.2);display:flex;flex-direction:column;align-items:flex-start;justify-content:space-between;gap:8px;transition:all .1s;width:100%;min-height:115px}
-.mbc{background:linear-gradient(145deg,#4a5d64,var(--p))!important;box-shadow:0 5px 0 #0a3a40!important}
+.mb{background:linear-gradient(145deg,var(--s-accent),var(--s-azul-oscuro));color:#fff;border:none;border-radius:14px;padding:14px 12px;font-size:.85rem;font-weight:bold;text-align:left;cursor:pointer;box-shadow:0 5px 0 var(--s-azul-profundo),0 8px 16px rgba(24,78,119,.3);display:flex;flex-direction:column;align-items:flex-start;justify-content:space-between;gap:8px;transition:all .1s;width:100%;min-height:115px}
+.mbc{background:linear-gradient(145deg,var(--s-turquesa),var(--s-azul-profundo))!important;box-shadow:0 5px 0 var(--s-azul-profundo)!important}
 .mb *{pointer-events:none}
-.mb:active{transform:translateY(3px);box-shadow:0 2px 0 #0f391f}
+.mb:active{transform:translateY(3px);box-shadow:0 2px 0 var(--s-azul-profundo)}
 .mb .bt{display:flex;flex-direction:column;gap:3px;width:100%}
 .mb .bt strong{font-size:.9rem;line-height:1.15}
 .mb .bt small{font-size:.65rem;font-weight:normal;opacity:.9;line-height:1.15}
 .mb span.i{font-size:1.6rem;background:rgba(255,255,255,.15);padding:6px 10px;border-radius:10px;align-self:flex-end}
-.sc{background:var(--c);border-radius:14px;padding:16px;margin-bottom:16px;box-shadow:0 6px 20px rgba(0,0,0,.08);display:none;border:1px solid #d2e6dc}
+
+.sc{background:var(--s-card);border-radius:14px;padding:16px;margin-bottom:16px;box-shadow:0 6px 20px rgba(24,78,119,.08);display:none;border:1px solid var(--s-verde-claro)}
 .sc.a{display:block!important}
-.sh{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;border-bottom:2px solid var(--bg);padding-bottom:10px}
-.sh h2{font-size:1.1rem;color:var(--p)}
+.sh{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;border-bottom:2px solid var(--s-verde-claro);padding-bottom:10px}
+.sh h2{font-size:1.1rem;color:var(--s-azul-profundo)}
 .bk{background:linear-gradient(145deg,#f0f0f0,#d0d0d0);border:none;padding:8px 14px;border-radius:8px;font-size:.85rem;font-weight:bold;cursor:pointer;box-shadow:0 3px 0 #b0b0b0}
+
 .fg{margin-bottom:14px}
 label{display:block;font-size:.85rem;font-weight:bold;margin-bottom:5px;color:#444}
-input,select{width:100%;padding:12px;border:1px solid #ccc;border-radius:10px;font-size:1rem;background:#fafafa}
-.feb{background:#e8f4ec;border:1px dashed var(--s);padding:10px 12px;border-radius:8px;font-size:.85rem;color:var(--s);margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
-.feb label{margin:0;color:var(--s);font-size:.85rem;flex:1}
-.feb input[type=date]{padding:6px 10px;font-size:.9rem;width:auto;max-width:180px;border:1px solid var(--s);border-radius:6px;background:#fff}
-.ib{background:#e8f4ec;border-left:4px solid var(--s);padding:10px 12px;border-radius:8px;font-size:.85rem;margin-bottom:12px;color:#1b6535}
+input,select,textarea{width:100%;padding:12px;border:1px solid #ccc;border-radius:10px;font-size:1rem;background:#fafafa}
+
+.feb{background:var(--s-verde-claro);border:1px dashed var(--s-azul-oscuro);padding:10px 12px;border-radius:8px;font-size:.85rem;color:var(--s-azul-profundo);margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.feb label{margin:0;color:var(--s-azul-profundo);font-size:.85rem;flex:1}
+.feb input[type=date]{padding:6px 10px;font-size:.9rem;width:auto;max-width:180px;border:1px solid var(--s-azul-oscuro);border-radius:6px;background:#fff}
+
+.ib{background:var(--s-verde-claro);border-left:4px solid var(--s-azul-oscuro);padding:10px 12px;border-radius:8px;font-size:.85rem;margin-bottom:12px;color:var(--s-azul-profundo)}
 .as{padding:8px 12px;border-radius:8px;font-size:.85rem;margin-top:-8px;margin-bottom:12px;display:none;font-weight:bold}
-.as.ok{display:block;background:#d4edda;color:#155724;border-left:4px solid #28a745}
+.as.ok{display:block;background:#d4edda;color:#155724;border-left:4px solid var(--s-success)}
 .as.w{display:block;background:#fff3cd;color:#856404;border-left:4px solid #ffc107}
+
 .rb{background:linear-gradient(145deg,#fff9e6,#ffeeba);border:2px solid #f0ad4e;padding:14px;border-radius:10px;margin-top:12px;font-size:.9rem;display:none}
 .rb.v{display:block}
 .rb h4{font-size:.95rem;color:#8a6d3b;margin-bottom:10px;border-bottom:1px solid #f0ad4e;padding-bottom:6px}
 .rl{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dashed #e0c890;font-size:.85rem}
 .rl:last-child{border-bottom:none}
-.ba{background:linear-gradient(145deg,#227c45,var(--s));color:#fff;border:none;width:100%;padding:14px;border-radius:10px;font-weight:bold;font-size:1rem;cursor:pointer;margin-top:10px;box-shadow:0 4px 0 #0f391f}
+
+.ba{background:linear-gradient(145deg,var(--s-accent),var(--s-azul-oscuro));color:#fff;border:none;width:100%;padding:14px;border-radius:10px;font-weight:bold;font-size:1rem;cursor:pointer;margin-top:10px;box-shadow:0 4px 0 var(--s-azul-profundo)}
 .ba:active{transform:translateY(3px)}
-.bg2{background:linear-gradient(145deg,#0d4b52,var(--p));color:#fff;border:none;width:100%;padding:12px;border-radius:10px;font-size:.95rem;font-weight:bold;cursor:pointer;margin-top:10px;box-shadow:0 4px 0 #052225}
+.bg2{background:linear-gradient(145deg,var(--s-turquesa),var(--s-azul-profundo));color:#fff;border:none;width:100%;padding:12px;border-radius:10px;font-size:.95rem;font-weight:bold;cursor:pointer;margin-top:10px;box-shadow:0 4px 0 var(--s-azul-profundo)}
 .brf{background:linear-gradient(145deg,#f0ad4e,#d98c1f);color:#fff;border:none;width:100%;padding:12px;border-radius:10px;font-size:.95rem;font-weight:bold;cursor:pointer;margin-top:10px;box-shadow:0 4px 0 #a96c10}
-.be{background:linear-gradient(145deg,#4ad18b,var(--a));color:#111;border:none;width:100%;padding:12px;border-radius:10px;font-size:.95rem;font-weight:bold;cursor:pointer;margin-top:10px;box-shadow:0 4px 0 #288a55}
-.bj{background:linear-gradient(145deg,#6c8cff,#4a5dff);color:#fff;border:none;width:100%;padding:12px;border-radius:10px;font-size:.95rem;font-weight:bold;cursor:pointer;margin-top:10px;box-shadow:0 4px 0 #2e3da8}
+.be{background:linear-gradient(145deg,var(--s-verde-medio),var(--s-success));color:#111;border:none;width:100%;padding:12px;border-radius:10px;font-size:.95rem;font-weight:bold;cursor:pointer;margin-top:10px;box-shadow:0 4px 0 var(--s-verde-agua)}
+.bj{background:linear-gradient(145deg,var(--s-azul),var(--s-azul-medio));color:#fff;border:none;width:100%;padding:12px;border-radius:10px;font-size:.95rem;font-weight:bold;cursor:pointer;margin-top:10px;box-shadow:0 4px 0 var(--s-azul-oscuro)}
 .bw{background:linear-gradient(145deg,#34d058,#25D366);color:#fff;border:none;width:100%;padding:12px;border-radius:10px;font-size:.95rem;font-weight:bold;cursor:pointer;margin-top:10px;box-shadow:0 4px 0 #128C7E;display:flex;align-items:center;justify-content:center;gap:8px}
-.db{background:#e4f0ea;border:1px solid #a8d5be;padding:12px;border-radius:10px;margin-bottom:14px;font-size:.9rem}
-.gc{background:#fff;border:2px dashed var(--p);padding:12px;border-radius:10px;margin-top:12px;display:none;font-size:.85rem}
-.gt{font-size:.9rem;font-weight:bold;color:var(--p);margin:12px 0 6px 0;padding-bottom:4px;border-bottom:1px solid #e0e0e0}
+
+.db{background:var(--s-verde-claro);border:1px solid var(--s-verde-medio);padding:12px;border-radius:10px;margin-bottom:14px;font-size:.9rem;color:var(--s-azul-profundo)}
+.gc{background:#fff;border:2px dashed var(--s-azul-oscuro);padding:12px;border-radius:10px;margin-top:12px;display:none;font-size:.85rem}
+.gt{font-size:.9rem;font-weight:bold;color:var(--s-azul-profundo);margin:12px 0 6px 0;padding-bottom:4px;border-bottom:1px solid #e0e0e0}
 .gw{position:relative;height:220px;margin-bottom:10px}
+
 .tc{overflow-x:auto;margin-top:14px;max-height:240px;border:1px solid #e0e0e0;border-radius:10px}
 table{width:100%;border-collapse:collapse;font-size:.8rem;white-space:nowrap}
 th,td{padding:8px 10px;text-align:left;border-bottom:1px solid #ddd}
-th{background-color:#e4f0ea;color:var(--p);position:sticky;top:0}
+th{background:var(--s-verde-claro);color:var(--s-azul-profundo);position:sticky;top:0}
 .bte{background:#f0ad4e;color:#fff;border:none;padding:4px 8px;border-radius:4px;cursor:pointer;font-size:.75rem;margin-right:4px;font-weight:bold}
 .btd{background:#d9534f;color:#fff;border:none;padding:4px 8px;border-radius:4px;cursor:pointer;font-size:.75rem;font-weight:bold}
+
 .wm{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);z-index:999;justify-content:center;align-items:center;padding:16px}
 .wm.v{display:flex}
 .wmc{background:#fff;border-radius:14px;padding:20px;max-width:420px;width:100%}
-.wmc h3{color:var(--p);margin-bottom:12px;font-size:1.05rem}
+.wmc h3{color:var(--s-azul-profundo);margin-bottom:12px;font-size:1.05rem}
 .wmc input{margin-bottom:10px}
 .wmb{display:flex;gap:8px;margin-top:10px}
 .wmb button{flex:1;padding:10px;border-radius:8px;border:none;font-weight:bold;cursor:pointer;font-size:.9rem}
 .wmc2{background:#ddd;color:#333}
 .wms{background:#25D366;color:#fff}
-.si{position:fixed;bottom:12px;right:12px;background:var(--s);color:#fff;padding:6px 12px;border-radius:20px;font-size:.7rem;box-shadow:0 4px 10px rgba(0,0,0,.2);z-index:100;opacity:0;transition:opacity .3s}
+
+.si{position:fixed;bottom:12px;right:12px;background:var(--s-accent);color:#fff;padding:6px 12px;border-radius:20px;font-size:.7rem;box-shadow:0 4px 10px rgba(24,78,119,.3);z-index:100;opacity:0;transition:opacity .3s}
 .si.v{opacity:1}
 .si.e{background:#d9534f}
 </style>
@@ -92,24 +128,50 @@ th{background-color:#e4f0ea;color:var(--p);position:sticky;top:0}
 <body>
 
 <div id="login">
-<h1>🐂 SYNTRO</h1>
+<img src="logo.png" alt="SYNTRO" class="logo" onerror="this.style.display='none'">
 <p class="sub">Gestión Ganadera Inteligente</p>
 <div class="err" id="err"></div>
 <div class="ok" id="ok"></div>
 <input type="email" id="a-email" placeholder="Correo electrónico">
 <input type="password" id="a-pass" placeholder="Contraseña">
-<input type="text" id="a-finca" placeholder="Nombre de tu finca (solo al registrarse)">
 <button type="button" class="bl" onclick="login()">Iniciar Sesión</button>
 <button type="button" class="br" onclick="registrar()">Crear Cuenta Nueva</button>
-<button type="button" class="brec" onclick="recuperar()">¿Olvidaste tu contraseña?</button>
+<button type="button" class="brec" onclick="mostrarRecuperar()">¿Olvidaste tu contraseña?</button>
+</div>
+
+<div id="pantalla-reset">
+<img src="logo.png" alt="SYNTRO" class="logo" onerror="this.style.display='none'">
+<p class="sub">Restablecer Contraseña</p>
+<div class="err" id="err-reset"></div>
+<div class="ok" id="ok-reset"></div>
+
+<div id="paso-recuperar">
+<p style="font-size:.9rem;color:#555;margin-bottom:14px;text-align:left">Ingresa tu correo y te enviaremos un enlace para restablecer tu contraseña.</p>
+<input type="email" id="reset-email" placeholder="Tu correo electrónico">
+<button type="button" class="bl" onclick="enviarRecuperacion()">Enviar Enlace de Recuperación</button>
+<button type="button" class="brec" onclick="volverLogin()">← Volver al inicio de sesión</button>
+</div>
+
+<div id="paso-nueva-pass" style="display:none">
+<p style="font-size:.9rem;color:#555;margin-bottom:14px;text-align:left">Escribe tu nueva contraseña. Mínimo 6 caracteres.</p>
+<input type="password" id="nueva-pass1" placeholder="Nueva contraseña">
+<input type="password" id="nueva-pass2" placeholder="Confirmar nueva contraseña">
+<button type="button" class="bl" onclick="guardarNuevaPass()">Guardar Nueva Contraseña</button>
+</div>
 </div>
 
 <div id="app">
 <header>
 <img src="logo.png" alt="SYNTRO" onerror="this.style.display='none'">
-<div><h1>SYNTRO GANADERA</h1><p>Sistema Inteligente de Trazabilidad</p></div>
+<div><h1>Gestión Ganadera</h1><p>Sistema Inteligente de Trazabilidad</p></div>
 <button type="button" class="bo" onclick="salir()">Salir</button>
 </header>
+
+<div id="banner-vencimiento">
+⚠️ <strong id="banner-texto"></strong>
+<a href="#" onclick="renovarWhatsApp();return false">Renovar ahora →</a>
+</div>
+
 <div class="fh"><span>🏡 <strong>Finca:</strong></span><input type="text" id="nom-finca" value="Mi Finca" onchange="guardarNombreFinca(this.value)"></div>
 
 <div id="menu" class="mc">
@@ -125,8 +187,8 @@ th{background-color:#e4f0ea;color:var(--p);position:sticky;top:0}
 
 <div id="s-cfg" class="sc">
 <div class="sh"><h2>Configuración</h2><button type="button" class="bk" onclick="back()">Volver</button></div>
-<div style="background:#e4f0ea;padding:12px;border-radius:10px;margin-bottom:16px">
-<h3 style="font-size:.95rem;color:var(--p);margin-bottom:8px">🧬 Especies y Días de Gestación</h3>
+<div style="background:var(--s-verde-claro);padding:12px;border-radius:10px;margin-bottom:16px">
+<h3 style="font-size:.95rem;color:var(--s-azul-profundo);margin-bottom:8px">🧬 Especies y Días de Gestación</h3>
 <div class="fg"><label>Nombre de Especie:</label><input type="text" id="ce-n" placeholder="Ej. Caprino"></div>
 <div class="fg"><label>Días de Gestación:</label><input type="number" id="ce-d" placeholder="Ej. 150"></div>
 <button type="button" class="ba" onclick="guardarEspecie()">Agregar / Actualizar</button>
@@ -170,12 +232,12 @@ th{background-color:#e4f0ea;color:var(--p);position:sticky;top:0}
 <div class="fg"><label>Madre:</label><input type="text" id="n-madre" oninput="val('n-madre','st-n')"><div class="as" id="st-n"></div></div>
 <div class="fg"><label>Tipo de Parto:</label><select id="n-tipo" onchange="tPT()"><option value="normal">Normal</option><option value="gemelar">Gemelar</option><option value="distocico">Distócico</option><option value="aborto">Aborto</option><option value="mortinato">Mortinato</option></select></div>
 <div id="cc">
-<fieldset style="border:1px solid #ccc;padding:10px;border-radius:8px;margin-bottom:10px"><legend style="font-size:.8rem;font-weight:bold;color:var(--p)">Cría 1</legend>
+<fieldset style="border:1px solid #ccc;padding:10px;border-radius:8px;margin-bottom:10px"><legend style="font-size:.8rem;font-weight:bold;color:var(--s-azul-profundo)">Cría 1</legend>
 <div class="fg"><label>Arete:</label><input type="text" id="n-a1"></div>
 <div class="fg"><label>Sexo:</label><select id="n-s1"><option>Macho</option><option>Hembra</option></select></div>
 <div class="fg"><label>Peso (kg):</label><input type="number" id="n-p1"></div>
 </fieldset>
-<fieldset id="bc2" style="border:1px solid #ccc;padding:10px;border-radius:8px;margin-bottom:10px;display:none"><legend style="font-size:.8rem;font-weight:bold;color:var(--p)">Cría 2</legend>
+<fieldset id="bc2" style="border:1px solid #ccc;padding:10px;border-radius:8px;margin-bottom:10px;display:none"><legend style="font-size:.8rem;font-weight:bold;color:var(--s-azul-profundo)">Cría 2</legend>
 <div class="fg"><label>Arete:</label><input type="text" id="n-a2"></div>
 <div class="fg"><label>Sexo:</label><select id="n-s2"><option>Macho</option><option>Hembra</option></select></div>
 <div class="fg"><label>Peso (kg):</label><input type="number" id="n-p2"></div>
@@ -291,7 +353,7 @@ th{background-color:#e4f0ea;color:var(--p);position:sticky;top:0}
 <div id="wm" class="wm">
 <div class="wmc">
 <h3>💬 Enviar por WhatsApp</h3>
-<p style="font-size:.85rem;color:#555;margin-bottom:12px">Número con código de país (sin +).</p>
+<p style="font-size:.85rem;color:#555;margin-bomostrarRecuperarttom:12px">Número con código de país (sin +).</p>
 <input type="tel" id="w-num" placeholder="Ej: 584241234567">
 <input type="hidden" id="w-mod">
 <div class="wmb">
@@ -306,8 +368,8 @@ th{background-color:#e4f0ea;color:var(--p);position:sticky;top:0}
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc, collection, addDoc, getDocs, deleteDoc, query, where, orderBy, updateDoc } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, sendPasswordResetEmail, confirmPasswordReset, verifyPasswordResetCode } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc, collection, addDoc, getDocs, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAtBrpDpP92rjMS6KtW6yJctLD-2Qj4IcY",
@@ -322,11 +384,15 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const LCF = "Lote de Cría";
+const WHATSAPP_SYNTRO = "584241234567";
 const CI = {};
 let usuario = null;
 let fincaId = null;
+let modoReset = null;
+let oobCodeActual = null;
 let D = {inventario:[],nacimientos:[],traslados:[],palpaciones:[],pesajes:[],leche:[],muertes:[],configEspecies:[],configLotes:[]};
 
+// ==================== LOGIN / REGISTRO ====================
 window.login = async function(){
 const e=document.getElementById('a-email').value.trim(),p=document.getElementById('a-pass').value;
 msg('','');if(!e||!p){msg('Ingrese email y contraseña.','e');return;}
@@ -334,21 +400,15 @@ try{await signInWithEmailAndPassword(auth,e,p);}catch(err){msg(traducirError(err
 };
 
 window.registrar = async function(){
-const e=document.getElementById('a-email').value.trim(),p=document.getElementById('a-pass').value,f=document.getElementById('a-finca').value.trim()||'Mi Finca';
+const e=document.getElementById('a-email').value.trim(),p=document.getElementById('a-pass').value;
 msg('','');if(!e||!p){msg('Ingrese email y contraseña.','e');return;}
 if(p.length<6){msg('La contraseña debe tener al menos 6 caracteres.','e');return;}
 try{
 const cred = await createUserWithEmailAndPassword(auth,e,p);
-await crearFincaConDefaults(cred.user.uid, f);
-msg('✅ Cuenta creada. Ingresando...','o');
+const nombreTemporal = e.split('@')[0];
+await crearFincaConDefaults(cred.user.uid, nombreTemporal, e);
+msg('✅ Cuenta creada. Bienvenido a SYNTRO.','o');
 }catch(err){msg(traducirError(err.code),'e');}
-};
-
-window.recuperar = async function(){
-const e=document.getElementById('a-email').value.trim();
-if(!e){msg('Ingrese su correo.','e');return;}
-try{await sendPasswordResetEmail(auth,e);msg('Te enviamos un correo para recuperar tu contraseña.','o');}
-catch(err){msg(traducirError(err.code),'e');}
 };
 
 window.salir = async function(){await signOut(auth);};
@@ -356,13 +416,15 @@ window.salir = async function(){await signOut(auth);};
 function traducirError(code){
 const m={
 'auth/email-already-in-use':'Este correo ya está registrado.',
-'auth/invalid-email':'Correo electrónico inválido.',
-'auth/weak-password':'Contraseña muy débil (mínimo 6 caracteres).',
+'auth/invalid-email':'Correo inválido.',
+'auth/weak-password':'Contraseña muy débil (mínimo 6).',
 'auth/user-not-found':'No existe cuenta con ese correo.',
 'auth/wrong-password':'Contraseña incorrecta.',
 'auth/invalid-credential':'Correo o contraseña incorrectos.',
 'auth/too-many-requests':'Demasiados intentos. Intenta más tarde.',
-'auth/network-request-failed':'Error de conexión. Verifica tu internet.'
+'auth/network-request-failed':'Error de conexión.',
+'auth/expired-action-code':'El enlace ha expirado. Solicita uno nuevo.',
+'auth/invalid-action-code':'El enlace no es válido o ya fue usado.'
 };
 return m[code]||('Error: '+code);}
 
@@ -371,9 +433,112 @@ e.style.display='none';o.style.display='none';
 if(tipo==='e'){e.textContent=t;e.style.display='block';}
 if(tipo==='o'){o.textContent=t;o.style.display='block';}}
 
-async function crearFincaConDefaults(uid, nombre){
+function msgReset(t,tipo){const e=document.getElementById('err-reset'),o=document.getElementById('ok-reset');
+e.style.display='none';o.style.display='none';
+if(tipo==='e'){e.textContent=t;e.style.display='block';}
+if(tipo==='o'){o.textContent=t;o.style.display='block';}}
+
+// ==================== RECUPERACIÓN DE CONTRASEÑA ====================
+window.mostrarRecuperar = function(){
+document.getElementById('login').style.display='none';
+document.getElementById('pantalla-reset').style.display='block';
+document.getElementById('paso-recuperar').style.display='block';
+document.getElementById('paso-nueva-pass').style.display='none';
+msgReset('','');
+};
+
+window.volverLogin = function(){
+document.getElementById('pantalla-reset').style.display='none';
+document.getElementById('login').style.display='block';
+msgReset('','');
+};
+
+window.enviarRecuperacion = async function(){
+const e = document.getElementById('reset-email').value.trim();
+msgReset('','');
+if(!e){msgReset('Ingrese su correo electrónico.','e');return;}
+try{
+  const actionCodeSettings = {
+    url: window.location.origin + window.location.pathname,
+    handleCodeInApp: true
+  };
+  await sendPasswordResetEmail(auth, e, actionCodeSettings);
+  msgReset('✅ Te enviamos un correo. Revisa tu bandeja (y la carpeta de spam).','o');
+}catch(err){
+  msgReset(traducirError(err.code),'e');
+}
+};
+
+window.guardarNuevaPass = async function(){
+const p1 = document.getElementById('nueva-pass1').value;
+const p2 = document.getElementById('nueva-pass2').value;
+msgReset('','');
+if(!p1 || !p2){msgReset('Complete ambos campos.','e');return;}
+if(p1.length < 6){msgReset('La contraseña debe tener al menos 6 caracteres.','e');return;}
+if(p1 !== p2){msgReset('Las contraseñas no coinciden.','e');return;}
+try{
+  await confirmPasswordReset(auth, oobCodeActual, p1);
+  msgReset('✅ ¡Contraseña actualizada! Ya puedes iniciar sesión.','o');
+  setTimeout(()=>{ volverLogin(); document.getElementById('a-email').value = ''; document.getElementById('a-pass').value = ''; }, 2500);
+}catch(err){
+  msgReset(traducirError(err.code),'e');
+}
+};
+
+// Detectar si venimos de un enlace de recuperación
+function detectarResetEnURL(){
+  const params = new URLSearchParams(window.location.search);
+  const mode = params.get('mode');
+  const oobCode = params.get('oobCode');
+  
+  if(mode === 'resetPassword' && oobCode){
+    modoReset = 'resetPassword';
+    oobCodeActual = oobCode;
+    
+    // Verificar que el código sea válido
+    verifyPasswordResetCode(auth, oobCode)
+      .then((email) => {
+        document.getElementById('login').style.display='none';
+        document.getElementById('pantalla-reset').style.display='block';
+        document.getElementById('paso-recuperar').style.display='none';
+        document.getElementById('paso-nueva-pass').style.display='block';
+        document.querySelector('#pantalla-reset .sub').textContent = 'Restablecer para: ' + email;
+      })
+      .catch((err) => {
+        document.getElementById('login').style.display='none';
+        document.getElementById('pantalla-reset').style.display='block';
+        document.getElementById('paso-recuperar').style.display='block';
+        document.getElementById('paso-nueva-pass').style.display='none';
+        msgReset(traducirError(err.code),'e');
+      });
+    return true;
+  }
+  return false;
+}
+
+// ==================== FIN RECUPERACIÓN ====================
+
+async function crearFincaConDefaults(uid, nombre, email){
 fincaId = uid;
-await setDoc(doc(db,'fincas',uid),{nombre, userId:uid, fecha:new Date().toISOString()});
+const hoy = new Date();
+const vencimiento = new Date(hoy);
+vencimiento.setDate(vencimiento.getDate() + 30);
+const fechaVenc = vencimiento.toISOString().split('T')[0];
+
+await setDoc(doc(db,'fincas',uid),{
+  nombre,
+  userId:uid,
+  email: email || '',
+  telefono: '',
+  fecha:new Date().toISOString(),
+  fechaRegistro: new Date().toISOString(),
+  activo: true,
+  plan: 'prueba',
+  monto: 0,
+  fechaVencimiento: fechaVenc,
+  notas: 'Cuenta en periodo de prueba (30 días)'
+});
+
 const esp = [{nombre:'Bovino',dias_gestacion:281},{nombre:'Bufalino',dias_gestacion:310},{nombre:'Porcino',dias_gestacion:114}];
 for(const e of esp) await addDoc(collection(db,'fincas',uid,'configEspecies'),e);
 const lotes = [
@@ -387,19 +552,80 @@ const lotes = [
 for(const l of lotes) await addDoc(collection(db,'fincas',uid,'configLotes'),l);
 }
 
+async function verificarVencimiento(uid){
+try {
+  const fSnap = await getDoc(doc(db,'fincas',uid));
+  if (!fSnap.exists()) return true;
+  const f = fSnap.data();
+  if (f.activo === false) { mostrarBloqueo(f, 'suspendido'); return false; }
+  if (f.fechaVencimiento) {
+    const hoy = new Date();
+    const venc = new Date(f.fechaVencimiento + 'T23:59:59');
+    if (hoy > venc) { mostrarBloqueo(f, 'vencido'); return false; }
+  }
+  return true;
+} catch(e) { console.error(e); return true; }
+}
+
+function mostrarBloqueo(finca, tipo){
+const mensaje = tipo === 'suspendido' 
+  ? 'Tu cuenta ha sido suspendida. Contacta a SYNTRO para reactivarla.'
+  : 'Tu periodo de prueba ha terminado. Contacta a SYNTRO para continuar usando el sistema.';
+
+document.body.innerHTML = `
+  <div style="max-width:500px;margin:60px auto;padding:24px;background:#fff;border-radius:16px;box-shadow:0 10px 30px rgba(24,78,119,.15);text-align:center;font-family:sans-serif">
+    <div style="font-size:4rem;margin-bottom:16px">🔒</div>
+    <h1 style="color:#184e77;font-size:1.4rem;margin-bottom:12px">Cuenta Bloqueada</h1>
+    <p style="color:#666;font-size:.95rem;line-height:1.5;margin-bottom:20px">${mensaje}</p>
+    <div style="background:#d9ed92;border-radius:10px;padding:16px;margin-bottom:20px;text-align:left;font-size:.85rem">
+      <div style="padding:4px 0"><strong>Finca:</strong> ${finca.nombre || 'Sin nombre'}</div>
+      <div style="padding:4px 0"><strong>Plan:</strong> ${finca.plan || 'prueba'}</div>
+      <div style="padding:4px 0"><strong>Venció:</strong> ${finca.fechaVencimiento || 'N/A'}</div>
+    </div>
+    <a href="https://wa.me/${WHATSAPP_SYNTRO}?text=${encodeURIComponent('Hola SYNTRO, quiero reactivar mi cuenta: ' + (finca.nombre || ''))}" 
+       style="display:inline-block;padding:14px 24px;background:linear-gradient(145deg,#34d058,#25D366);color:#fff;text-decoration:none;border-radius:10px;font-weight:bold;margin-right:8px">
+      💬 Contactar por WhatsApp
+    </a>
+    <br><br>
+    <button onclick="location.reload()" style="padding:12px 24px;background:#ddd;color:#333;border:none;border-radius:10px;font-weight:bold;cursor:pointer">
+      Cerrar sesión
+    </button>
+  </div>
+`;
+}
+
 onAuthStateChanged(auth, async (user)=>{
+if(modoReset) return;
 if(user){
 usuario=user;fincaId=user.uid;
 const fSnap = await getDoc(doc(db,'fincas',user.uid));
 if(fSnap.exists()){
 const f = fSnap.data();
+
+const puedeEntrar = await verificarVencimiento(user.uid);
+if (!puedeEntrar) return;
+
 document.getElementById('nom-finca').value = f.nombre;
 document.getElementById('login').style.display='none';
 document.getElementById('app').style.display='block';
 await cargarTodo();
 iniciarFechas();
+
+const hoy = new Date();
+if (f.fechaVencimiento) {
+  const venc = new Date(f.fechaVencimiento + 'T23:59:59');
+  const diasRestantes = Math.ceil((venc - hoy) / (1000*60*60*24));
+  if (diasRestantes <= 7 && diasRestantes >= 0) {
+    const banner = document.getElementById('banner-vencimiento');
+    const texto = document.getElementById('banner-texto');
+    if (banner && texto) {
+      texto.textContent = `Tu ${f.plan === 'prueba' ? 'periodo de prueba' : 'plan'} vence en ${diasRestantes} día(s). Renueva para no perder acceso.`;
+      banner.style.display = 'block';
+    }
+  }
+}
 }else{
-await crearFincaConDefaults(user.uid,'Mi Finca');
+await crearFincaConDefaults(user.uid,'Mi Finca', user.email);
 location.reload();
 }
 }else{
@@ -407,6 +633,12 @@ document.getElementById('login').style.display='block';
 document.getElementById('app').style.display='none';
 }
 });
+
+window.renovarWhatsApp = function(){
+const nombreFinca = document.getElementById('nom-finca').value;
+const msj = encodeURIComponent(`Hola SYNTRO, soy de la finca "${nombreFinca}" y quiero renovar mi plan.`);
+window.open(`https://wa.me/${WHATSAPP_SYNTRO}?text=${msj}`, '_blank');
+};
 
 window.guardarNombreFinca = async function(n){
 if(!fincaId)return;
@@ -436,6 +668,7 @@ sync();actualizarTablas();actualizarDash();sugerir();
 function ff(f){const d=String(f.getDate()).padStart(2,'0'),m=String(f.getMonth()+1).padStart(2,'0');return `${d}/${m}/${f.getFullYear()}`;}
 function iniciarFechas(){const h=new Date().toISOString().split('T')[0];
 ['f-inv','f-nac','f-tra','f-pal','f-pes','f-lec','f-mue'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=h;});}
+
 window.show = function(id){document.getElementById('menu').classList.add('h');
 document.querySelectorAll('.sc').forEach(e=>e.classList.remove('a'));
 document.getElementById(id).classList.add('a');
@@ -658,26 +891,26 @@ const cw=document.createElement('div');cw.className='gw';const c=document.create
 w.appendChild(cw);b.appendChild(w);return c.getContext('2d');}
 function grafNac(b){const n=D.nacimientos||[];if(!n.length){b.innerHTML='<p style="text-align:center;padding:20px;color:#888">Sin datos</p>';return;}
 const pm={};n.forEach(x=>{if(x.fecha){const[a,m]=x.fecha.split('-');pm[`${m}/${a}`]=(pm[`${m}/${a}`]||0)+1;}});
-CI.nac_mes=new Chart(mkCanvas(b,'c1','📅 Por Mes/Año'),{type:'bar',data:{labels:Object.keys(pm),datasets:[{label:'Nacimientos',data:Object.values(pm),backgroundColor:'#1b6535'}]},options:{responsive:true,maintainAspectRatio:false}});
+CI.nac_mes=new Chart(mkCanvas(b,'c1','📅 Por Mes/Año'),{type:'bar',data:{labels:Object.keys(pm),datasets:[{label:'Nacimientos',data:Object.values(pm),backgroundColor:'#52b69a'}]},options:{responsive:true,maintainAspectRatio:false}});
 const ps={Macho:0,Hembra:0};n.forEach(x=>{if(x.sexo1==='Macho')ps.Macho++;if(x.sexo1==='Hembra')ps.Hembra++;if(x.sexo2==='Macho')ps.Macho++;if(x.sexo2==='Hembra')ps.Hembra++;});
-CI.nac_sexo=new Chart(mkCanvas(b,'c2','♂️♀️ Por Sexo'),{type:'doughnut',data:{labels:Object.keys(ps),datasets:[{data:Object.values(ps),backgroundColor:['#3db87a','#f0ad4e']}]},options:{responsive:true,maintainAspectRatio:false}});
+CI.nac_sexo=new Chart(mkCanvas(b,'c2','♂️♀️ Por Sexo'),{type:'doughnut',data:{labels:Object.keys(ps),datasets:[{data:Object.values(ps),backgroundColor:['#168aad','#99d98c']}]},options:{responsive:true,maintainAspectRatio:false}});
 const pt={};n.forEach(x=>{const t=x.tipo||'normal';pt[t]=(pt[t]||0)+1;});
-CI.nac_tipo=new Chart(mkCanvas(b,'c3','🏷️ Por Tipo'),{type:'pie',data:{labels:Object.keys(pt),datasets:[{data:Object.values(pt),backgroundColor:['#1b6535','#0a3a40','#3db87a','#f0ad4e','#d9534f']}]},options:{responsive:true,maintainAspectRatio:false}});}
+CI.nac_tipo=new Chart(mkCanvas(b,'c3','🏷️ Por Tipo'),{type:'pie',data:{labels:Object.keys(pt),datasets:[{data:Object.values(pt),backgroundColor:['#184e77','#1a759f','#52b69a','#76c893','#99d98c']}]},options:{responsive:true,maintainAspectRatio:false}});}
 function grafPal(b){const p=D.palpaciones||[];if(!p.length){b.innerHTML='<p style="text-align:center;padding:20px;color:#888">Sin datos</p>';return;}
 const g=(campo)=>{const r={};p.forEach(x=>{if(x[campo]&&x[campo]!=='N/A'){const pr=x[campo].split('/');if(pr.length===3){const k=`${pr[1]}/${pr[2]}`;r[k]=(r[k]||0)+1;}}});return r;};
 const ipc=g('fecha_concepcion');
-CI.pal_ipc=new Chart(mkCanvas(b,'r1','🧬 Concepciones'),{type:'bar',data:{labels:Object.keys(ipc).length?Object.keys(ipc):['Sin datos'],datasets:[{label:'Concepciones',data:Object.values(ipc).length?Object.values(ipc):[0],backgroundColor:'#1b6535'}]},options:{responsive:true,maintainAspectRatio:false}});
+CI.pal_ipc=new Chart(mkCanvas(b,'r1','🧬 Concepciones'),{type:'bar',data:{labels:Object.keys(ipc).length?Object.keys(ipc):['Sin datos'],datasets:[{label:'Concepciones',data:Object.values(ipc).length?Object.values(ipc):[0],backgroundColor:'#184e77'}]},options:{responsive:true,maintainAspectRatio:false}});
 const par=g('fecha_parto');
-CI.pal_parto=new Chart(mkCanvas(b,'r2','🐄 Partos Próximos'),{type:'bar',data:{labels:Object.keys(par).length?Object.keys(par):['Sin datos'],datasets:[{label:'Partos',data:Object.values(par).length?Object.values(par):[0],backgroundColor:'#3db87a'}]},options:{responsive:true,maintainAspectRatio:false}});
+CI.pal_parto=new Chart(mkCanvas(b,'r2','🐄 Partos Próximos'),{type:'bar',data:{labels:Object.keys(par).length?Object.keys(par):['Sin datos'],datasets:[{label:'Partos',data:Object.values(par).length?Object.values(par):[0],backgroundColor:'#52b69a'}]},options:{responsive:true,maintainAspectRatio:false}});
 const sec=g('fecha_secado');
-CI.pal_secado=new Chart(mkCanvas(b,'r3','🥛 Secados'),{type:'bar',data:{labels:Object.keys(sec).length?Object.keys(sec):['Sin datos'],datasets:[{label:'Secados',data:Object.values(sec).length?Object.values(sec):[0],backgroundColor:'#f0ad4e'}]},options:{responsive:true,maintainAspectRatio:false}});}
+CI.pal_secado=new Chart(mkCanvas(b,'r3','🥛 Secados'),{type:'bar',data:{labels:Object.keys(sec).length?Object.keys(sec):['Sin datos'],datasets:[{label:'Secados',data:Object.values(sec).length?Object.values(sec):[0],backgroundColor:'#76c893'}]},options:{responsive:true,maintainAspectRatio:false}});}
 function grafSimple(t,b){let l=[],v=[],ti='Registros';
 if(t==='inv'){const c={};(D.inventario||[]).forEach(i=>c[i.categoria]=(c[i.categoria]||0)+1);l=Object.keys(c);v=Object.values(c);ti='Animales por Categoría';}
 else if(t==='tra'){const x=D.traslados||[];l=x.map(y=>y.fecha);v=x.map((_,i)=>i+1);ti='Traslados';}
 else if(t==='pes'){const x=D.pesajes||[];l=x.map(y=>y.fecha);v=x.map(y=>y.kilos);ti='Pesos (kg)';}
 else if(t==='lec'){const x=D.leche||[];l=x.map(y=>y.fecha);v=x.map(y=>y.litros);ti='Litros de Leche';}
 else if(t==='mue'){const x=D.muertes||[];l=x.map(y=>y.fecha);v=x.map((_,i)=>i+1);ti='Bajas';}
-CI[t]=new Chart(mkCanvas(b,'g'+t,'📊 '+ti),{type:'bar',data:{labels:l.length?l:['Sin Datos'],datasets:[{label:ti,data:v.length?v:[0],backgroundColor:'#1b6535'}]},options:{responsive:true,maintainAspectRatio:false}});}
+CI[t]=new Chart(mkCanvas(b,'g'+t,'📊 '+ti),{type:'bar',data:{labels:l.length?l:['Sin Datos'],datasets:[{label:ti,data:v.length?v:[0],backgroundColor:'#52b69a'}]},options:{responsive:true,maintainAspectRatio:false}});}
 
 window.csv = function(m){const d=D[m]||[];if(!d.length){alert("No hay datos.");return;}
 const k=Object.keys(d[0]);let c=[k.join(',')];
@@ -705,6 +938,9 @@ const ar=new File([bl],`syntro_${m}_${fh}.csv`,{type:'text/csv'});
 if(navigator.canShare&&navigator.canShare({files:[ar]})){try{await navigator.share({files:[ar],title:`SYNTRO - ${m}`,text:r});cw();return;}catch(e){console.warn(e);}}
 window.open(`https://wa.me/${n}?text=${encodeURIComponent(r)}`,'_blank');
 dl(bl,`syntro_${m}_${fh}.csv`);alert("WhatsApp abierto. CSV descargado.");cw();};
+
+// Detectar enlace de recuperación al iniciar
+detectarResetEnURL();
 </script>
 </body>
 </html>
