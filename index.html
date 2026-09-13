@@ -1,1442 +1,710 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SYNTRO - Gestión Ganadera Inteligente</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-    <style>
-        :root {
-            --syntro-primary: #0a3a40;
-            --syntro-secondary: #1b6535;
-            --syntro-accent: #3db87a;
-            --syntro-bg: #eef4f1;
-            --card-bg: #ffffff;
-            --text-main: #222222;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        }
-
-        body {
-            background-color: var(--syntro-bg);
-            color: var(--text-main);
-            padding: 12px;
-            max-width: 900px;
-            margin: 0 auto;
-        }
-
-        header {
-            text-align: center;
-            background: linear-gradient(135deg, var(--syntro-primary), var(--syntro-secondary));
-            color: white;
-            padding: 16px;
-            border-radius: 14px;
-            margin-bottom: 14px;
-            box-shadow: 0 6px 16px rgba(0,0,0,0.2), inset 0 2px 3px rgba(255,255,255,0.2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            border-bottom: 4px solid #06262a;
-        }
-
-        header img {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            border: 2px solid #fff;
-            object-fit: cover;
-            background: #fff;
-        }
-
-        header h1 { font-size: 1.25rem; letter-spacing: 0.5px; text-shadow: 1px 1px 2px rgba(0,0,0,0.3); }
-        header p { font-size: 0.75rem; opacity: 0.9; }
-
-        .finca-header-box {
-            background: #ffffff;
-            padding: 10px 14px;
-            border-radius: 10px;
-            margin-bottom: 14px;
-            border: 1px solid #b2d8c8;
-            font-size: 0.9rem;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-        }
-
-        .finca-header-box input {
-            padding: 10px;
-            font-size: 0.95rem;
-            width: 100%;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-        }
-
-        .menu-container {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 12px;
-        }
-
-        @media (min-width: 600px) {
-            .menu-container {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            .finca-header-box {
-                flex-direction: row;
-                justify-content: space-between;
-                align-items: center;
-            }
-            .finca-header-box input {
-                width: 65%;
-            }
-        }
-
-        .menu-container.hidden {
-            display: none !important;
-        }
-
-        .menu-btn-giant {
-            background: linear-gradient(145deg, #1f753d, var(--syntro-secondary));
-            color: white;
-            border: none;
-            border-radius: 14px;
-            padding: 14px 16px;
-            font-size: 1rem;
-            font-weight: bold;
-            text-align: left;
-            cursor: pointer;
-            box-shadow: 0 5px 0 #0f391f, 0 8px 16px rgba(0,0,0,0.2);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            transition: all 0.1s ease;
-            width: 100%;
-        }
-
-        .menu-btn-config {
-            background: linear-gradient(145deg, #4a5d64, var(--syntro-primary)) !important;
-            box-shadow: 0 5px 0 #0a3a40, 0 8px 16px rgba(0,0,0,0.2) !important;
-        }
-
-        .menu-btn-giant * { pointer-events: none; }
-        .menu-btn-giant:hover { filter: brightness(1.05); }
-        .menu-btn-giant:active {
-            transform: translateY(3px);
-            box-shadow: 0 2px 0 #0f391f, 0 4px 8px rgba(0,0,0,0.2);
-        }
-
-        .menu-btn-config:active {
-            box-shadow: 0 2px 0 #0a3a40, 0 4px 8px rgba(0,0,0,0.2) !important;
-        }
-
-        .menu-btn-giant span.icon {
-            font-size: 1.7rem;
-            background: rgba(255,255,255,0.15);
-            padding: 8px 10px;
-            border-radius: 10px;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
-            flex-shrink: 0;
-            margin-left: 10px;
-        }
-
-        .section-card {
-            background: var(--card-bg);
-            border-radius: 14px;
-            padding: 16px;
-            margin-bottom: 16px;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.08);
-            display: none;
-            border: 1px solid #d2e6dc;
-        }
-
-        .section-card.active { display: block !important; }
-
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-            border-bottom: 2px solid var(--syntro-bg);
-            padding-bottom: 10px;
-        }
-
-        .section-header h2 { font-size: 1.1rem; color: var(--syntro-primary); }
-
-        .back-btn {
-            background: linear-gradient(145deg, #f0f0f0, #d0d0d0);
-            border: none;
-            padding: 8px 14px;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 3px 0 #b0b0b0, 0 5px 8px rgba(0,0,0,0.1);
-            transition: all 0.1s ease;
-        }
-        .back-btn:active {
-            transform: translateY(2px);
-            box-shadow: 0 1px 0 #b0b0b0;
-        }
-
-        .form-group { margin-bottom: 14px; }
-        label { display: block; font-size: 0.85rem; font-weight: bold; margin-bottom: 5px; color: #444; }
-        input, select {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ccc;
-            border-radius: 10px;
-            font-size: 1rem;
-            background: #fafafa;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.03);
-        }
-
-        .btn-action {
-            background: linear-gradient(145deg, #227c45, var(--syntro-secondary));
-            color: white;
-            border: none;
-            width: 100%;
-            padding: 14px;
-            border-radius: 10px;
-            font-weight: bold;
-            font-size: 1rem;
-            cursor: pointer;
-            margin-top: 10px;
-            box-shadow: 0 4px 0 #0f391f, 0 6px 12px rgba(0,0,0,0.15);
-            transition: all 0.1s ease;
-        }
-        .btn-action:active {
-            transform: translateY(3px);
-            box-shadow: 0 1px 0 #0f391f;
-        }
-
-        .btn-graph {
-            background: linear-gradient(145deg, #0d4b52, var(--syntro-primary));
-            color: white;
-            border: none;
-            width: 100%;
-            padding: 12px;
-            border-radius: 10px;
-            font-size: 0.95rem;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 10px;
-            box-shadow: 0 4px 0 #052225, 0 6px 12px rgba(0,0,0,0.15);
-            transition: all 0.1s ease;
-        }
-        .btn-graph:active {
-            transform: translateY(3px);
-            box-shadow: 0 1px 0 #052225;
-        }
-
-        .btn-refresh {
-            background: linear-gradient(145deg, #f0ad4e, #d98c1f);
-            color: #fff;
-            border: none;
-            width: 100%;
-            padding: 12px;
-            border-radius: 10px;
-            font-size: 0.95rem;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 10px;
-            box-shadow: 0 4px 0 #a96c10, 0 6px 12px rgba(0,0,0,0.15);
-            transition: all 0.1s ease;
-        }
-        .btn-refresh:active {
-            transform: translateY(3px);
-            box-shadow: 0 1px 0 #a96c10;
-        }
-
-        .btn-export {
-            background: linear-gradient(145deg, #4ad18b, var(--syntro-accent));
-            color: #111;
-            border: none;
-            width: 100%;
-            padding: 12px;
-            border-radius: 10px;
-            font-size: 0.95rem;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 10px;
-            box-shadow: 0 4px 0 #288a55, 0 6px 12px rgba(0,0,0,0.1);
-            transition: all 0.1s ease;
-        }
-        .btn-export:active {
-            transform: translateY(3px);
-            box-shadow: 0 1px 0 #288a55;
-        }
-
-        .dashboard-box {
-            background: #e4f0ea;
-            border: 1px solid #a8d5be;
-            padding: 12px;
-            border-radius: 10px;
-            margin-bottom: 14px;
-            font-size: 0.9rem;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.03);
-        }
-
-        .graph-container-box {
-            background: #fff;
-            border: 2px dashed var(--syntro-primary);
-            padding: 12px;
-            border-radius: 10px;
-            margin-top: 12px;
-            display: none;
-            text-align: center;
-            font-size: 0.85rem;
-            min-height: 240px;
-        }
-
-        .table-container {
-            overflow-x: auto;
-            margin-top: 14px;
-            max-height: 240px;
-            border: 1px solid #e0e0e0;
-            border-radius: 10px;
-        }
-
-        table { width: 100%; border-collapse: collapse; font-size: 0.8rem; white-space: nowrap; }
-        th, td { padding: 8px 10px; text-align: left; border-bottom: 1px solid #ddd; }
-        th { background-color: #e4f0ea; color: var(--syntro-primary); position: sticky; top: 0; }
-
-        .btn-tbl-edit {
-            background: #f0ad4e;
-            color: #fff;
-            border: none;
-            padding: 4px 8px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.75rem;
-            margin-right: 4px;
-            font-weight: bold;
-        }
-        .btn-tbl-delete {
-            background: #d9534f;
-            color: #fff;
-            border: none;
-            padding: 4px 8px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.75rem;
-            font-weight: bold;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SYNTRO - Gestión Ganadera</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+:root{--p:#0a3a40;--s:#1b6535;--a:#3db87a;--bg:#eef4f1;--c:#fff;--t:#222}
+*{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+body{background:var(--bg);color:var(--t);padding:12px;max-width:900px;margin:0 auto}
+#login{max-width:420px;margin:40px auto;background:#fff;border-radius:16px;padding:24px;box-shadow:0 10px 30px rgba(0,0,0,.1)}
+#login h1{color:var(--p);text-align:center;font-size:1.4rem;margin-bottom:6px}
+#login .sub{text-align:center;color:#666;font-size:.85rem;margin-bottom:20px}
+#login input{width:100%;padding:12px;margin-bottom:10px;border:1px solid #ccc;border-radius:8px;font-size:1rem}
+#login button{width:100%;padding:14px;border:none;border-radius:8px;font-weight:bold;font-size:1rem;cursor:pointer;margin-bottom:8px}
+.bl{background:linear-gradient(145deg,#227c45,var(--s));color:#fff}
+.br{background:linear-gradient(145deg,#0d4b52,var(--p));color:#fff}
+.brec{background:transparent!important;color:var(--p);text-decoration:underline;font-size:.85rem!important;padding:8px!important}
+.err{display:none;background:#f8d7da;color:#721c24;padding:10px;border-radius:8px;margin-bottom:12px;font-size:.85rem}
+.ok{display:none;background:#d4edda;color:#155724;padding:10px;border-radius:8px;margin-bottom:12px;font-size:.85rem}
+#app{display:none}
+header{text-align:center;background:linear-gradient(135deg,var(--p),var(--s));color:#fff;padding:16px;border-radius:14px;margin-bottom:14px;box-shadow:0 6px 16px rgba(0,0,0,.2);display:flex;align-items:center;justify-content:center;gap:12px;border-bottom:4px solid #06262a;position:relative}
+header img{width:48px;height:48px;border-radius:8px;border:2px solid #fff;object-fit:contain}
+header h1{font-size:1.25rem}
+header p{font-size:.75rem;opacity:.9}
+.bo{position:absolute;right:10px;top:10px;background:rgba(255,255,255,.2);color:#fff;border:1px solid rgba(255,255,255,.4);border-radius:6px;padding:4px 8px;font-size:.7rem;cursor:pointer}
+.fh{background:#fff;padding:10px 14px;border-radius:10px;margin-bottom:14px;border:1px solid #b2d8c8;font-size:.9rem;display:flex;flex-direction:column;gap:6px}
+.fh input{padding:10px;font-size:.95rem;width:100%;border:1px solid #ccc;border-radius:8px}
+@media(min-width:700px){.fh{flex-direction:row;justify-content:space-between;align-items:center}.fh input{width:65%}}
+.mc{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mc.h{display:none!important}
+.mb{background:linear-gradient(145deg,#1f753d,var(--s));color:#fff;border:none;border-radius:14px;padding:14px 12px;font-size:.85rem;font-weight:bold;text-align:left;cursor:pointer;box-shadow:0 5px 0 #0f391f,0 8px 16px rgba(0,0,0,.2);display:flex;flex-direction:column;align-items:flex-start;justify-content:space-between;gap:8px;transition:all .1s;width:100%;min-height:115px}
+.mbc{background:linear-gradient(145deg,#4a5d64,var(--p))!important;box-shadow:0 5px 0 #0a3a40!important}
+.mb *{pointer-events:none}
+.mb:active{transform:translateY(3px);box-shadow:0 2px 0 #0f391f}
+.mb .bt{display:flex;flex-direction:column;gap:3px;width:100%}
+.mb .bt strong{font-size:.9rem;line-height:1.15}
+.mb .bt small{font-size:.65rem;font-weight:normal;opacity:.9;line-height:1.15}
+.mb span.i{font-size:1.6rem;background:rgba(255,255,255,.15);padding:6px 10px;border-radius:10px;align-self:flex-end}
+.sc{background:var(--c);border-radius:14px;padding:16px;margin-bottom:16px;box-shadow:0 6px 20px rgba(0,0,0,.08);display:none;border:1px solid #d2e6dc}
+.sc.a{display:block!important}
+.sh{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;border-bottom:2px solid var(--bg);padding-bottom:10px}
+.sh h2{font-size:1.1rem;color:var(--p)}
+.bk{background:linear-gradient(145deg,#f0f0f0,#d0d0d0);border:none;padding:8px 14px;border-radius:8px;font-size:.85rem;font-weight:bold;cursor:pointer;box-shadow:0 3px 0 #b0b0b0}
+.fg{margin-bottom:14px}
+label{display:block;font-size:.85rem;font-weight:bold;margin-bottom:5px;color:#444}
+input,select{width:100%;padding:12px;border:1px solid #ccc;border-radius:10px;font-size:1rem;background:#fafafa}
+.feb{background:#e8f4ec;border:1px dashed var(--s);padding:10px 12px;border-radius:8px;font-size:.85rem;color:var(--s);margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.feb label{margin:0;color:var(--s);font-size:.85rem;flex:1}
+.feb input[type=date]{padding:6px 10px;font-size:.9rem;width:auto;max-width:180px;border:1px solid var(--s);border-radius:6px;background:#fff}
+.ib{background:#e8f4ec;border-left:4px solid var(--s);padding:10px 12px;border-radius:8px;font-size:.85rem;margin-bottom:12px;color:#1b6535}
+.as{padding:8px 12px;border-radius:8px;font-size:.85rem;margin-top:-8px;margin-bottom:12px;display:none;font-weight:bold}
+.as.ok{display:block;background:#d4edda;color:#155724;border-left:4px solid #28a745}
+.as.w{display:block;background:#fff3cd;color:#856404;border-left:4px solid #ffc107}
+.rb{background:linear-gradient(145deg,#fff9e6,#ffeeba);border:2px solid #f0ad4e;padding:14px;border-radius:10px;margin-top:12px;font-size:.9rem;display:none}
+.rb.v{display:block}
+.rb h4{font-size:.95rem;color:#8a6d3b;margin-bottom:10px;border-bottom:1px solid #f0ad4e;padding-bottom:6px}
+.rl{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dashed #e0c890;font-size:.85rem}
+.rl:last-child{border-bottom:none}
+.ba{background:linear-gradient(145deg,#227c45,var(--s));color:#fff;border:none;width:100%;padding:14px;border-radius:10px;font-weight:bold;font-size:1rem;cursor:pointer;margin-top:10px;box-shadow:0 4px 0 #0f391f}
+.ba:active{transform:translateY(3px)}
+.bg2{background:linear-gradient(145deg,#0d4b52,var(--p));color:#fff;border:none;width:100%;padding:12px;border-radius:10px;font-size:.95rem;font-weight:bold;cursor:pointer;margin-top:10px;box-shadow:0 4px 0 #052225}
+.brf{background:linear-gradient(145deg,#f0ad4e,#d98c1f);color:#fff;border:none;width:100%;padding:12px;border-radius:10px;font-size:.95rem;font-weight:bold;cursor:pointer;margin-top:10px;box-shadow:0 4px 0 #a96c10}
+.be{background:linear-gradient(145deg,#4ad18b,var(--a));color:#111;border:none;width:100%;padding:12px;border-radius:10px;font-size:.95rem;font-weight:bold;cursor:pointer;margin-top:10px;box-shadow:0 4px 0 #288a55}
+.bj{background:linear-gradient(145deg,#6c8cff,#4a5dff);color:#fff;border:none;width:100%;padding:12px;border-radius:10px;font-size:.95rem;font-weight:bold;cursor:pointer;margin-top:10px;box-shadow:0 4px 0 #2e3da8}
+.bw{background:linear-gradient(145deg,#34d058,#25D366);color:#fff;border:none;width:100%;padding:12px;border-radius:10px;font-size:.95rem;font-weight:bold;cursor:pointer;margin-top:10px;box-shadow:0 4px 0 #128C7E;display:flex;align-items:center;justify-content:center;gap:8px}
+.db{background:#e4f0ea;border:1px solid #a8d5be;padding:12px;border-radius:10px;margin-bottom:14px;font-size:.9rem}
+.gc{background:#fff;border:2px dashed var(--p);padding:12px;border-radius:10px;margin-top:12px;display:none;font-size:.85rem}
+.gt{font-size:.9rem;font-weight:bold;color:var(--p);margin:12px 0 6px 0;padding-bottom:4px;border-bottom:1px solid #e0e0e0}
+.gw{position:relative;height:220px;margin-bottom:10px}
+.tc{overflow-x:auto;margin-top:14px;max-height:240px;border:1px solid #e0e0e0;border-radius:10px}
+table{width:100%;border-collapse:collapse;font-size:.8rem;white-space:nowrap}
+th,td{padding:8px 10px;text-align:left;border-bottom:1px solid #ddd}
+th{background-color:#e4f0ea;color:var(--p);position:sticky;top:0}
+.bte{background:#f0ad4e;color:#fff;border:none;padding:4px 8px;border-radius:4px;cursor:pointer;font-size:.75rem;margin-right:4px;font-weight:bold}
+.btd{background:#d9534f;color:#fff;border:none;padding:4px 8px;border-radius:4px;cursor:pointer;font-size:.75rem;font-weight:bold}
+.wm{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);z-index:999;justify-content:center;align-items:center;padding:16px}
+.wm.v{display:flex}
+.wmc{background:#fff;border-radius:14px;padding:20px;max-width:420px;width:100%}
+.wmc h3{color:var(--p);margin-bottom:12px;font-size:1.05rem}
+.wmc input{margin-bottom:10px}
+.wmb{display:flex;gap:8px;margin-top:10px}
+.wmb button{flex:1;padding:10px;border-radius:8px;border:none;font-weight:bold;cursor:pointer;font-size:.9rem}
+.wmc2{background:#ddd;color:#333}
+.wms{background:#25D366;color:#fff}
+.si{position:fixed;bottom:12px;right:12px;background:var(--s);color:#fff;padding:6px 12px;border-radius:20px;font-size:.7rem;box-shadow:0 4px 10px rgba(0,0,0,.2);z-index:100;opacity:0;transition:opacity .3s}
+.si.v{opacity:1}
+.si.e{background:#d9534f}
+</style>
 </head>
 <body>
 
-    <header>
-        <img src="logo.png" alt="SYNTRO Logo" onerror="this.style.display='none'">
-        <div>
-            <h1>SYNTRO GANADERA</h1>
-            <p>Sistema Inteligente de Trazabilidad</p>
-        </div>
-    </header>
-
-    <div class="finca-header-box">
-        <span>🏡 <strong>Finca:</strong></span>
-        <input type="text" id="nombre-finca" value="Hacienda San Juan" oninput="guardarFinca(this.value)">
-    </div>
-
-    <div id="main-menu" class="menu-container">
-        <button class="menu-btn-giant" onclick="showSection('sec-inventario')">
-            <div><strong>Inventario Maestro & Lotes</strong><br><small style="font-weight:normal; opacity:0.9;">Control de Aretes, Chips y Lotes</small></div>
-            <span class="icon">🐂</span>
-        </button>
-        <button class="menu-btn-giant" onclick="showSection('sec-nacimiento')">
-            <div><strong>Nacimientos & Dashboard</strong><br><small style="font-weight:normal; opacity:0.9;">Partos, gemelares, abortos</small></div>
-            <span class="icon">🐄</span>
-        </button>
-        <button class="menu-btn-giant" onclick="showSection('sec-traslado')">
-            <div><strong>Traslado Interno & Dashboard</strong><br><small style="font-weight:normal; opacity:0.9;">Movimiento automático de lotes</small></div>
-            <span class="icon">🌾</span>
-        </button>
-        <button class="menu-btn-giant" onclick="showSection('sec-palpacion')">
-            <div><strong>Palpación & Dashboard</strong><br><small style="font-weight:normal; opacity:0.9;">Gestación multiespecie y secado</small></div>
-            <span class="icon">🧬</span>
-        </button>
-        <button class="menu-btn-giant" onclick="showSection('sec-pesaje')">
-            <div><strong>Pesaje Corporal & Dashboard</strong><br><small style="font-weight:normal; opacity:0.9;">Control de peso por báscula</small></div>
-            <span class="icon">⚖️</span>
-        </button>
-        <button class="menu-btn-giant" onclick="showSection('sec-leche')">
-            <div><strong>Producción de Leche & Dashboard</strong><br><small style="font-weight:normal; opacity:0.9;">Control por lotes y turnos</small></div>
-            <span class="icon">🥛</span>
-        </button>
-        <button class="menu-btn-giant" onclick="showSection('sec-muerte')">
-            <div><strong>Muertes / Bajas & Dashboard</strong><br><small style="font-weight:normal; opacity:0.9;">Registro de mortalidad</small></div>
-            <span class="icon">⚰️</span>
-        </button>
-        <button class="menu-btn-giant menu-btn-config" onclick="showSection('sec-configuracion')">
-            <div><strong>Configuración & Parámetros</strong><br><small style="font-weight:normal; opacity:0.9;">Editar gestaciones y gestión de lotes</small></div>
-            <span class="icon">⚙️</span>
-        </button>
-    </div>
-
-    <!-- SECCIÓN CONFIGURACIÓN -->
-    <div id="sec-configuracion" class="section-card">
-        <div class="section-header">
-            <h2>Configuración de Gestaciones y Lotes</h2>
-            <button class="back-btn" onclick="showMenu()">Volver</button>
-        </div>
-        
-        <div style="background: #e4f0ea; padding: 12px; border-radius: 10px; margin-bottom: 16px; border: 1px solid #a8d5be;">
-            <h3 style="font-size: 0.95rem; color: var(--syntro-primary); margin-bottom: 8px;">🧬 Parámetros de Días de Gestación</h3>
-            <p style="font-size: 0.8rem; color: #555; margin-bottom: 10px;">Modifique los días estándar de gestación para las especies del sistema o agregue nuevas especies.</p>
-            <div class="form-group">
-                <label>Nombre de Especie / Categoría:</label>
-                <input type="text" id="cfg-especie-nombre" placeholder="Ej. Caprino, Equino...">
-            </div>
-            <div class="form-group">
-                <label>Días de Gestación:</label>
-                <input type="number" id="cfg-especie-dias" placeholder="Ej. 150">
-            </div>
-            <button class="btn-action" onclick="guardarEspecieConfig()">Agregar / Actualizar Especie</button>
-            <div class="table-container">
-                <table id="tabla-cfg-especies"><thead><tr><th>Especie</th><th>Días de Gestación</th><th>Acciones</th></tr></thead><tbody></tbody></table>
-            </div>
-        </div>
-
-        <div style="background: #fdf5e6; padding: 12px; border-radius: 10px; margin-bottom: 16px; border: 1px solid #f1d5a3;">
-            <h3 style="font-size: 0.95rem; color: #8a6d3b; margin-bottom: 8px;">🏡 Gestión y Creación de Lotes / Potreros</h3>
-            <p style="font-size: 0.8rem; color: #555; margin-bottom: 10px;">Agregue o elimine los lotes disponibles para el sistema y los selectores de fichas.</p>
-            <div class="form-group">
-                <label>Nombre del Nuevo Lote / Potrero:</label>
-                <input type="text" id="cfg-lote-nombre" placeholder="Ej. Potrero San Benito, Lote Novillas 2...">
-            </div>
-            <button class="btn-action" style="background: linear-gradient(145deg, #f0ad4e, #d98c1f); box-shadow: 0 4px 0 #a96c10, 0 6px 12px rgba(0,0,0,0.15);" onclick="guardarLoteConfig()">Agregar Nuevo Lote</button>
-            <div class="table-container">
-                <table id="tabla-cfg-lotes"><thead><tr><th>Nombre del Lote</th><th>Acciones</th></tr></thead><tbody></tbody></table>
-            </div>
-        </div>
-    </div>
-
-    <!-- SECCIÓN INVENTARIO -->
-    <div id="sec-inventario" class="section-card">
-        <div class="section-header">
-            <h2>Inventario Maestro & Lotes</h2>
-            <button class="back-btn" onclick="showMenu()">Volver</button>
-        </div>
-        <div class="dashboard-box" id="dashboard-inv"><strong>📊 Dashboard Inventario:</strong> Cargando...</div>
-        <input type="hidden" id="edit-index-inventario" value="-1">
-        <div class="form-group">
-            <label>Lectura Microchip (Prioritario):</label>
-            <input type="text" id="inv-chip" placeholder="Pase el lector de microchip..." oninput="buscarPorChip(this.value)">
-        </div>
-        <div class="form-group">
-            <label>Nro. de Arete:</label>
-            <input type="text" id="inv-arete" placeholder="Autogenerado o manual">
-        </div>
-        <div class="form-group">
-            <label>Lote (Editable / Seleccionable):</label>
-            <input type="text" id="inv-lote" list="lista-lotes" placeholder="Seleccione o escriba un lote...">
-            <datalist id="lista-lotes"></datalist>
-        </div>
-        <div class="form-group">
-            <label>Especie / Categoría:</label>
-            <select id="inv-categoria">
-                <option value="Bovino">Vaca Bovina</option>
-                <option value="Bufalino">Búfala</option>
-                <option value="Porcino">Cerdas / Reproductora</option>
-                <option value="Novilla">Novilla</option>
-                <option value="Becerra">Becerra</option>
-                <option value="Toro">Toro / Reproductor</option>
-            </select>
-        </div>
-        <button class="btn-action" onclick="guardarInventario()">Registrar / Actualizar en Inventario</button>
-        <button class="btn-graph" onclick="toggleGrafica('inv')">📈 Ver Gráfica de Inventario</button>
-        <button class="btn-refresh" onclick="refrescarGrafica('inv')">🔄 Actualizar Gráfica</button>
-        <div id="graph-inv" class="graph-container-box"></div>
-        <button class="btn-export" onclick="exportarCSV('inventario')">📥 Descargar CSV Inventario</button>
-        <div class="table-container">
-            <table id="tabla-inventario"><thead><tr><th>Arete</th><th>Microchip</th><th>Lote</th><th>Categoría</th><th>Acciones</th></tr></thead><tbody></tbody></table>
-        </div>
-    </div>
-
-    <!-- SECCIÓN NACIMIENTOS -->
-    <div id="sec-nacimiento" class="section-card">
-        <div class="section-header">
-            <h2>Registro de Nacimientos</h2>
-            <button class="back-btn" onclick="showMenu()">Volver</button>
-        </div>
-        <div class="dashboard-box" id="dashboard-nac"><strong>📊 Dashboard Nacimientos:</strong> Cargando...</div>
-        <input type="hidden" id="edit-index-nacimientos" value="-1">
-        <div class="form-group">
-            <label>Especie:</label>
-            <select id="nac-especie"></select>
-        </div>
-        <div class="form-group">
-            <label>Madre (Arete / Microchip):</label>
-            <input type="text" id="nac-madre" placeholder="Arete o Chip de la madre">
-        </div>
-        <div class="form-group">
-            <label>Tipo de Parto:</label>
-            <select id="nac-tipo" onchange="togglePartoTipo()">
-                <option value="normal">Normal</option>
-                <option value="gemelar">Gemelar / Múltiple</option>
-                <option value="distocico">Distócico (Asistido)</option>
-                <option value="aborto">Aborto</option>
-                <option value="mortinato">Mortinato</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label>Tiempo de Gestación transcurrido (en Días):</label>
-            <input type="number" id="nac-dias-gestacion" placeholder="Ej. 280">
-        </div>
-        
-        <div id="crias-container">
-            <fieldset style="border: 1px solid #ccc; padding: 10px; border-radius: 8px; margin-bottom: 10px;">
-                <legend style="font-size: 0.8rem; font-weight:bold; color:var(--syntro-primary);">Datos Cría 1</legend>
-                <div class="form-group">
-                    <label>Arete Cría 1:</label>
-                    <input type="text" id="nac-arete1">
-                </div>
-                <div class="form-group">
-                    <label>Sexo:</label>
-                    <select id="nac-sexo1"><option>Macho</option><option>Hembra</option></select>
-                </div>
-                <div class="form-group">
-                    <label>Peso (kg):</label>
-                    <input type="number" id="nac-peso1" placeholder="Ej. 32">
-                </div>
-            </fieldset>
-
-            <fieldset id="block-cria2" style="border: 1px solid #ccc; padding: 10px; border-radius: 8px; margin-bottom: 10px; display:none;">
-                <legend style="font-size: 0.8rem; font-weight:bold; color:var(--syntro-primary);">Datos Cría 2 (Gemelar)</legend>
-                <div class="form-group">
-                    <label>Arete Cría 2:</label>
-                    <input type="text" id="nac-arete2">
-                </div>
-                <div class="form-group">
-                    <label>Sexo:</label>
-                    <select id="nac-sexo2"><option>Macho</option><option>Hembra</option></select>
-                </div>
-                <div class="form-group">
-                    <label>Peso (kg):</label>
-                    <input type="number" id="nac-peso2" placeholder="Ej. 30">
-                </div>
-            </fieldset>
-        </div>
-
-        <button class="btn-action" onclick="guardarNacimiento()">Guardar / Actualizar Nacimiento</button>
-        <button class="btn-graph" onclick="toggleGrafica('nac')">📈 Ver Gráfica de Nacimientos</button>
-        <button class="btn-refresh" onclick="refrescarGrafica('nac')">🔄 Actualizar Gráfica</button>
-        <div id="graph-nac" class="graph-container-box"></div>
-        <button class="btn-export" onclick="exportarCSV('nacimientos')">📥 Descargar CSV Nacimientos</button>
-        <div class="table-container">
-            <table id="tabla-nacimientos"><thead><tr><th>Fecha</th><th>Madre</th><th>Tipo</th><th>Cría</th><th>Peso</th><th>Acciones</th></tr></thead><tbody></tbody></table>
-        </div>
-    </div>
-
-    <!-- SECCIÓN TRASLADOS -->
-    <div id="sec-traslado" class="section-card">
-        <div class="section-header">
-            <h2>Traslado Interno & Dashboard</h2>
-            <button class="back-btn" onclick="showMenu()">Volver</button>
-        </div>
-        <div class="dashboard-box" id="dashboard-tras"><strong>📊 Dashboard Traslados:</strong> Cargando...</div>
-        <input type="hidden" id="edit-index-traslados" value="-1">
-        <div class="form-group">
-            <label>Arete / Animal:</label>
-            <input type="text" id="tras-animal" placeholder="Ej. Arete 105">
-        </div>
-        <div class="form-group">
-            <label>Potrero / Lote Destino (Actualiza Inventario):</label>
-            <input type="text" id="tras-destino" list="lista-lotes" placeholder="Seleccione el lote destino">
-        </div>
-        <button class="btn-action" onclick="guardarTraslado()">Procesar / Actualizar Traslado</button>
-        <button class="btn-graph" onclick="toggleGrafica('tras')">📈 Ver Gráfica de Traslados</button>
-        <button class="btn-refresh" onclick="refrescarGrafica('tras')">🔄 Actualizar Gráfica</button>
-        <div id="graph-tras" class="graph-container-box"></div>
-        <button class="btn-export" onclick="exportarCSV('traslados')">📥 Descargar CSV Traslados</button>
-        <div class="table-container">
-            <table id="tabla-traslados"><thead><tr><th>Fecha</th><th>Animal</th><th>Nuevo Lote Destino</th><th>Acciones</th></tr></thead><tbody></tbody></table>
-        </div>
-    </div>
-
-    <!-- SECCIÓN PALPACIÓN -->
-    <div id="sec-palpacion" class="section-card">
-        <div class="section-header">
-            <h2>Palpación & Dashboard Reproductivo</h2>
-            <button class="back-btn" onclick="showMenu()">Volver</button>
-        </div>
-        <div class="dashboard-box" id="dashboard-rep"><strong>📊 Dashboard Reproductivo:</strong> Cargando...</div>
-        <input type="hidden" id="edit-index-palpaciones" value="-1">
-        <div class="form-group">
-            <label>Arete del Animal:</label>
-            <input type="text" id="pal-animal" placeholder="Arete o Microchip">
-        </div>
-        <div class="form-group">
-            <label>Especie:</label>
-            <select id="pal-especie"></select>
-        </div>
-        <div class="form-group">
-            <label>Diagnóstico:</label>
-            <select id="pal-diag" onchange="toggleGestacionCampos()">
-                <option value="Preñada">Preñada</option>
-                <option value="Vacia">Vacía / Repetición</option>
-                <option value="Cria al pie">Cría al pie / Apta</option>
-            </select>
-        </div>
-        <div class="form-group" id="block-gestacion">
-            <label>Fecha en que quedó preñada (Mes y Año):</label>
-            <input type="month" id="pal-fecha-servicio">
-        </div>
-        <button class="btn-action" onclick="guardarPalpacion()">Guardar / Actualizar Diagnóstico</button>
-        <button class="btn-graph" onclick="toggleGrafica('rep')">📈 Ver Gráfica Reproductiva</button>
-        <button class="btn-refresh" onclick="refrescarGrafica('rep')">🔄 Actualizar Gráfica</button>
-        <div id="graph-rep" class="graph-container-box"></div>
-        <button class="btn-export" onclick="exportarCSV('palpaciones')">📥 Descargar CSV Palpaciones</button>
-        <div class="table-container">
-            <table id="tabla-palpaciones"><thead><tr><th>Fecha Palp.</th><th>Arete</th><th>Diagnóstico</th><th>Parto Estimado</th><th>Secado Sugerido</th><th>Acciones</th></tr></thead><tbody></tbody></table>
-        </div>
-    </div>
-
-    <!-- SECCIÓN PESAJE -->
-    <div id="sec-pesaje" class="section-card">
-        <div class="section-header">
-            <h2>Pesaje Corporal & Dashboard</h2>
-            <button class="back-btn" onclick="showMenu()">Volver</button>
-        </div>
-        <div class="dashboard-box" id="dashboard-pes"><strong>📊 Dashboard Pesajes:</strong> Cargando...</div>
-        <input type="hidden" id="edit-index-pesajes" value="-1">
-        <div class="form-group">
-            <label>Arete del Animal:</label>
-            <input type="text" id="pes-animal" placeholder="Arete">
-        </div>
-        <div class="form-group">
-            <label>Peso Actual (kg):</label>
-            <input type="number" id="pes-kilos" placeholder="Ej. 420">
-        </div>
-        <button class="btn-action" onclick="guardarPesaje()">Registrar / Actualizar Peso</button>
-        <button class="btn-graph" onclick="toggleGrafica('pes')">📈 Ver Gráfica de Pesos</button>
-        <button class="btn-refresh" onclick="refrescarGrafica('pes')">🔄 Actualizar Gráfica</button>
-        <div id="graph-pes" class="graph-container-box"></div>
-        <button class="btn-export" onclick="exportarCSV('pesajes')">📥 Descargar CSV Pesajes</button>
-        <div class="table-container">
-            <table id="tabla-pesajes"><thead><tr><th>Fecha</th><th>Arete</th><th>Peso (kg)</th><th>Acciones</th></tr></thead><tbody></tbody></table>
-        </div>
-    </div>
-
-    <!-- SECCIÓN LECHE -->
-    <div id="sec-leche" class="section-card">
-        <div class="section-header">
-            <h2>Producción de Leche & Dashboard</h2>
-            <button class="back-btn" onclick="showMenu()">Volver</button>
-        </div>
-        <div class="dashboard-box" id="dashboard-lec"><strong>📊 Dashboard Leche:</strong> Cargando...</div>
-        <input type="hidden" id="edit-index-leche" value="-1">
-        <div class="form-group">
-            <label>Nombre del Lote:</label>
-            <input type="text" id="lec-lote" list="lista-lotes" placeholder="Seleccione el lote">
-        </div>
-        <div class="form-group">
-            <label>Turno:</label>
-            <select id="lec-turno">
-                <option>Mañana</option>
-                <option>Tarde</option>
-                <option>Único / Completo</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label>Litros Totales:</label>
-            <input type="number" id="lec-litros" placeholder="Ej. 350">
-        </div>
-        <div class="form-group">
-            <label>Número de Vacas en Ordeño:</label>
-            <input type="number" id="lec-vacas" placeholder="Ej. 30">
-        </div>
-        <button class="btn-action" onclick="guardarLeche()">Registrar / Actualizar Producción</button>
-        <button class="btn-graph" onclick="toggleGrafica('lec')">📈 Ver Gráfica de Leche</button>
-        <button class="btn-refresh" onclick="refrescarGrafica('lec')">🔄 Actualizar Gráfica</button>
-        <div id="graph-lec" class="graph-container-box"></div>
-        <button class="btn-export" onclick="exportarCSV('leche')">📥 Descargar CSV Leche</button>
-        <div class="table-container">
-            <table id="tabla-leche"><thead><tr><th>Fecha</th><th>Lote</th><th>Turno</th><th>Litros</th><th>Vacas</th><th>Acciones</th></tr></thead><tbody></tbody></table>
-        </div>
-    </div>
-
-    <!-- SECCIÓN MUERTES -->
-    <div id="sec-muerte" class="section-card">
-        <div class="section-header">
-            <h2>Muertes / Bajas & Dashboard</h2>
-            <button class="back-btn" onclick="showMenu()">Volver</button>
-        </div>
-        <div class="dashboard-box" id="dashboard-mue"><strong>📊 Dashboard Muertes:</strong> Cargando...</div>
-        <input type="hidden" id="edit-index-muertes" value="-1">
-        <div class="form-group">
-            <label>Arete del Animal:</label>
-            <input type="text" id="mue-animal" placeholder="Arete">
-        </div>
-        <div class="form-group">
-            <label>Causa estimada:</label>
-            <input type="text" id="mue-causa" placeholder="Ej. Enfermedad / Accidente">
-        </div>
-        <button class="btn-action" onclick="guardarMuerte()">Registrar / Actualizar Baja</button>
-        <button class="btn-graph" onclick="toggleGrafica('mue')">📈 Ver Gráfica de Mortalidad</button>
-        <button class="btn-refresh" onclick="refrescarGrafica('mue')">🔄 Actualizar Gráfica</button>
-        <div id="graph-mue" class="graph-container-box"></div>
-        <button class="btn-export" onclick="exportarCSV('muertes')">📥 Descargar CSV Muertes</button>
-        <div class="table-container">
-            <table id="tabla-muertes"><thead><tr><th>Fecha</th><th>Arete</th><th>Causa</th><th>Acciones</th></tr></thead><tbody></tbody></table>
-        </div>
-    </div>
-
-    <script>
-        const chartsInstancia = {};
-
-        const defaultEspecies = [
-            { nombre: "Bovino", dias: 281 },
-            { nombre: "Bufalino", dias: 310 },
-            { nombre: "Porcino", dias: 114 }
-        ];
-
-        const defaultLotes = [
-            "Lote Ordeño Principal",
-            "Lote Vacas Horras",
-            "Potrero de Descanso",
-            "Lote Maternidad",
-            "Potrero de Engorde"
-        ];
-
-        document.addEventListener("DOMContentLoaded", () => {
-            let finca = localStorage.getItem('nombre_finca') || "Hacienda San Juan";
-            document.getElementById('nombre-finca').value = finca;
-            
-            inicializarConfiguracionPorDefecto();
-            sincronizarSelectsYLotes();
-            actualizarTodasLasTablas();
-            sugerirCorrelativo();
-            actualizarTodosDashboards();
-        });
-
-        function inicializarConfiguracionPorDefecto() {
-            if (!localStorage.getItem('cfg_especies')) {
-                localStorage.setItem('cfg_especies', JSON.stringify(defaultEspecies));
-            }
-            if (!localStorage.getItem('cfg_lotes')) {
-                localStorage.setItem('cfg_lotes', JSON.stringify(defaultLotes));
-            }
-        }
-
-        function obtenerEspeciesConfig() {
-            return JSON.parse(localStorage.getItem('cfg_especies')) || defaultEspecies;
-        }
-
-        function obtenerLotesConfig() {
-            return JSON.parse(localStorage.getItem('cfg_lotes')) || defaultLotes;
-        }
-
-        function sincronizarSelectsYLotes() {
-            const lotes = obtenerLotesConfig();
-            const especies = obtenerEspeciesConfig();
-
-            const datalist = document.getElementById('lista-lotes');
-            if (datalist) {
-                datalist.innerHTML = lotes.map(l => `<option value="${l}">`).join('');
-            }
-
-            const selectsEspecie = ['nac-especie', 'pal-especie'];
-            selectsEspecie.forEach(id => {
-                const sel = document.getElementById(id);
-                if (sel) {
-                    sel.innerHTML = especies.map(e => `<option value="${e.nombre}">${e.nombre} (${e.dias} días)</option>`).join('');
-                }
-            });
-
-            renderTablaConfigEspecies();
-            renderTablaConfigLotes();
-        }
-
-        function showSection(idSec) {
-            document.getElementById('main-menu').classList.add('hidden');
-            document.querySelectorAll('.section-card').forEach(el => el.classList.remove('active'));
-            document.getElementById(idSec).classList.add('active');
-            window.scrollTo(0,0);
-        }
-
-        function showMenu() {
-            document.querySelectorAll('.section-card').forEach(el => el.classList.remove('active'));
-            document.getElementById('main-menu').classList.remove('hidden');
-            sugerirCorrelativo();
-            actualizarTodosDashboards();
-        }
-
-        function guardarFinca(val) {
-            localStorage.setItem('nombre_finca', val);
-        }
-
-        function sugerirCorrelativo() {
-            let inv = JSON.parse(localStorage.getItem('syntro_inventario')) || [];
-            let nextNum = inv.length + 1;
-            let areteSugerido = "ARETE-" + String(nextNum).padStart(3, '0');
-            let inputArete = document.getElementById('inv-arete');
-            if (inputArete && !inputArete.value) {
-                inputArete.value = areteSugerido;
-            }
-        }
-
-        function guardarEspecieConfig() {
-            let nombre = document.getElementById('cfg-especie-nombre').value.trim();
-            let dias = parseInt(document.getElementById('cfg-especie-dias').value);
-            if (!nombre || isNaN(dias)) {
-                alert("Ingrese un nombre de especie válido y los días de gestación.");
-                return;
-            }
-            let especies = obtenerEspeciesConfig();
-            let idx = especies.findIndex(e => e.nombre.toLowerCase() === nombre.toLowerCase());
-            if (idx >= 0) {
-                especies[idx].dias = dias;
-            } else {
-                especies.push({ nombre, dias });
-            }
-            localStorage.setItem('cfg_especies', JSON.stringify(especies));
-            document.getElementById('cfg-especie-nombre').value = '';
-            document.getElementById('cfg-especie-dias').value = '';
-            sincronizarSelectsYLotes();
-            alert("Especie guardada correctamente.");
-        }
-
-        function eliminarEspecieConfig(nombre) {
-            let especies = obtenerEspeciesConfig();
-            especies = especies.filter(e => e.nombre !== nombre);
-            localStorage.setItem('cfg_especies', JSON.stringify(especies));
-            sincronizarSelectsYLotes();
-        }
-
-        function renderTablaConfigEspecies() {
-            let especies = obtenerEspeciesConfig();
-            let tbody = document.querySelector('#tabla-cfg-especies tbody');
-            if (!tbody) return;
-            tbody.innerHTML = especies.map(e => `
-                <tr>
-                    <td>${e.nombre}</td>
-                    <td>${e.dias} días</td>
-                    <td><button class="btn-tbl-delete" onclick="eliminarEspecieConfig('${e.nombre}')">Eliminar</button></td>
-                </tr>
-            `).join('');
-        }
-
-        function guardarLoteConfig() {
-            let nombre = document.getElementById('cfg-lote-nombre').value.trim();
-            if (!nombre) {
-                alert("Ingrese el nombre del lote.");
-                return;
-            }
-            let lotes = obtenerLotesConfig();
-            if (!lotes.includes(nombre)) {
-                lotes.push(nombre);
-                localStorage.setItem('cfg_lotes', JSON.stringify(lotes));
-                document.getElementById('cfg-lote-nombre').value = '';
-                sincronizarSelectsYLotes();
-                alert("Lote agregado correctamente.");
-            } else {
-                alert("El lote ya existe en el sistema.");
-            }
-        }
-
-        function eliminarLoteConfig(nombre) {
-            let lotes = obtenerLotesConfig();
-            lotes = lotes.filter(l => l !== nombre);
-            localStorage.setItem('cfg_lotes', JSON.stringify(lotes));
-            sincronizarSelectsYLotes();
-        }
-
-        function renderTablaConfigLotes() {
-            let lotes = obtenerLotesConfig();
-            let tbody = document.querySelector('#tabla-cfg-lotes tbody');
-            if (!tbody) return;
-            tbody.innerHTML = lotes.map(l => `
-                <tr>
-                    <td>${l}</td>
-                    <td><button class="btn-tbl-delete" onclick="eliminarLoteConfig('${l}')">Eliminar</button></td>
-                </tr>
-            `).join('');
-        }
-
-        function buscarPorChip(chip) {
-            if (!chip) return;
-            let inv = JSON.parse(localStorage.getItem('syntro_inventario')) || [];
-            let encontrado = inv.find(item => item.chip === chip);
-            if (encontrado) {
-                document.getElementById('inv-arete').value = encontrado.arete;
-                document.getElementById('inv-lote').value = encontrado.lote;
-                document.getElementById('inv-categoria').value = encontrado.categoria;
-            }
-        }
-
-        function guardarInventario() {
-            let chip = document.getElementById('inv-chip').value.trim();
-            let arete = document.getElementById('inv-arete').value.trim();
-            let lote = document.getElementById('inv-lote').value.trim();
-            let categoria = document.getElementById('inv-categoria').value;
-            let editIndex = parseInt(document.getElementById('edit-index-inventario').value);
-
-            if (!arete) {
-                alert("El arete es obligatorio.");
-                return;
-            }
-
-            let inv = JSON.parse(localStorage.getItem('syntro_inventario')) || [];
-
-            if (editIndex >= 0) {
-                inv[editIndex] = { chip, arete, lote, categoria };
-                document.getElementById('edit-index-inventario').value = -1;
-            } else {
-                inv.push({ chip, arete, lote, categoria });
-            }
-
-            localStorage.setItem('syntro_inventario', JSON.stringify(inv));
-            document.getElementById('inv-chip').value = '';
-            document.getElementById('inv-arete').value = '';
-            document.getElementById('inv-lote').value = '';
-            sugerirCorrelativo();
-            actualizarTablaInventario();
-            actualizarDashboardInventario();
-            alert("Inventario actualizado correctamente.");
-        }
-
-        function editarInventario(index) {
-            let inv = JSON.parse(localStorage.getItem('syntro_inventario')) || [];
-            let item = inv[index];
-            if (!item) return;
-            document.getElementById('inv-chip').value = item.chip || '';
-            document.getElementById('inv-arete').value = item.arete || '';
-            document.getElementById('inv-lote').value = item.lote || '';
-            document.getElementById('inv-categoria').value = item.categoria || 'Bovino';
-            document.getElementById('edit-index-inventario').value = index;
-            showSection('sec-inventario');
-        }
-
-        function eliminarInventario(index) {
-            let inv = JSON.parse(localStorage.getItem('syntro_inventario')) || [];
-            inv.splice(index, 1);
-            localStorage.setItem('syntro_inventario', JSON.stringify(inv));
-            actualizarTablaInventario();
-            actualizarDashboardInventario();
-        }
-
-        function actualizarTablaInventario() {
-            let inv = JSON.parse(localStorage.getItem('syntro_inventario')) || [];
-            let tbody = document.querySelector('#tabla-inventario tbody');
-            if (!tbody) return;
-            tbody.innerHTML = inv.map((item, idx) => `
-                <tr>
-                    <td>${item.arete}</td>
-                    <td>${item.chip || 'N/A'}</td>
-                    <td>${item.lote || 'Sin Lote'}</td>
-                    <td>${item.categoria}</td>
-                    <td>
-                        <button class="btn-tbl-edit" onclick="editarInventario(${idx})">Editar</button>
-                        <button class="btn-tbl-delete" onclick="eliminarInventario(${idx})">Eliminar</button>
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        function actualizarDashboardInventario() {
-            let inv = JSON.parse(localStorage.getItem('syntro_inventario')) || [];
-            let total = inv.length;
-            let categorias = {};
-            inv.forEach(i => {
-                categorias[i.categoria] = (categorias[i.categoria] || 0) + 1;
-            });
-            let catStr = Object.entries(categorias).map(([k, v]) => `${k}: ${v}`).join(' | ');
-            let el = document.getElementById('dashboard-inv');
-            if (el) {
-                el.innerHTML = `<strong>📊 Dashboard Inventario:</strong> Total Animales: ${total} | ${catStr}`;
-            }
-        }
-
-        function togglePartoTipo() {
-            let tipo = document.getElementById('nac-tipo').value;
-            let blockCria2 = document.getElementById('block-cria2');
-            if (tipo === 'gemelar') {
-                blockCria2.style.display = 'block';
-            } else {
-                blockCria2.style.display = 'none';
-            }
-        }
-
-        function guardarNacimiento() {
-            let especie = document.getElementById('nac-especie').value;
-            let madre = document.getElementById('nac-madre').value.trim();
-            let tipo = document.getElementById('nac-tipo').value;
-            let diasGestacion = document.getElementById('nac-dias-gestacion').value;
-            let arete1 = document.getElementById('nac-arete1').value.trim();
-            let sexo1 = document.getElementById('nac-sexo1').value;
-            let peso1 = document.getElementById('nac-peso1').value;
-            let arete2 = document.getElementById('nac-arete2').value.trim();
-            let sexo2 = document.getElementById('nac-sexo2').value;
-            let peso2 = document.getElementById('nac-peso2').value;
-            let editIndex = parseInt(document.getElementById('edit-index-nacimientos').value);
-
-            let fecha = new Date().toISOString().split('T')[0];
-            let nacs = JSON.parse(localStorage.getItem('syntro_nacimientos')) || [];
-
-            let obj = { fecha, especie, madre, tipo, diasGestacion, arete1, sexo1, peso1, arete2, sexo2, peso2 };
-
-            if (editIndex >= 0) {
-                nacs[editIndex] = obj;
-                document.getElementById('edit-index-nacimientos').value = -1;
-            } else {
-                nacs.push(obj);
-            }
-
-            localStorage.setItem('syntro_nacimientos', JSON.stringify(nacs));
-            actualizarTablaNacimientos();
-            actualizarDashboardNacimientos();
-            alert("Nacimiento registrado correctamente.");
-        }
-
-        function actualizarTablaNacimientos() {
-            let nacs = JSON.parse(localStorage.getItem('syntro_nacimientos')) || [];
-            let tbody = document.querySelector('#tabla-nacimientos tbody');
-            if (!tbody) return;
-            tbody.innerHTML = nacs.map((item, idx) => `
-                <tr>
-                    <td>${item.fecha}</td>
-                    <td>${item.madre || 'N/A'}</td>
-                    <td>${item.tipo}</td>
-                    <td>${item.arete1 || 'Sin Arete'} (${item.sexo1})</td>
-                    <td>${item.peso1 || 0} kg</td>
-                    <td>
-                        <button class="btn-tbl-delete" onclick="eliminarNacimiento(${idx})">Eliminar</button>
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        function eliminarNacimiento(index) {
-            let nacs = JSON.parse(localStorage.getItem('syntro_nacimientos')) || [];
-            nacs.splice(index, 1);
-            localStorage.setItem('syntro_nacimientos', JSON.stringify(nacs));
-            actualizarTablaNacimientos();
-            actualizarDashboardNacimientos();
-        }
-
-        function actualizarDashboardNacimientos() {
-            let nacs = JSON.parse(localStorage.getItem('syntro_nacimientos')) || [];
-            let total = nacs.length;
-            let el = document.getElementById('dashboard-nac');
-            if (el) {
-                el.innerHTML = `<strong>📊 Dashboard Nacimientos:</strong> Total Partos Registrados: ${total}`;
-            }
-        }
-
-        function guardarTraslado() {
-            let animal = document.getElementById('tras-animal').value.trim();
-            let destino = document.getElementById('tras-destino').value.trim();
-            let fecha = new Date().toISOString().split('T')[0];
-            if (!animal || !destino) {
-                alert("Complete el animal y el lote destino.");
-                return;
-            }
-            let tras = JSON.parse(localStorage.getItem('syntro_traslados')) || [];
-            tras.push({ fecha, animal, destino });
-            localStorage.setItem('syntro_traslados', JSON.stringify(tras));
-
-            // Actualizar inventario automáticamente si existe el arete
-            let inv = JSON.parse(localStorage.getItem('syntro_inventario')) || [];
-            let idx = inv.findIndex(i => i.arete === animal || i.chip === animal);
-            if (idx >= 0) {
-                inv[idx].lote = destino;
-                localStorage.setItem('syntro_inventario', JSON.stringify(inv));
-                actualizarTablaInventario();
-            }
-
-            actualizarTablaTraslados();
-            actualizarDashboardTraslados();
-            alert("Traslado procesado y lote actualizado.");
-        }
-
-        function actualizarTablaTraslados() {
-            let tras = JSON.parse(localStorage.getItem('syntro_traslados')) || [];
-            let tbody = document.querySelector('#tabla-traslados tbody');
-            if (!tbody) return;
-            tbody.innerHTML = tras.map((item, idx) => `
-                <tr>
-                    <td>${item.fecha}</td>
-                    <td>${item.animal}</td>
-                    <td>${item.destino}</td>
-                    <td><button class="btn-tbl-delete" onclick="eliminarTraslado(${idx})">Eliminar</button></td>
-                </tr>
-            `).join('');
-        }
-
-        function eliminarTraslado(index) {
-            let tras = JSON.parse(localStorage.getItem('syntro_traslados')) || [];
-            tras.splice(index, 1);
-            localStorage.setItem('syntro_traslados', JSON.stringify(tras));
-            actualizarTablaTraslados();
-            actualizarDashboardTraslados();
-        }
-
-        function actualizarDashboardTraslados() {
-            let tras = JSON.parse(localStorage.getItem('syntro_traslados')) || [];
-            let el = document.getElementById('dashboard-tras');
-            if (el) {
-                el.innerHTML = `<strong>📊 Dashboard Traslados:</strong> Total Movimientos: ${tras.length}`;
-            }
-        }
-
-        function toggleGestacionCampos() {
-            let diag = document.getElementById('pal-diag').value;
-            let block = document.getElementById('block-gestacion');
-            if (diag === 'Preñada') {
-                block.style.display = 'block';
-            } else {
-                block.style.display = 'none';
-            }
-        }
-
-        function guardarPalpacion() {
-            let animal = document.getElementById('pal-animal').value.trim();
-            let especie = document.getElementById('pal-especie').value;
-            let diag = document.getElementById('pal-diag').value;
-            let fechaServicio = document.getElementById('pal-fecha-servicio').value;
-            let fecha = new Date().toISOString().split('T')[0];
-
-            if (!animal) {
-                alert("Ingrese el arete del animal.");
-                return;
-            }
-
-            let palps = JSON.parse(localStorage.getItem('syntro_palpaciones')) || [];
-            palps.push({ fecha, animal, especie, diag, fechaServicio });
-            localStorage.setItem('syntro_palpaciones', JSON.stringify(palps));
-            actualizarTablaPalpaciones();
-            actualizarDashboardPalpaciones();
-            alert("Palpación guardada correctamente.");
-        }
-
-        function actualizarTablaPalpaciones() {
-            let palps = JSON.parse(localStorage.getItem('syntro_palpaciones')) || [];
-            let tbody = document.querySelector('#tabla-palpaciones tbody');
-            if (!tbody) return;
-            tbody.innerHTML = palps.map((item, idx) => `
-                <tr>
-                    <td>${item.fecha}</td>
-                    <td>${item.animal}</td>
-                    <td>${item.diag}</td>
-                    <td>N/A</td>
-                    <td>N/A</td>
-                    <td><button class="btn-tbl-delete" onclick="eliminarPalpacion(${idx})">Eliminar</button></td>
-                </tr>
-            `).join('');
-        }
-
-        function eliminarPalpacion(index) {
-            let palps = JSON.parse(localStorage.getItem('syntro_palpaciones')) || [];
-            palps.splice(index, 1);
-            localStorage.setItem('syntro_palpaciones', JSON.stringify(palps));
-            actualizarTablaPalpaciones();
-            actualizarDashboardPalpaciones();
-        }
-
-        function actualizarDashboardPalpaciones() {
-            let palps = JSON.parse(localStorage.getItem('syntro_palpaciones')) || [];
-            let el = document.getElementById('dashboard-rep');
-            if (el) {
-                el.innerHTML = `<strong>📊 Dashboard Reproductivo:</strong> Total Diagnósticos: ${palps.length}`;
-            }
-        }
-
-        function guardarPesaje() {
-            let animal = document.getElementById('pes-animal').value.trim();
-            let kilos = parseFloat(document.getElementById('pes-kilos').value);
-            let fecha = new Date().toISOString().split('T')[0];
-
-            if (!animal || isNaN(kilos)) {
-                alert("Complete los datos de pesaje.");
-                return;
-            }
-
-            let pes = JSON.parse(localStorage.getItem('syntro_pesajes')) || [];
-            pes.push({ fecha, animal, kilos });
-            localStorage.setItem('syntro_pesajes', JSON.stringify(pes));
-            actualizarTablaPesajes();
-            actualizarDashboardPesajes();
-            alert("Pesaje registrado correctamente.");
-        }
-
-        function actualizarTablaPesajes() {
-            let pes = JSON.parse(localStorage.getItem('syntro_pesajes')) || [];
-            let tbody = document.querySelector('#tabla-pesajes tbody');
-            if (!tbody) return;
-            tbody.innerHTML = pes.map((item, idx) => `
-                <tr>
-                    <td>${item.fecha}</td>
-                    <td>${item.animal}</td>
-                    <td>${item.kilos} kg</td>
-                    <td><button class="btn-tbl-delete" onclick="eliminarPesaje(${idx})">Eliminar</button></td>
-                </tr>
-            `).join('');
-        }
-
-        function eliminarPesaje(index) {
-            let pes = JSON.parse(localStorage.getItem('syntro_pesajes')) || [];
-            pes.splice(index, 1);
-            localStorage.setItem('syntro_pesajes', JSON.stringify(pes));
-            actualizarTablaPesajes();
-            actualizarDashboardPesajes();
-        }
-
-        function actualizarDashboardPesajes() {
-            let pes = JSON.parse(localStorage.getItem('syntro_pesajes')) || [];
-            let el = document.getElementById('dashboard-pes');
-            if (el) {
-                el.innerHTML = `<strong>📊 Dashboard Pesajes:</strong> Total Pesajes: ${pes.length}`;
-            }
-        }
-
-        function guardarLeche() {
-            let lote = document.getElementById('lec-lote').value.trim();
-            let turno = document.getElementById('lec-turno').value;
-            let litros = parseFloat(document.getElementById('lec-litros').value);
-            let vacas = parseInt(document.getElementById('lec-vacas').value);
-            let fecha = new Date().toISOString().split('T')[0];
-
-            if (!lote || isNaN(litros)) {
-                alert("Complete los datos de producción de leche.");
-                return;
-            }
-
-            let lec = JSON.parse(localStorage.getItem('syntro_leche')) || [];
-            lec.push({ fecha, lote, turno, litros, vacas });
-            localStorage.setItem('syntro_leche', JSON.stringify(lec));
-            actualizarTablaLeche();
-            actualizarDashboardLeche();
-            alert("Producción de leche registrada.");
-        }
-
-        function actualizarTablaLeche() {
-            let lec = JSON.parse(localStorage.getItem('syntro_leche')) || [];
-            let tbody = document.querySelector('#tabla-leche tbody');
-            if (!tbody) return;
-            tbody.innerHTML = lec.map((item, idx) => `
-                <tr>
-                    <td>${item.fecha}</td>
-                    <td>${item.lote}</td>
-                    <td>${item.turno}</td>
-                    <td>${item.litros} L</td>
-                    <td>${item.vacas || 0}</td>
-                    <td><button class="btn-tbl-delete" onclick="eliminarLeche(${idx})">Eliminar</button></td>
-                </tr>
-            `).join('');
-        }
-
-        function eliminarLeche(index) {
-            let lec = JSON.parse(localStorage.getItem('syntro_leche')) || [];
-            lec.splice(index, 1);
-            localStorage.setItem('syntro_leche', JSON.stringify(lec));
-            actualizarTablaLeche();
-            actualizarDashboardLeche();
-        }
-
-        function actualizarDashboardLeche() {
-            let lec = JSON.parse(localStorage.getItem('syntro_leche')) || [];
-            let totalLitros = lec.reduce((acc, curr) => acc + (curr.litros || 0), 0);
-            let el = document.getElementById('dashboard-lec');
-            if (el) {
-                el.innerHTML = `<strong>📊 Dashboard Leche:</strong> Litros Totales Registrados: ${totalLitros} L`;
-            }
-        }
-
-        function guardarMuerte() {
-            let animal = document.getElementById('mue-animal').value.trim();
-            let causa = document.getElementById('mue-causa').value.trim();
-            let fecha = new Date().toISOString().split('T')[0];
-
-            if (!animal) {
-                alert("Ingrese el arete del animal.");
-                return;
-            }
-
-            let mue = JSON.parse(localStorage.getItem('syntro_muertes')) || [];
-            mue.push({ fecha, animal, causa });
-            localStorage.setItem('syntro_muertes', JSON.stringify(mue));
-
-            // Eliminar del inventario maestro automáticamente
-            let inv = JSON.parse(localStorage.getItem('syntro_inventario')) || [];
-            inv = inv.filter(i => i.arete !== animal && i.chip !== animal);
-            localStorage.setItem('syntro_inventario', JSON.stringify(inv));
-
-            actualizarTablaInventario();
-            actualizarDashboardInventario();
-            actualizarTablaMuertes();
-            actualizarDashboardMuertes();
-            alert("Baja registrada y retirada del inventario.");
-        }
-
-        function actualizarTablaMuertes() {
-            let mue = JSON.parse(localStorage.getItem('syntro_muertes')) || [];
-            let tbody = document.querySelector('#tabla-muertes tbody');
-            if (!tbody) return;
-            tbody.innerHTML = mue.map((item, idx) => `
-                <tr>
-                    <td>${item.fecha}</td>
-                    <td>${item.animal}</td>
-                    <td>${item.causa || 'No especificada'}</td>
-                    <td><button class="btn-tbl-delete" onclick="eliminarMuerte(${idx})">Eliminar</button></td>
-                </tr>
-            `).join('');
-        }
-
-        function eliminarMuerte(index) {
-            let mue = JSON.parse(localStorage.getItem('syntro_muertes')) || [];
-            mue.splice(index, 1);
-            localStorage.setItem('syntro_muertes', JSON.stringify(mue));
-            actualizarTablaMuertes();
-            actualizarDashboardMuertes();
-        }
-
-        function actualizarDashboardMuertes() {
-            let mue = JSON.parse(localStorage.getItem('syntro_muertes')) || [];
-            let el = document.getElementById('dashboard-mue');
-            if (el) {
-                el.innerHTML = `<strong>📊 Dashboard Muertes:</strong> Total Bajas: ${mue.length}`;
-            }
-        }
-
-        function actualizarTodasLasTablas() {
-            actualizarTablaInventario();
-            actualizarTablaNacimientos();
-            actualizarTablaTraslados();
-            actualizarTablaPalpaciones();
-            actualizarTablaPesajes();
-            actualizarTablaLeche();
-            actualizarTablaMuertes();
-        }
-
-        function actualizarTodosDashboards() {
-            actualizarDashboardInventario();
-            actualizarDashboardNacimientos();
-            actualizarDashboardTraslados();
-            actualizarDashboardPalpaciones();
-            actualizarDashboardPesajes();
-            actualizarDashboardLeche();
-            actualizarDashboardMuertes();
-        }
-
-        function toggleGrafica(tipo) {
-            let box = document.getElementById('graph-' + tipo);
-            if (!box) return;
-            if (box.style.display === 'block') {
-                box.style.display = 'none';
-            } else {
-                box.style.display = 'block';
-                renderizarGrafica(tipo);
-            }
-        }
-
-        function refrescarGrafica(tipo) {
-            renderizarGrafica(tipo);
-        }
-
-        function renderizarGrafica(tipo) {
-            let box = document.getElementById('graph-' + tipo);
-            if (!box) return;
-            
-            box.innerHTML = `<canvas id="canvas-${tipo}" style="max-height:220px; width:100%;"></canvas>`;
-            let canvas = document.getElementById('canvas-' + tipo);
-            if (!canvas) return;
-            let ctx = canvas.getContext('2d');
-
-            if (chartsInstancia[tipo]) {
-                chartsInstancia[tipo].destroy();
-            }
-
-            let labels = [];
-            let dataValues = [];
-            let labelTitle = "Registros";
-
-            if (tipo === 'inv') {
-                let inv = JSON.parse(localStorage.getItem('syntro_inventario')) || [];
-                let counts = {};
-                inv.forEach(i => counts[i.categoria] = (counts[i.categoria] || 0) + 1);
-                labels = Object.keys(counts);
-                dataValues = Object.values(counts);
-                labelTitle = "Animales por Categoría";
-            } else if (tipo === 'nac') {
-                let nacs = JSON.parse(localStorage.getItem('syntro_nacimientos')) || [];
-                labels = nacs.map(n => n.fecha);
-                dataValues = nacs.map((n, i) => i + 1);
-                labelTitle = "Acumulado de Nacimientos";
-            } else if (tipo === 'tras') {
-                let tras = JSON.parse(localStorage.getItem('syntro_traslados')) || [];
-                labels = tras.map(t => t.fecha);
-                dataValues = tras.map((t, i) => i + 1);
-                labelTitle = "Acumulado de Traslados";
-            } else if (tipo === 'rep') {
-                let palps = JSON.parse(localStorage.getItem('syntro_palpaciones')) || [];
-                let counts = {};
-                palps.forEach(p => counts[p.diag] = (counts[p.diag] || 0) + 1);
-                labels = Object.keys(counts);
-                dataValues = Object.values(counts);
-                labelTitle = "Diagnósticos Reproductivos";
-            } else if (tipo === 'pes') {
-                let pes = JSON.parse(localStorage.getItem('syntro_pesajes')) || [];
-                labels = pes.map(p => p.fecha);
-                dataValues = pes.map(p => p.kilos);
-                labelTitle = "Evolución de Pesos (kg)";
-            } else if (tipo === 'lec') {
-                let lec = JSON.parse(localStorage.getItem('syntro_leche')) || [];
-                labels = lec.map(l => l.fecha);
-                dataValues = lec.map(l => l.litros);
-                labelTitle = "Litros de Leche por Registro";
-            } else if (tipo === 'mue') {
-                let mue = JSON.parse(localStorage.getItem('syntro_muertes')) || [];
-                labels = mue.map(m => m.fecha);
-                dataValues = mue.map((m, i) => i + 1);
-                labelTitle = "Acumulado de Bajas";
-            }
-
-            chartsInstancia[tipo] = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: labels.length ? labels : ['Sin Datos'],
-                    datasets: [{
-                        label: labelTitle,
-                        data: dataValues.length ? dataValues : [0],
-                        backgroundColor: '#1b6535',
-                        borderColor: '#0a3a40',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false
-                }
-            });
-        }
-
-        function exportarCSV(modulo) {
-            let data = JSON.parse(localStorage.getItem('syntro_' + modulo)) || [];
-            if (!data.length) {
-                alert("No hay datos para exportar en este módulo.");
-                return;
-            }
-            let keys = Object.keys(data[0]);
-            let csv = [keys.join(',')];
-            data.forEach(item => {
-                let row = keys.map(k => `"${item[k] !== undefined ? item[k] : ''}"`);
-                csv.push(row.join(','));
-            });
-            let blob = new Blob([csv.join('\n')], { type: 'text/csv;charset=utf-8;' });
-            let url = URL.createObjectURL(blob);
-            let a = document.createElement('a');
-            a.href = url;
-            a.download = `syntro_${modulo}_export.csv`;
-            a.click();
-        }
-    </script>
+<div id="login">
+<h1>🐂 SYNTRO</h1>
+<p class="sub">Gestión Ganadera Inteligente</p>
+<div class="err" id="err"></div>
+<div class="ok" id="ok"></div>
+<input type="email" id="a-email" placeholder="Correo electrónico">
+<input type="password" id="a-pass" placeholder="Contraseña">
+<input type="text" id="a-finca" placeholder="Nombre de tu finca (solo al registrarse)">
+<button type="button" class="bl" onclick="login()">Iniciar Sesión</button>
+<button type="button" class="br" onclick="registrar()">Crear Cuenta Nueva</button>
+<button type="button" class="brec" onclick="recuperar()">¿Olvidaste tu contraseña?</button>
+</div>
+
+<div id="app">
+<header>
+<img src="logo.png" alt="SYNTRO" onerror="this.style.display='none'">
+<div><h1>SYNTRO GANADERA</h1><p>Sistema Inteligente de Trazabilidad</p></div>
+<button type="button" class="bo" onclick="salir()">Salir</button>
+</header>
+<div class="fh"><span>🏡 <strong>Finca:</strong></span><input type="text" id="nom-finca" value="Mi Finca" onchange="guardarNombreFinca(this.value)"></div>
+
+<div id="menu" class="mc">
+<button type="button" class="mb" onclick="show('s-inv')"><span class="bt"><strong>Inventario</strong><small>Maestro & Lotes</small></span><span class="i">🐂</span></button>
+<button type="button" class="mb" onclick="show('s-nac')"><span class="bt"><strong>Nacimientos</strong><small>Partos y crías</small></span><span class="i">🐄</span></button>
+<button type="button" class="mb" onclick="show('s-tra')"><span class="bt"><strong>Traslados</strong><small>Movimiento de lotes</small></span><span class="i">🌾</span></button>
+<button type="button" class="mb" onclick="show('s-pal')"><span class="bt"><strong>Palpación</strong><small>Gestión y secado</small></span><span class="i">🧬</span></button>
+<button type="button" class="mb" onclick="show('s-pes')"><span class="bt"><strong>Pesaje</strong><small>Control corporal</small></span><span class="i">⚖️</span></button>
+<button type="button" class="mb" onclick="show('s-lec')"><span class="bt"><strong>Leche</strong><small>Producción y turnos</small></span><span class="i">🥛</span></button>
+<button type="button" class="mb" onclick="show('s-mue')"><span class="bt"><strong>Muertes / Bajas</strong><small>Registro de mortalidad</small></span><span class="i">⚰️</span></button>
+<button type="button" class="mb mbc" onclick="show('s-cfg')"><span class="bt"><strong>Configuración</strong><small>Especies y lotes</small></span><span class="i">⚙️</span></button>
+</div>
+
+<div id="s-cfg" class="sc">
+<div class="sh"><h2>Configuración</h2><button type="button" class="bk" onclick="back()">Volver</button></div>
+<div style="background:#e4f0ea;padding:12px;border-radius:10px;margin-bottom:16px">
+<h3 style="font-size:.95rem;color:var(--p);margin-bottom:8px">🧬 Especies y Días de Gestación</h3>
+<div class="fg"><label>Nombre de Especie:</label><input type="text" id="ce-n" placeholder="Ej. Caprino"></div>
+<div class="fg"><label>Días de Gestación:</label><input type="number" id="ce-d" placeholder="Ej. 150"></div>
+<button type="button" class="ba" onclick="guardarEspecie()">Agregar / Actualizar</button>
+<div class="tc"><table id="t-cfg-e"><thead><tr><th>Especie</th><th>Días</th><th>Acciones</th></tr></thead><tbody></tbody></table></div>
+</div>
+<div style="background:#fdf5e6;padding:12px;border-radius:10px">
+<h3 style="font-size:.95rem;color:#8a6d3b;margin-bottom:8px">🏡 Lotes</h3>
+<div class="fg"><label>Nombre del Nuevo Lote:</label><input type="text" id="cl-n" placeholder="Ej. Lote San Benito"></div>
+<button type="button" class="ba" style="background:linear-gradient(145deg,#f0ad4e,#d98c1f)" onclick="guardarLote()">Agregar Nuevo Lote</button>
+<div class="tc"><table id="t-cfg-l"><thead><tr><th>Lote</th><th>Tipo</th><th>Acciones</th></tr></thead><tbody></tbody></table></div>
+</div>
+</div>
+
+<div id="s-inv" class="sc">
+<div class="sh"><h2>Inventario Maestro</h2><button type="button" class="bk" onclick="back()">Volver</button></div>
+<div class="db" id="d-inv">📊 Cargando...</div>
+<input type="hidden" id="e-inv" value="">
+<div class="feb"><label>📅 <strong>Fecha:</strong></label><input type="date" id="f-inv"></div>
+<div class="fg"><label>Microchip:</label><input type="text" id="i-chip" placeholder="Pase el lector..." oninput="buscarChip(this.value)"></div>
+<div class="fg"><label>Nro. Arete:</label><input type="text" id="i-arete" placeholder="Autogenerado o manual"></div>
+<div class="fg"><label>Lote:</label><input type="text" id="i-lote" list="dl-lotes" placeholder="Seleccione..."><datalist id="dl-lotes"></datalist></div>
+<div class="fg"><label>Especie / Categoría:</label><select id="i-cat"></select></div>
+<button type="button" class="ba" onclick="guardarInv()">Registrar / Actualizar</button>
+<button type="button" class="bg2" onclick="toggleG('inv')">📈 Ver Gráfica</button>
+<button type="button" class="brf" onclick="refG('inv')">🔄 Actualizar Gráfica</button>
+<div id="g-inv" class="gc"></div>
+<button type="button" class="be" onclick="csv('inventario')">📥 CSV</button>
+<button type="button" class="bj" onclick="json('inventario')">📋 JSON</button>
+<button type="button" class="bw" onclick="wa('inventario')">💬 WhatsApp</button>
+<div class="tc"><table id="t-inv"><thead><tr><th>Fecha</th><th>Arete</th><th>Chip</th><th>Lote</th><th>Categoría</th><th>Acciones</th></tr></thead><tbody></tbody></table></div>
+</div>
+
+<div id="s-nac" class="sc">
+<div class="sh"><h2>Nacimientos</h2><button type="button" class="bk" onclick="back()">Volver</button></div>
+<div class="db" id="d-nac">📊 Cargando...</div>
+<input type="hidden" id="e-nac" value="">
+<div class="feb"><label>📅 <strong>Fecha:</strong></label><input type="date" id="f-nac"></div>
+<div class="ib">🐄 Las crías entran al <strong>Lote de Cría</strong>.</div>
+<div class="fg"><label>Especie:</label><select id="n-esp" onchange="infoNac()"></select></div>
+<div class="ib" id="in-nac">💡 --</div>
+<div class="fg"><label>Madre:</label><input type="text" id="n-madre" oninput="val('n-madre','st-n')"><div class="as" id="st-n"></div></div>
+<div class="fg"><label>Tipo de Parto:</label><select id="n-tipo" onchange="tPT()"><option value="normal">Normal</option><option value="gemelar">Gemelar</option><option value="distocico">Distócico</option><option value="aborto">Aborto</option><option value="mortinato">Mortinato</option></select></div>
+<div id="cc">
+<fieldset style="border:1px solid #ccc;padding:10px;border-radius:8px;margin-bottom:10px"><legend style="font-size:.8rem;font-weight:bold;color:var(--p)">Cría 1</legend>
+<div class="fg"><label>Arete:</label><input type="text" id="n-a1"></div>
+<div class="fg"><label>Sexo:</label><select id="n-s1"><option>Macho</option><option>Hembra</option></select></div>
+<div class="fg"><label>Peso (kg):</label><input type="number" id="n-p1"></div>
+</fieldset>
+<fieldset id="bc2" style="border:1px solid #ccc;padding:10px;border-radius:8px;margin-bottom:10px;display:none"><legend style="font-size:.8rem;font-weight:bold;color:var(--p)">Cría 2</legend>
+<div class="fg"><label>Arete:</label><input type="text" id="n-a2"></div>
+<div class="fg"><label>Sexo:</label><select id="n-s2"><option>Macho</option><option>Hembra</option></select></div>
+<div class="fg"><label>Peso (kg):</label><input type="number" id="n-p2"></div>
+</fieldset>
+</div>
+<button type="button" class="ba" onclick="guardarNac()">Guardar / Actualizar</button>
+<button type="button" class="bg2" onclick="toggleG('nac')">📈 Ver Gráficas</button>
+<button type="button" class="brf" onclick="refG('nac')">🔄 Actualizar</button>
+<div id="g-nac" class="gc"></div>
+<button type="button" class="be" onclick="csv('nacimientos')">📥 CSV</button>
+<button type="button" class="bj" onclick="json('nacimientos')">📋 JSON</button>
+<button type="button" class="bw" onclick="wa('nacimientos')">💬 WhatsApp</button>
+<div class="tc"><table id="t-nac"><thead><tr><th>Fecha</th><th>Madre</th><th>Especie</th><th>Tipo</th><th>Cría</th><th>Sexo</th><th>Peso</th><th>Acciones</th></tr></thead><tbody></tbody></table></div>
+</div>
+
+<div id="s-tra" class="sc">
+<div class="sh"><h2>Traslados</h2><button type="button" class="bk" onclick="back()">Volver</button></div>
+<div class="db" id="d-tra">📊 Cargando...</div>
+<div class="feb"><label>📅 <strong>Fecha:</strong></label><input type="date" id="f-tra"></div>
+<div class="fg"><label>Arete / Animal:</label><input type="text" id="tr-an" oninput="val('tr-an','st-tr')"><div class="as" id="st-tr"></div></div>
+<div class="fg"><label>Lote Destino:</label><input type="text" id="tr-d" list="dl-lotes"></div>
+<button type="button" class="ba" onclick="guardarTra()">Procesar Traslado</button>
+<button type="button" class="bg2" onclick="toggleG('tra')">📈 Ver Gráfica</button>
+<button type="button" class="brf" onclick="refG('tra')">🔄 Actualizar</button>
+<div id="g-tra" class="gc"></div>
+<button type="button" class="be" onclick="csv('traslados')">📥 CSV</button>
+<button type="button" class="bj" onclick="json('traslados')">📋 JSON</button>
+<button type="button" class="bw" onclick="wa('traslados')">💬 WhatsApp</button>
+<div class="tc"><table id="t-tra"><thead><tr><th>Fecha</th><th>Animal</th><th>Destino</th><th>Acciones</th></tr></thead><tbody></tbody></table></div>
+</div>
+
+<div id="s-pal" class="sc">
+<div class="sh"><h2>Palpación & IPC</h2><button type="button" class="bk" onclick="back()">Volver</button></div>
+<div class="db" id="d-pal">📊 Cargando...</div>
+<div class="feb"><label>📅 <strong>Fecha:</strong></label><input type="date" id="f-pal" onchange="calcIPC()"></div>
+<div class="fg"><label>Arete del Animal:</label><input type="text" id="p-an" oninput="val('p-an','st-pa')"><div class="as" id="st-pa"></div></div>
+<div class="fg"><label>Especie:</label><select id="p-esp" onchange="infoPal()"></select></div>
+<div class="ib" id="in-pal">💡 --</div>
+<div class="fg"><label>Diagnóstico:</label><select id="p-dg" onchange="tGC()"><option value="Preñada">Preñada</option><option value="Vacia">Vacía</option><option value="Cria al pie">Cría al pie</option></select></div>
+<div id="bg">
+<div class="fg"><label>Meses (1-9 con .5) o Días (>9):</label><input type="number" step="0.5" id="p-me" oninput="calcIPC()" placeholder="Ej. 3.5 o 45"></div>
+<div class="ib">📌 1-9 → meses (×30). >9 → días directos.</div>
+<div id="ripc" class="rb">
+<h4>🧮 IPC (Índice Parto-Concepción)</h4>
+<div class="rl"><strong>Días transcurridos:</strong><span id="r1">--</span></div>
+<div class="rl"><strong>Concepción:</strong><span id="r2">--</span></div>
+<div class="rl"><strong>Días totales:</strong><span id="r3">--</span></div>
+<div class="rl"><strong>Días restantes:</strong><span id="r4">--</span></div>
+<div class="rl"><strong>Parto probable:</strong><span id="r5">--</span></div>
+<div class="rl"><strong>Secado sugerido:</strong><span id="r6">--</span></div>
+</div>
+</div>
+<button type="button" class="ba" onclick="guardarPal()">Guardar / Actualizar</button>
+<button type="button" class="bg2" onclick="toggleG('pal')">📈 Ver Gráficas</button>
+<button type="button" class="brf" onclick="refG('pal')">🔄 Actualizar</button>
+<div id="g-pal" class="gc"></div>
+<button type="button" class="be" onclick="csv('palpaciones')">📥 CSV</button>
+<button type="button" class="bj" onclick="json('palpaciones')">📋 JSON</button>
+<button type="button" class="bw" onclick="wa('palpaciones')">💬 WhatsApp</button>
+<div class="tc"><table id="t-pal"><thead><tr><th>Fecha</th><th>Arete</th><th>Especie</th><th>Diag</th><th>Meses</th><th>Concepción</th><th>Parto</th><th>Secado</th><th>Acciones</th></tr></thead><tbody></tbody></table></div>
+</div>
+
+<div id="s-pes" class="sc">
+<div class="sh"><h2>Pesaje Corporal</h2><button type="button" class="bk" onclick="back()">Volver</button></div>
+<div class="db" id="d-pes">📊 Cargando...</div>
+<div class="feb"><label>📅 <strong>Fecha:</strong></label><input type="date" id="f-pes"></div>
+<div class="fg"><label>Arete del Animal:</label><input type="text" id="ps-an" oninput="val('ps-an','st-ps')"><div class="as" id="st-ps"></div></div>
+<div class="fg"><label>Peso (kg):</label><input type="number" id="ps-kg"></div>
+<button type="button" class="ba" onclick="guardarPes()">Registrar Peso</button>
+<button type="button" class="bg2" onclick="toggleG('pes')">📈 Ver Gráfica</button>
+<button type="button" class="brf" onclick="refG('pes')">🔄 Actualizar</button>
+<div id="g-pes" class="gc"></div>
+<button type="button" class="be" onclick="csv('pesajes')">📥 CSV</button>
+<button type="button" class="bj" onclick="json('pesajes')">📋 JSON</button>
+<button type="button" class="bw" onclick="wa('pesajes')">💬 WhatsApp</button>
+<div class="tc"><table id="t-pes"><thead><tr><th>Fecha</th><th>Arete</th><th>Peso</th><th>Acciones</th></tr></thead><tbody></tbody></table></div>
+</div>
+
+<div id="s-lec" class="sc">
+<div class="sh"><h2>Producción de Leche</h2><button type="button" class="bk" onclick="back()">Volver</button></div>
+<div class="db" id="d-lec">📊 Cargando...</div>
+<div class="feb"><label>📅 <strong>Fecha:</strong></label><input type="date" id="f-lec"></div>
+<div class="fg"><label>Lote:</label><input type="text" id="l-lote" list="dl-lotes"></div>
+<div class="fg"><label>Turno:</label><select id="l-tur"><option>Mañana</option><option>Tarde</option><option>Único / Completo</option></select></div>
+<div class="fg"><label>Litros Totales:</label><input type="number" id="l-lit"></div>
+<div class="fg"><label>Vacas en Ordeño:</label><input type="number" id="l-vac"></div>
+<button type="button" class="ba" onclick="guardarLec()">Registrar Producción</button>
+<button type="button" class="bg2" onclick="toggleG('lec')">📈 Ver Gráfica</button>
+<button type="button" class="brf" onclick="refG('lec')">🔄 Actualizar</button>
+<div id="g-lec" class="gc"></div>
+<button type="button" class="be" onclick="csv('leche')">📥 CSV</button>
+<button type="button" class="bj" onclick="json('leche')">📋 JSON</button>
+<button type="button" class="bw" onclick="wa('leche')">💬 WhatsApp</button>
+<div class="tc"><table id="t-lec"><thead><tr><th>Fecha</th><th>Lote</th><th>Turno</th><th>Litros</th><th>Vacas</th><th>Acciones</th></tr></thead><tbody></tbody></table></div>
+</div>
+
+<div id="s-mue" class="sc">
+<div class="sh"><h2>Muertes / Bajas</h2><button type="button" class="bk" onclick="back()">Volver</button></div>
+<div class="db" id="d-mue">📊 Cargando...</div>
+<div class="feb"><label>📅 <strong>Fecha:</strong></label><input type="date" id="f-mue"></div>
+<div class="fg"><label>Arete del Animal:</label><input type="text" id="m-an" oninput="val('m-an','st-mu')"><div class="as" id="st-mu"></div></div>
+<div class="fg"><label>Causa:</label><input type="text" id="m-ca"></div>
+<button type="button" class="ba" onclick="guardarMue()">Registrar Baja</button>
+<button type="button" class="bg2" onclick="toggleG('mue')">📈 Ver Gráfica</button>
+<button type="button" class="brf" onclick="refG('mue')">🔄 Actualizar</button>
+<div id="g-mue" class="gc"></div>
+<button type="button" class="be" onclick="csv('muertes')">📥 CSV</button>
+<button type="button" class="bj" onclick="json('muertes')">📋 JSON</button>
+<button type="button" class="bw" onclick="wa('muertes')">💬 WhatsApp</button>
+<div class="tc"><table id="t-mue"><thead><tr><th>Fecha</th><th>Arete</th><th>Causa</th><th>Acciones</th></tr></thead><tbody></tbody></table></div>
+</div>
+
+<div id="wm" class="wm">
+<div class="wmc">
+<h3>💬 Enviar por WhatsApp</h3>
+<p style="font-size:.85rem;color:#555;margin-bottom:12px">Número con código de país (sin +).</p>
+<input type="tel" id="w-num" placeholder="Ej: 584241234567">
+<input type="hidden" id="w-mod">
+<div class="wmb">
+<button type="button" class="wmc2" onclick="cw()">Cancelar</button>
+<button type="button" class="wms" onclick="ew()">Enviar</button>
+</div>
+</div>
+</div>
+
+<div id="si" class="si">☁️ Sincronizando...</div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc, collection, addDoc, getDocs, deleteDoc, query, where, orderBy, updateDoc } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAtBrpDpP92rjMS6KtW6yJctLD-2Qj4IcY",
+  authDomain: "syntro-ganadera.firebaseapp.com",
+  projectId: "syntro-ganadera",
+  storageBucket: "syntro-ganadera.firebasestorage.app",
+  messagingSenderId: "1045697245018",
+  appId: "1:1045697245018:web:c165b114097deb9d848d63"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const LCF = "Lote de Cría";
+const CI = {};
+let usuario = null;
+let fincaId = null;
+let D = {inventario:[],nacimientos:[],traslados:[],palpaciones:[],pesajes:[],leche:[],muertes:[],configEspecies:[],configLotes:[]};
+
+window.login = async function(){
+const e=document.getElementById('a-email').value.trim(),p=document.getElementById('a-pass').value;
+msg('','');if(!e||!p){msg('Ingrese email y contraseña.','e');return;}
+try{await signInWithEmailAndPassword(auth,e,p);}catch(err){msg(traducirError(err.code),'e');}
+};
+
+window.registrar = async function(){
+const e=document.getElementById('a-email').value.trim(),p=document.getElementById('a-pass').value,f=document.getElementById('a-finca').value.trim()||'Mi Finca';
+msg('','');if(!e||!p){msg('Ingrese email y contraseña.','e');return;}
+if(p.length<6){msg('La contraseña debe tener al menos 6 caracteres.','e');return;}
+try{
+const cred = await createUserWithEmailAndPassword(auth,e,p);
+await crearFincaConDefaults(cred.user.uid, f);
+msg('✅ Cuenta creada. Ingresando...','o');
+}catch(err){msg(traducirError(err.code),'e');}
+};
+
+window.recuperar = async function(){
+const e=document.getElementById('a-email').value.trim();
+if(!e){msg('Ingrese su correo.','e');return;}
+try{await sendPasswordResetEmail(auth,e);msg('Te enviamos un correo para recuperar tu contraseña.','o');}
+catch(err){msg(traducirError(err.code),'e');}
+};
+
+window.salir = async function(){await signOut(auth);};
+
+function traducirError(code){
+const m={
+'auth/email-already-in-use':'Este correo ya está registrado.',
+'auth/invalid-email':'Correo electrónico inválido.',
+'auth/weak-password':'Contraseña muy débil (mínimo 6 caracteres).',
+'auth/user-not-found':'No existe cuenta con ese correo.',
+'auth/wrong-password':'Contraseña incorrecta.',
+'auth/invalid-credential':'Correo o contraseña incorrectos.',
+'auth/too-many-requests':'Demasiados intentos. Intenta más tarde.',
+'auth/network-request-failed':'Error de conexión. Verifica tu internet.'
+};
+return m[code]||('Error: '+code);}
+
+function msg(t,tipo){const e=document.getElementById('err'),o=document.getElementById('ok');
+e.style.display='none';o.style.display='none';
+if(tipo==='e'){e.textContent=t;e.style.display='block';}
+if(tipo==='o'){o.textContent=t;o.style.display='block';}}
+
+async function crearFincaConDefaults(uid, nombre){
+fincaId = uid;
+await setDoc(doc(db,'fincas',uid),{nombre, userId:uid, fecha:new Date().toISOString()});
+const esp = [{nombre:'Bovino',dias_gestacion:281},{nombre:'Bufalino',dias_gestacion:310},{nombre:'Porcino',dias_gestacion:114}];
+for(const e of esp) await addDoc(collection(db,'fincas',uid,'configEspecies'),e);
+const lotes = [
+{nombre:LCF,es_fijo:true},
+{nombre:'Lote Ordeño Principal',es_fijo:false},
+{nombre:'Lote Vacas Horras',es_fijo:false},
+{nombre:'Lote Descanso',es_fijo:false},
+{nombre:'Lote Maternidad',es_fijo:false},
+{nombre:'Lote Engorde',es_fijo:false}
+];
+for(const l of lotes) await addDoc(collection(db,'fincas',uid,'configLotes'),l);
+}
+
+onAuthStateChanged(auth, async (user)=>{
+if(user){
+usuario=user;fincaId=user.uid;
+const fSnap = await getDoc(doc(db,'fincas',user.uid));
+if(fSnap.exists()){
+const f = fSnap.data();
+document.getElementById('nom-finca').value = f.nombre;
+document.getElementById('login').style.display='none';
+document.getElementById('app').style.display='block';
+await cargarTodo();
+iniciarFechas();
+}else{
+await crearFincaConDefaults(user.uid,'Mi Finca');
+location.reload();
+}
+}else{
+document.getElementById('login').style.display='block';
+document.getElementById('app').style.display='none';
+}
+});
+
+window.guardarNombreFinca = async function(n){
+if(!fincaId)return;
+await updateDoc(doc(db,'fincas',fincaId),{nombre:n});
+};
+
+async function cargarTodo(){
+if(!fincaId)return;
+const cargar = async (col) => {
+const snap = await getDocs(collection(db,'fincas',fincaId,col));
+const arr = [];
+snap.forEach(d=>arr.push({id:d.id,...d.data()}));
+return arr;
+};
+D.inventario = await cargar('inventario');
+D.nacimientos = await cargar('nacimientos');
+D.traslados = await cargar('traslados');
+D.palpaciones = await cargar('palpaciones');
+D.pesajes = await cargar('pesajes');
+D.leche = await cargar('leche');
+D.muertes = await cargar('muertes');
+D.configEspecies = await cargar('configEspecies');
+D.configLotes = await cargar('configLotes');
+sync();actualizarTablas();actualizarDash();sugerir();
+}
+
+function ff(f){const d=String(f.getDate()).padStart(2,'0'),m=String(f.getMonth()+1).padStart(2,'0');return `${d}/${m}/${f.getFullYear()}`;}
+function iniciarFechas(){const h=new Date().toISOString().split('T')[0];
+['f-inv','f-nac','f-tra','f-pal','f-pes','f-lec','f-mue'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=h;});}
+window.show = function(id){document.getElementById('menu').classList.add('h');
+document.querySelectorAll('.sc').forEach(e=>e.classList.remove('a'));
+document.getElementById(id).classList.add('a');
+if(id==='s-nac')infoNac();if(id==='s-pal')infoPal();window.scrollTo(0,0);};
+window.back = function(){document.querySelectorAll('.sc').forEach(e=>e.classList.remove('a'));
+document.getElementById('menu').classList.remove('h');sugerir();actualizarDash();};
+function sugerir(){const i=D.inventario||[];const inp=document.getElementById('i-arete');
+if(inp&&!inp.value)inp.value="ARETE-"+String(i.length+1).padStart(3,'0');}
+function buscarAnimal(v){if(!v)return null;const x=v.trim().toLowerCase();
+return(D.inventario||[]).find(i=>(i.arete&&i.arete.toLowerCase()===x)||(i.chip&&i.chip.toLowerCase()===x));}
+function val(inp,st){const i=document.getElementById(inp),s=document.getElementById(st);if(!i||!s)return;
+const v=i.value.trim();if(!v){s.className='as';s.textContent='';return;}
+const a=buscarAnimal(v);
+if(a){s.className='as ok';s.innerHTML=`✅ Arete: <strong>${a.arete}</strong> | Lote: <strong>${a.lote}</strong> | Especie: <strong>${a.categoria}</strong>`;}
+else{s.className='as w';s.innerHTML=`⚠️ <strong>${v}</strong> no está registrado.`;}}
+function diasG(n){const e=(D.configEspecies||[]).find(x=>x.nombre.toLowerCase()===n.toLowerCase());return e?e.dias_gestacion:281;}
+function sync(){const l=(D.configLotes||[]).map(x=>x.nombre),es=D.configEspecies||[];
+const dl=document.getElementById('dl-lotes');if(dl)dl.innerHTML=l.map(x=>`<option value="${x}">`).join('');
+const si=document.getElementById('i-cat');if(si)si.innerHTML=es.map(e=>`<option value="${e.nombre}">${e.nombre}</option>`).join('');
+['n-esp','p-esp'].forEach(id=>{const s=document.getElementById(id);if(s)s.innerHTML=es.map(e=>`<option value="${e.nombre}">${e.nombre} (${e.dias_gestacion} días)</option>`).join('');});
+renderCE();renderCL();infoNac();infoPal();}
+function infoNac(){const s=document.getElementById('n-esp'),i=document.getElementById('in-nac');if(!s||!i)return;
+i.innerHTML=`💡 Especie: <strong>${s.value}</strong> — <strong>${diasG(s.value)} días</strong>`;}
+function infoPal(){const s=document.getElementById('p-esp'),i=document.getElementById('in-pal');if(!s||!i)return;
+i.innerHTML=`💡 Especie: <strong>${s.value}</strong> — <strong>${diasG(s.value)} días</strong>`;calcIPC();}
+function msj(tipo){const el=document.getElementById('si');el.className='si'+(tipo==='e'?' e':'');el.textContent=tipo==='e'?'⚠️ Error':'☁️ Sincronizado';el.classList.add('v');setTimeout(()=>el.classList.remove('v'),2000);}
+
+window.guardarEspecie = async function(){const n=document.getElementById('ce-n').value.trim(),d=parseInt(document.getElementById('ce-d').value);
+if(!n||isNaN(d)){alert("Ingrese nombre y días.");return;}
+const ex=D.configEspecies.find(e=>e.nombre.toLowerCase()===n.toLowerCase());
+try{
+if(ex)await updateDoc(doc(db,'fincas',fincaId,'configEspecies',ex.id),{dias_gestacion:d});
+else await addDoc(collection(db,'fincas',fincaId,'configEspecies'),{nombre:n,dias_gestacion:d});
+document.getElementById('ce-n').value='';document.getElementById('ce-d').value='';await cargarTodo();msj();alert("Especie guardada.");
+}catch(e){msj('e');alert("Error: "+e.message);}};
+window.delEspecie = async function(id){if(!confirm('¿Eliminar?'))return;
+await deleteDoc(doc(db,'fincas',fincaId,'configEspecies',id));await cargarTodo();};
+function renderCE(){const tb=document.querySelector('#t-cfg-e tbody');if(!tb)return;
+tb.innerHTML=(D.configEspecies||[]).map(e=>`<tr><td>${e.nombre}</td><td>${e.dias_gestacion} días</td><td><button type="button" class="btd" onclick="delEspecie('${e.id}')">Eliminar</button></td></tr>`).join('');}
+window.guardarLote = async function(){const n=document.getElementById('cl-n').value.trim();if(!n){alert("Ingrese el nombre.");return;}
+const ex=D.configLotes.find(l=>l.nombre.toLowerCase()===n.toLowerCase());if(ex){alert("Ya existe.");return;}
+try{await addDoc(collection(db,'fincas',fincaId,'configLotes'),{nombre:n,es_fijo:false});
+document.getElementById('cl-n').value='';await cargarTodo();msj();alert("Lote agregado.");}catch(e){msj('e');alert("Error: "+e.message);}};
+window.delLote = async function(id,n){if(n===LCF){alert("Lote de Cría es fijo.");return;}
+await deleteDoc(doc(db,'fincas',fincaId,'configLotes',id));await cargarTodo();};
+function renderCL(){const tb=document.querySelector('#t-cfg-l tbody');if(!tb)return;
+tb.innerHTML=(D.configLotes||[]).map(l=>{const ef=l.nombre===LCF||l.es_fijo;
+return `<tr><td>${l.nombre}</td><td>${ef?'🔒 Fijo':'Editable'}</td><td>${ef?'<span style="color:#888;font-size:.75rem">No eliminable</span>':`<button type="button" class="btd" onclick="delLote('${l.id}','${l.nombre}')">Eliminar</button>`}</td></tr>`;}).join('');}
+window.buscarChip = function(c){if(!c)return;const a=buscarAnimal(c);
+if(a){document.getElementById('i-arete').value=a.arete;document.getElementById('i-lote').value=a.lote;document.getElementById('i-cat').value=a.categoria;}};
+
+window.guardarInv = async function(){const chip=document.getElementById('i-chip').value.trim(),arete=document.getElementById('i-arete').value.trim(),
+lote=document.getElementById('i-lote').value.trim()||'General',cat=document.getElementById('i-cat').value,
+f=document.getElementById('f-inv').value||new Date().toISOString().split('T')[0],eid=document.getElementById('e-inv').value;
+if(!arete){alert("El arete es obligatorio.");return;}
+try{
+const r={fecha:f,chip,arete,lote,categoria:cat,createdAt:new Date().toISOString()};
+if(eid){await updateDoc(doc(db,'fincas',fincaId,'inventario',eid),r);document.getElementById('e-inv').value='';}
+else await addDoc(collection(db,'fincas',fincaId,'inventario'),r);
+document.getElementById('i-chip').value='';document.getElementById('i-arete').value='';document.getElementById('i-lote').value='';
+await cargarTodo();msj();alert("Inventario actualizado ☁️");}catch(e){msj('e');alert("Error: "+e.message);}};
+window.editInv = function(id){const i=D.inventario.find(x=>x.id===id);if(!i)return;
+document.getElementById('f-inv').value=i.fecha||'';document.getElementById('i-chip').value=i.chip||'';
+document.getElementById('i-arete').value=i.arete||'';document.getElementById('i-lote').value=i.lote||'';
+document.getElementById('i-cat').value=i.categoria||'';document.getElementById('e-inv').value=id;show('s-inv');};
+window.delInv = async function(id){if(!confirm('¿Eliminar?'))return;
+await deleteDoc(doc(db,'fincas',fincaId,'inventario',id));await cargarTodo();msj();};
+function tablaInv(){const tb=document.querySelector('#t-inv tbody');if(!tb)return;
+tb.innerHTML=(D.inventario||[]).map(i=>`<tr><td>${i.fecha}</td><td>${i.arete}</td><td>${i.chip||'-'}</td><td>${i.lote||'-'}</td><td>${i.categoria}</td><td><button type="button" class="bte" onclick="editInv('${i.id}')">Editar</button><button type="button" class="btd" onclick="delInv('${i.id}')">Eliminar</button></td></tr>`).join('');}
+function dashInv(){const i=D.inventario||[],c={};i.forEach(x=>c[x.categoria]=(c[x.categoria]||0)+1);
+const s=Object.entries(c).map(([k,v])=>`${k}: ${v}`).join(' | ');
+const el=document.getElementById('d-inv');if(el)el.innerHTML=`<strong>📊 Total: ${i.length}</strong> | ${s}`;}
+
+window.tPT = function(){const t=document.getElementById('n-tipo').value,c=document.getElementById('bc2'),cc=document.getElementById('cc');
+if(t==='aborto'||t==='mortinato')cc.style.display='none';
+else{cc.style.display='block';c.style.display=(t==='gemelar')?'block':'none';}};
+window.guardarNac = async function(){const esp=document.getElementById('n-esp').value,madre=document.getElementById('n-madre').value.trim(),
+tipo=document.getElementById('n-tipo').value,a1=document.getElementById('n-a1').value.trim(),s1=document.getElementById('n-s1').value,
+p1=parseFloat(document.getElementById('n-p1').value)||null,a2=document.getElementById('n-a2').value.trim(),s2=document.getElementById('n-s2').value,
+p2=parseFloat(document.getElementById('n-p2').value)||null,f=document.getElementById('f-nac').value||new Date().toISOString().split('T')[0],
+eid=document.getElementById('e-nac').value;
+if(!madre){alert("Ingrese la madre.");return;}
+try{
+const r={fecha:f,especie:esp,madre,tipo,arete1:a1,sexo1:s1,peso1:p1,arete2:a2,sexo2:s2,peso2:p2};
+if(eid){await updateDoc(doc(db,'fincas',fincaId,'nacimientos',eid),r);document.getElementById('e-nac').value='';}
+else{await addDoc(collection(db,'fincas',fincaId,'nacimientos'),r);
+if(tipo==='normal'||tipo==='gemelar'||tipo==='distocico'){
+if(a1)await addDoc(collection(db,'fincas',fincaId,'inventario'),{fecha:f,arete:a1,lote:LCF,categoria:esp,chip:''});
+if(tipo==='gemelar'&&a2)await addDoc(collection(db,'fincas',fincaId,'inventario'),{fecha:f,arete:a2,lote:LCF,categoria:esp,chip:''});}}
+['n-madre','n-a1','n-p1','n-a2','n-p2'].forEach(id=>document.getElementById(id).value='');
+document.getElementById('st-n').className='as';await cargarTodo();msj();alert("Nacimiento guardado ☁️");}catch(e){msj('e');alert("Error: "+e.message);}};
+window.editNac = function(id){const i=D.nacimientos.find(x=>x.id===id);if(!i)return;
+document.getElementById('f-nac').value=i.fecha||'';document.getElementById('n-esp').value=i.especie||'';
+document.getElementById('n-madre').value=i.madre||'';document.getElementById('n-tipo').value=i.tipo||'normal';
+document.getElementById('n-a1').value=i.arete1||'';document.getElementById('n-s1').value=i.sexo1||'Macho';
+document.getElementById('n-p1').value=i.peso1||'';document.getElementById('n-a2').value=i.arete2||'';
+document.getElementById('n-s2').value=i.sexo2||'Macho';document.getElementById('n-p2').value=i.peso2||'';
+document.getElementById('e-nac').value=id;tPT();show('s-nac');};
+window.delNac = async function(id){if(!confirm('¿Eliminar?'))return;
+await deleteDoc(doc(db,'fincas',fincaId,'nacimientos',id));await cargarTodo();msj();};
+function tablaNac(){const tb=document.querySelector('#t-nac tbody');if(!tb)return;
+tb.innerHTML=(D.nacimientos||[]).map(i=>`<tr><td>${i.fecha}</td><td>${i.madre}</td><td>${i.especie}</td><td>${i.tipo}</td><td>${i.arete1||'-'}</td><td>${i.sexo1||'-'}</td><td>${i.peso1||0} kg</td><td><button type="button" class="bte" onclick="editNac('${i.id}')">Editar</button><button type="button" class="btd" onclick="delNac('${i.id}')">Eliminar</button></td></tr>`).join('');}
+function dashNac(){const el=document.getElementById('d-nac');if(el)el.innerHTML=`<strong>📊 Total: ${(D.nacimientos||[]).length}</strong>`;}
+
+window.guardarTra = async function(){const a=document.getElementById('tr-an').value.trim(),d=document.getElementById('tr-d').value.trim(),
+f=document.getElementById('f-tra').value||new Date().toISOString().split('T')[0];
+if(!a||!d){alert("Complete los campos.");return;}
+try{
+await addDoc(collection(db,'fincas',fincaId,'traslados'),{fecha:f,animal:a,destino:d});
+const ii=D.inventario.find(i=>i.arete===a||i.chip===a);
+if(ii)await updateDoc(doc(db,'fincas',fincaId,'inventario',ii.id),{lote:d});
+document.getElementById('tr-an').value='';document.getElementById('tr-d').value='';
+document.getElementById('st-tr').className='as';await cargarTodo();msj();alert("Traslado procesado ☁️");}catch(e){msj('e');alert("Error: "+e.message);}};
+window.delTra = async function(id){if(!confirm('¿Eliminar?'))return;
+await deleteDoc(doc(db,'fincas',fincaId,'traslados',id));await cargarTodo();msj();};
+function tablaTra(){const tb=document.querySelector('#t-tra tbody');if(!tb)return;
+tb.innerHTML=(D.traslados||[]).map(i=>`<tr><td>${i.fecha}</td><td>${i.animal}</td><td>${i.destino}</td><td><button type="button" class="btd" onclick="delTra('${i.id}')">Eliminar</button></td></tr>`).join('');}
+function dashTra(){const el=document.getElementById('d-tra');if(el)el.innerHTML=`<strong>📊 Total: ${(D.traslados||[]).length}</strong>`;}
+
+window.tGC = function(){const d=document.getElementById('p-dg').value,b=document.getElementById('bg');
+if(d==='Preñada'){b.style.display='block';calcIPC();}
+else{b.style.display='none';document.getElementById('ripc').classList.remove('v');}};
+function convD(v){if(isNaN(v)||v<=0)return 0;return v>9?Math.round(v):Math.round(v*30);}
+function calcIPC(){const inp=document.getElementById('p-me'),box=document.getElementById('ripc');if(!inp)return;
+const v=parseFloat(inp.value);if(isNaN(v)||v<=0){box.classList.remove('v');return;}
+const esp=document.getElementById('p-esp').value,dt=diasG(esp),dtr=convD(v);
+if(dtr<=0){box.classList.remove('v');return;}
+const fp=document.getElementById('f-pal').value,h=fp?new Date(fp+'T00:00:00'):new Date();
+const fc=new Date(h);fc.setDate(fc.getDate()-dtr);
+const fpa=new Date(fc);fpa.setDate(fpa.getDate()+dt);
+const fs=new Date(fpa);fs.setDate(fs.getDate()-60);
+document.getElementById('r1').textContent=`${dtr} días`;
+document.getElementById('r2').textContent=ff(fc);
+document.getElementById('r3').textContent=`${dt} días`;
+document.getElementById('r4').textContent=`${dt-dtr} días`;
+document.getElementById('r5').textContent=ff(fpa);
+document.getElementById('r6').textContent=ff(fs);
+box.classList.add('v');}
+window.calcIPC = calcIPC;
+window.guardarPal = async function(){const a=document.getElementById('p-an').value.trim(),esp=document.getElementById('p-esp').value,
+dg=document.getElementById('p-dg').value,mv=document.getElementById('p-me').value,
+f=document.getElementById('f-pal').value||new Date().toISOString().split('T')[0];
+if(!a){alert("Ingrese el arete.");return;}
+let dtr=0,fc='N/A',fp='N/A',fs='N/A';
+if(dg==='Preñada'&&mv){const v=parseFloat(mv);
+if(!isNaN(v)&&v>0){dtr=convD(v);const dt=diasG(esp),h=new Date(f+'T00:00:00');
+const c=new Date(h);c.setDate(c.getDate()-dtr);
+const p=new Date(c);p.setDate(p.getDate()+dt);
+const s=new Date(p);s.setDate(s.getDate()-60);
+fc=ff(c);fp=ff(p);fs=ff(s);}}
+try{
+await addDoc(collection(db,'fincas',fincaId,'palpaciones'),{fecha:f,animal:a,especie:esp,diag:dg,
+meses:mv?parseFloat(mv):null,dias_transcurridos:dtr,fecha_concepcion:fc,fecha_parto:fp,fecha_secado:fs});
+document.getElementById('p-an').value='';document.getElementById('p-me').value='';
+document.getElementById('ripc').classList.remove('v');document.getElementById('st-pa').className='as';
+await cargarTodo();msj();alert("Palpación guardada ☁️");}catch(e){msj('e');alert("Error: "+e.message);}};
+window.delPal = async function(id){if(!confirm('¿Eliminar?'))return;
+await deleteDoc(doc(db,'fincas',fincaId,'palpaciones',id));await cargarTodo();msj();};
+function tablaPal(){const tb=document.querySelector('#t-pal tbody');if(!tb)return;
+tb.innerHTML=(D.palpaciones||[]).map(i=>`<tr><td>${i.fecha}</td><td>${i.animal}</td><td>${i.especie}</td><td>${i.diag}</td><td>${i.meses||'-'}</td><td>${i.fecha_concepcion||'-'}</td><td>${i.fecha_parto||'-'}</td><td>${i.fecha_secado||'-'}</td><td><button type="button" class="btd" onclick="delPal('${i.id}')">Eliminar</button></td></tr>`).join('');}
+function dashPal(){const p=D.palpaciones||[],pr=p.filter(x=>x.diag==='Preñada').length;
+const el=document.getElementById('d-pal');if(el)el.innerHTML=`<strong>📊 Total: ${p.length} | Preñadas: ${pr}</strong>`;}
+
+window.guardarPes = async function(){const a=document.getElementById('ps-an').value.trim(),k=parseFloat(document.getElementById('ps-kg').value),
+f=document.getElementById('f-pes').value||new Date().toISOString().split('T')[0];
+if(!a||isNaN(k)){alert("Complete los datos.");return;}
+try{
+await addDoc(collection(db,'fincas',fincaId,'pesajes'),{fecha:f,animal:a,kilos:k});
+document.getElementById('ps-an').value='';document.getElementById('ps-kg').value='';
+document.getElementById('st-ps').className='as';await cargarTodo();msj();alert("Pesaje registrado ☁️");}catch(e){msj('e');alert("Error: "+e.message);}};
+window.delPes = async function(id){if(!confirm('¿Eliminar?'))return;
+await deleteDoc(doc(db,'fincas',fincaId,'pesajes',id));await cargarTodo();msj();};
+function tablaPes(){const tb=document.querySelector('#t-pes tbody');if(!tb)return;
+tb.innerHTML=(D.pesajes||[]).map(i=>`<tr><td>${i.fecha}</td><td>${i.animal}</td><td>${i.kilos} kg</td><td><button type="button" class="btd" onclick="delPes('${i.id}')">Eliminar</button></td></tr>`).join('');}
+function dashPes(){const el=document.getElementById('d-pes');if(el)el.innerHTML=`<strong>📊 Total: ${(D.pesajes||[]).length}</strong>`;}
+
+window.guardarLec = async function(){const l=document.getElementById('l-lote').value.trim(),t=document.getElementById('l-tur').value,
+li=parseFloat(document.getElementById('l-lit').value),v=parseInt(document.getElementById('l-vac').value)||null,
+f=document.getElementById('f-lec').value||new Date().toISOString().split('T')[0];
+if(!l||isNaN(li)){alert("Complete los datos.");return;}
+try{
+await addDoc(collection(db,'fincas',fincaId,'leche'),{fecha:f,lote:l,turno:t,litros:li,vacas:v});
+document.getElementById('l-lit').value='';document.getElementById('l-vac').value='';
+await cargarTodo();msj();alert("Producción registrada ☁️");}catch(e){msj('e');alert("Error: "+e.message);}};
+window.delLec = async function(id){if(!confirm('¿Eliminar?'))return;
+await deleteDoc(doc(db,'fincas',fincaId,'leche',id));await cargarTodo();msj();};
+function tablaLec(){const tb=document.querySelector('#t-lec tbody');if(!tb)return;
+tb.innerHTML=(D.leche||[]).map(i=>`<tr><td>${i.fecha}</td><td>${i.lote}</td><td>${i.turno}</td><td>${i.litros} L</td><td>${i.vacas||0}</td><td><button type="button" class="btd" onclick="delLec('${i.id}')">Eliminar</button></td></tr>`).join('');}
+function dashLec(){const t=(D.leche||[]).reduce((a,c)=>a+(c.litros||0),0);
+const el=document.getElementById('d-lec');if(el)el.innerHTML=`<strong>📊 Litros Totales: ${t} L</strong>`;}
+
+window.guardarMue = async function(){const a=document.getElementById('m-an').value.trim(),c=document.getElementById('m-ca').value.trim(),
+f=document.getElementById('f-mue').value||new Date().toISOString().split('T')[0];
+if(!a){alert("Ingrese el arete.");return;}
+try{
+await addDoc(collection(db,'fincas',fincaId,'muertes'),{fecha:f,animal:a,causa:c});
+const ii=D.inventario.find(i=>i.arete===a||i.chip===a);
+if(ii)await deleteDoc(doc(db,'fincas',fincaId,'inventario',ii.id));
+document.getElementById('m-an').value='';document.getElementById('m-ca').value='';
+document.getElementById('st-mu').className='as';await cargarTodo();msj();alert("Baja registrada ☁️");}catch(e){msj('e');alert("Error: "+e.message);}};
+window.delMue = async function(id){if(!confirm('¿Eliminar?'))return;
+await deleteDoc(doc(db,'fincas',fincaId,'muertes',id));await cargarTodo();msj();};
+function tablaMue(){const tb=document.querySelector('#t-mue tbody');if(!tb)return;
+tb.innerHTML=(D.muertes||[]).map(i=>`<tr><td>${i.fecha}</td><td>${i.animal}</td><td>${i.causa||'-'}</td><td><button type="button" class="btd" onclick="delMue('${i.id}')">Eliminar</button></td></tr>`).join('');}
+function dashMue(){const el=document.getElementById('d-mue');if(el)el.innerHTML=`<strong>📊 Total Bajas: ${(D.muertes||[]).length}</strong>`;}
+
+function actualizarTablas(){tablaInv();tablaNac();tablaTra();tablaPal();tablaPes();tablaLec();tablaMue();}
+function actualizarDash(){dashInv();dashNac();dashTra();dashPal();dashPes();dashLec();dashMue();}
+
+window.toggleG = function(t){const b=document.getElementById('g-'+t);if(!b)return;
+if(b.style.display==='block')b.style.display='none';else{b.style.display='block';renderG(t);}};
+window.refG = function(t){renderG(t);};
+function renderG(t){const b=document.getElementById('g-'+t);if(!b)return;
+Object.keys(CI).forEach(k=>{if(k.startsWith(t+'_')||k===t){CI[k].destroy();delete CI[k];}});
+b.innerHTML='';
+if(t==='nac')grafNac(b);else if(t==='pal')grafPal(b);else grafSimple(t,b);}
+function mkCanvas(b,id,tit){const w=document.createElement('div');w.style.marginBottom='16px';
+const h=document.createElement('div');h.className='gt';h.textContent=tit;w.appendChild(h);
+const cw=document.createElement('div');cw.className='gw';const c=document.createElement('canvas');c.id=id;cw.appendChild(c);
+w.appendChild(cw);b.appendChild(w);return c.getContext('2d');}
+function grafNac(b){const n=D.nacimientos||[];if(!n.length){b.innerHTML='<p style="text-align:center;padding:20px;color:#888">Sin datos</p>';return;}
+const pm={};n.forEach(x=>{if(x.fecha){const[a,m]=x.fecha.split('-');pm[`${m}/${a}`]=(pm[`${m}/${a}`]||0)+1;}});
+CI.nac_mes=new Chart(mkCanvas(b,'c1','📅 Por Mes/Año'),{type:'bar',data:{labels:Object.keys(pm),datasets:[{label:'Nacimientos',data:Object.values(pm),backgroundColor:'#1b6535'}]},options:{responsive:true,maintainAspectRatio:false}});
+const ps={Macho:0,Hembra:0};n.forEach(x=>{if(x.sexo1==='Macho')ps.Macho++;if(x.sexo1==='Hembra')ps.Hembra++;if(x.sexo2==='Macho')ps.Macho++;if(x.sexo2==='Hembra')ps.Hembra++;});
+CI.nac_sexo=new Chart(mkCanvas(b,'c2','♂️♀️ Por Sexo'),{type:'doughnut',data:{labels:Object.keys(ps),datasets:[{data:Object.values(ps),backgroundColor:['#3db87a','#f0ad4e']}]},options:{responsive:true,maintainAspectRatio:false}});
+const pt={};n.forEach(x=>{const t=x.tipo||'normal';pt[t]=(pt[t]||0)+1;});
+CI.nac_tipo=new Chart(mkCanvas(b,'c3','🏷️ Por Tipo'),{type:'pie',data:{labels:Object.keys(pt),datasets:[{data:Object.values(pt),backgroundColor:['#1b6535','#0a3a40','#3db87a','#f0ad4e','#d9534f']}]},options:{responsive:true,maintainAspectRatio:false}});}
+function grafPal(b){const p=D.palpaciones||[];if(!p.length){b.innerHTML='<p style="text-align:center;padding:20px;color:#888">Sin datos</p>';return;}
+const g=(campo)=>{const r={};p.forEach(x=>{if(x[campo]&&x[campo]!=='N/A'){const pr=x[campo].split('/');if(pr.length===3){const k=`${pr[1]}/${pr[2]}`;r[k]=(r[k]||0)+1;}}});return r;};
+const ipc=g('fecha_concepcion');
+CI.pal_ipc=new Chart(mkCanvas(b,'r1','🧬 Concepciones'),{type:'bar',data:{labels:Object.keys(ipc).length?Object.keys(ipc):['Sin datos'],datasets:[{label:'Concepciones',data:Object.values(ipc).length?Object.values(ipc):[0],backgroundColor:'#1b6535'}]},options:{responsive:true,maintainAspectRatio:false}});
+const par=g('fecha_parto');
+CI.pal_parto=new Chart(mkCanvas(b,'r2','🐄 Partos Próximos'),{type:'bar',data:{labels:Object.keys(par).length?Object.keys(par):['Sin datos'],datasets:[{label:'Partos',data:Object.values(par).length?Object.values(par):[0],backgroundColor:'#3db87a'}]},options:{responsive:true,maintainAspectRatio:false}});
+const sec=g('fecha_secado');
+CI.pal_secado=new Chart(mkCanvas(b,'r3','🥛 Secados'),{type:'bar',data:{labels:Object.keys(sec).length?Object.keys(sec):['Sin datos'],datasets:[{label:'Secados',data:Object.values(sec).length?Object.values(sec):[0],backgroundColor:'#f0ad4e'}]},options:{responsive:true,maintainAspectRatio:false}});}
+function grafSimple(t,b){let l=[],v=[],ti='Registros';
+if(t==='inv'){const c={};(D.inventario||[]).forEach(i=>c[i.categoria]=(c[i.categoria]||0)+1);l=Object.keys(c);v=Object.values(c);ti='Animales por Categoría';}
+else if(t==='tra'){const x=D.traslados||[];l=x.map(y=>y.fecha);v=x.map((_,i)=>i+1);ti='Traslados';}
+else if(t==='pes'){const x=D.pesajes||[];l=x.map(y=>y.fecha);v=x.map(y=>y.kilos);ti='Pesos (kg)';}
+else if(t==='lec'){const x=D.leche||[];l=x.map(y=>y.fecha);v=x.map(y=>y.litros);ti='Litros de Leche';}
+else if(t==='mue'){const x=D.muertes||[];l=x.map(y=>y.fecha);v=x.map((_,i)=>i+1);ti='Bajas';}
+CI[t]=new Chart(mkCanvas(b,'g'+t,'📊 '+ti),{type:'bar',data:{labels:l.length?l:['Sin Datos'],datasets:[{label:ti,data:v.length?v:[0],backgroundColor:'#1b6535'}]},options:{responsive:true,maintainAspectRatio:false}});}
+
+window.csv = function(m){const d=D[m]||[];if(!d.length){alert("No hay datos.");return;}
+const k=Object.keys(d[0]);let c=[k.join(',')];
+d.forEach(i=>c.push(k.map(x=>`"${i[x]!==null&&i[x]!==undefined?i[x]:''}"`).join(',')));
+const b=new Blob([c.join('\n')],{type:'text/csv;charset=utf-8;'});dl(b,`syntro_${m}_${new Date().toISOString().split('T')[0]}.csv`);};
+window.json = function(m){const d=D[m]||[];if(!d.length){alert("No hay datos.");return;}
+const o={finca:document.getElementById('nom-finca').value,modulo:m,fechaExportacion:new Date().toISOString(),total:d.length,registros:d};
+const b=new Blob([JSON.stringify(o,null,2)],{type:'application/json;charset=utf-8;'});dl(b,`syntro_${m}_${new Date().toISOString().split('T')[0]}.json`);};
+function dl(b,n){const u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download=n;document.body.appendChild(a);a.click();document.body.removeChild(a);setTimeout(()=>URL.revokeObjectURL(u),1000);}
+
+window.wa = function(m){const d=D[m]||[];if(!d.length){alert("No hay datos.");return;}
+document.getElementById('w-mod').value=m;document.getElementById('w-num').value=localStorage.getItem('wa_num')||'';
+document.getElementById('wm').classList.add('v');};
+window.cw = function(){document.getElementById('wm').classList.remove('v');};
+window.ew = async function(){const m=document.getElementById('w-mod').value,n=document.getElementById('w-num').value.trim().replace(/\D/g,'');
+if(!n||n.length<10){alert("Número inválido.");return;}
+localStorage.setItem('wa_num',n);
+const d=D[m]||[],fn=document.getElementById('nom-finca').value,fh=new Date().toISOString().split('T')[0];
+let r=`*SYNTRO - ${m.toUpperCase()}*\n🏡 ${fn}\n📅 ${fh}\n📊 Total: ${d.length}\n\n*Últimos 10:*\n`;
+d.slice(-10).forEach((x,i)=>{r+=`\n${i+1}. `+Object.keys(x).map(k=>`${k}: ${x[k]}`).join(' | ');});
+const k=Object.keys(d[0]);let c=[k.join(',')];
+d.forEach(i=>c.push(k.map(x=>`"${i[x]!==null&&i[x]!==undefined?i[x]:''}"`).join(',')));
+const bl=new Blob([c.join('\n')],{type:'text/csv;charset=utf-8;'});
+const ar=new File([bl],`syntro_${m}_${fh}.csv`,{type:'text/csv'});
+if(navigator.canShare&&navigator.canShare({files:[ar]})){try{await navigator.share({files:[ar],title:`SYNTRO - ${m}`,text:r});cw();return;}catch(e){console.warn(e);}}
+window.open(`https://wa.me/${n}?text=${encodeURIComponent(r)}`,'_blank');
+dl(bl,`syntro_${m}_${fh}.csv`);alert("WhatsApp abierto. CSV descargado.");cw();};
+</script>
 </body>
 </html>
