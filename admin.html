@@ -159,7 +159,6 @@ tr:hover{background:#f8fbfa}
 </div>
 </div>
 
-<!-- MODAL EDITAR -->
 <div class="modal" id="modal-editar">
 <div class="modal-content">
 <h3>✏️ Editar Cliente</h3>
@@ -205,7 +204,6 @@ tr:hover{background:#f8fbfa}
 </div>
 </div>
 
-<!-- MODAL DETALLE -->
 <div class="modal" id="modal-detalle">
 <div class="modal-content">
 <h3 id="detalle-titulo">📋 Datos del Cliente</h3>
@@ -545,7 +543,6 @@ window.descargarTodo = async function(e){
       const respaldo = await generarRespaldoCliente(c.uid);
       descargarArchivo(respaldo, c.nombre);
       descargados++;
-      
       await new Promise(r => setTimeout(r, 500));
     }catch(err){
       console.error('Error con cliente:', c.nombre, err);
